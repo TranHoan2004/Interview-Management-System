@@ -1,6 +1,6 @@
 package com.ims_team4.utils;
 
-import org.springframework.context.annotation.Bean;
+import org.jetbrains.annotations.NotNull;
 
 import java.time.LocalDate;
 import java.time.Month;
@@ -9,24 +9,22 @@ import java.util.Scanner;
 
 public class Validation {
 
-    @Bean
-    public String removeUnnecessaryBlank(String input) {
+    @NotNull
+    public static String removeUnnecessaryBlank(@NotNull String input) {
         return input.trim().replaceAll("\\s+", " ");
     }
 
-    @Bean
-    public String removeAllBlank(String input) {
+    @NotNull
+    public static String removeAllBlank(@NotNull String input) {
         return input.trim().replaceAll("\\s+", "");
     }
 
-    @Bean
-    public boolean pressYN() throws Exception {
+    public static boolean pressYN() throws Exception {
         String input = getStringByRegex("Do you want to continue? (Y/N): ", "[YNyn]", "[YNyn]");
         return input.equalsIgnoreCase("y");
     }
 
-    @Bean
-    public String normalFormName(String input) {
+    public static String normalFormName(String input) {
         input = removeUnnecessaryBlank(input);
         String[] temp = input.split(" ");
         input = "";
@@ -39,8 +37,8 @@ public class Validation {
         return input;
     }
 
-    @Bean
-    public String getNonEmptyString(String mess, String string) throws Exception {
+    @NotNull
+    public static String getNonEmptyString(String mess, String string) throws Exception {
         System.out.print(mess);
         string = removeUnnecessaryBlank(string);
         if (string.equalsIgnoreCase("")) {
@@ -49,8 +47,8 @@ public class Validation {
         return string;
     }
 
-    @Bean
-    public String normalFormStringAfterDot(String input) {
+    @NotNull
+    public static String normalFormStringAfterDot(String input) {
         String output = "";
         input = removeUnnecessaryBlank(input);
         input = String.valueOf(input.charAt(0)).toUpperCase() + input.substring(1);
@@ -68,8 +66,7 @@ public class Validation {
         return output;
     }
 
-    @Bean
-    public int getInt(String message, String error, int min, int max) throws Exception {
+    public static int getInt(String message, String error, int min, int max) throws Exception {
         int input = Integer.parseInt(getStringByRegex(message, "[0-9]+", error));
         if (input < min || input > max) {
             throw new Exception("Out of range!");
@@ -78,8 +75,8 @@ public class Validation {
         }
     }
 
-    @Bean
-    public String getStringByRegex(String message, String regex, String err) throws Exception {
+    @NotNull
+    public static String getStringByRegex(String message, String regex, String err) throws Exception {
         Scanner sc = new Scanner(System.in);
         System.out.print(message + " ");
         String input = sc.nextLine();
@@ -91,14 +88,14 @@ public class Validation {
         throw new Exception(err);
     }
 
-    @Bean
-    public String getEmail(String message) throws Exception {
+    @NotNull
+    public static String getEmail(String message) throws Exception {
         String regex = "^[A-Za-z](.*)([@]{1})(.{2,})(\\.)(.{2,})"; // phai bat dau bang chu cai
         return getStringByRegex(message, regex, "Please enter email with format <account name>@<domain>");
     }
 
-    @Bean
-    public String getPhone(String message) throws Exception {
+    @NotNull
+    public static String getPhone(String message) throws Exception {
         String phoneNum = getStringByRegex(message, "[0-9]+", "Please enter number only!!");
         if (phoneNum.length() == 10 || phoneNum.length() == 11) {
             return phoneNum;
@@ -106,8 +103,7 @@ public class Validation {
         throw new Exception("Phone number must be at least 10 characters and at most 11 characters");
     }
 
-    @Bean
-    public double getDouble(String message, String error, double min, double max) throws Exception {
+    public static double getDouble(String message, String error, double min, double max) throws Exception {
         double input = Double.parseDouble(getStringByRegex(message, "[0-9]*\\.?[0-9]+", error));
         if (input < min || input > max) {
             throw new Exception("Out of range!");
@@ -116,8 +112,8 @@ public class Validation {
         }
     }
 
-    @Bean
-    public LocalDate getDate(String input) throws Exception {
+    @NotNull
+    public static LocalDate getDate(String input) throws Exception {
         Scanner sc = new Scanner(System.in);
         System.out.print(input);
         input = sc.nextLine();
@@ -157,8 +153,7 @@ public class Validation {
         return date;
     }
 
-    @Bean
-    public boolean getFormattedPassword(String password) throws Exception {
+    public static boolean getFormattedPassword(String password) throws Exception {
         password = removeUnnecessaryBlank(password);
         if (password.length() < 8 || password.length() > 32) {
             throw new Exception("Password must have length between 8 and 32 characters");
@@ -166,13 +161,12 @@ public class Validation {
         return true;
     }
 
-    @Bean
-    public LocalDate getCurrentDate() throws Exception {
+    @NotNull
+    public static LocalDate getCurrentDate() throws Exception {
         return LocalDate.parse(LocalDate.now().toString(), DateTimeFormatter.ofPattern("yyyy-MM-dd"));
     }
 
-    @Bean
-    private void isLeapYear(LocalDate localDate) throws Exception {
+    private static void isLeapYear(@NotNull LocalDate localDate) throws Exception {
         if (!localDate.isLeapYear() && localDate.getMonth().equals(Month.FEBRUARY) && localDate.getDayOfMonth() == 29) {
             throw new Exception("February has 28 days in non-leap years");
         }
