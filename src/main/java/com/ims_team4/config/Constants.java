@@ -14,4 +14,27 @@ public interface Constants {
         String ACCOUNT_NUMBER = "";
         String ACCOUNT_NAME = "";
     }
+
+    interface Regex {
+        String EMAIL_REGEX = "^[A-Za-z](.*)([@]{1})(.{2,})(\\\\.)(.{2,})";
+        String PHONE_REGEX = "^[0-9]{10,11}$";
+    }
+
+    interface GoogleAndFacebookAuthentication {
+        // Google
+        String GOOGLE_LINK_GET_TOKEN = "";
+        String GOOGLE_CLIENT_ID = "";
+        String GOOGLE_CLIENT_SECRET = "";
+        String GOOGLE_REDIRECT_URI = "";
+        String GOOGLE_GRANT_TYPE = "";
+        String GOOGLE_LINK_GET_USER_INFO = "";
+
+        // Facebook
+        String FACEBOOK_CLIENT_ID = "";
+        String FACEBOOK_CLIENT_SECRET = "";
+        String FACEBOOK_REDIRECT_URI = "";
+        String FACEBOOK_LINK_GET_TOKEN = "";
+        String FACEBOOK_LINK_GET_USER_INFO = "";
+    }
+
 }
