@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+          integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css"
+          integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU" crossorigin="anonymous">
+    <link rel="icon" type="image/png" th:href="@{/images/icons/favicon.ico}"/>
+    <link rel="stylesheet" type="text/css" th:href="@{/vendor/bootstrap/css/bootstrap.min.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{/fonts/font-awesome-4.7.0/css/font-awesome.min.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{/vendor/animate/animate.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{/vendor/css-hamburgers/hamburgers.min.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{/vendor/select2/select2.min.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{/css/login.css}"/>
+    <title>Log in</title>
+</head>
+
+<body>
+<div class="container-login100">
+    <div class="wrap-login100">
+        <div class="login100-pic js-tilt" data-tilt>
+            <img th:src="@{/images/img-01.png}" alt="IMG">
+        </div>
+        <form class="form-signin" th:action="@{/login}" th:method="POST">
+            <span class="login100-form-title">
+                Login in here
+            </span>
+            <!--Input email-->
+            <div class="wrap-input100 validate-input" data-validate="Valid email is required: ex@abc.xyz">
+                <label for="inputEmail">
+                    <input class="input100 form-control" type="text" id="inputEmail" name="username"
+                           placeholder="Username" required="" autofocus="">
+                </label>
+                <span class="focus-input100"></span>
+                <span class="symbol-input100">
+                        <i class="fa fa-envelope" aria-hidden="true"></i>
+                    </span>
+            </div>
+
+            <!--Input password-->
+            <div class="wrap-input100 validate-input" data-validate="Password is required">
+                <label for="inputPassword">
+                    <input class="input100 form-control" type="password" name="password" id="inputPassword"
+                           placeholder="Password" required="">
+                </label>
+                <span class="focus-input100"></span>
+                <span class="symbol-input100">
+                        <i class="fa fa-lock" aria-hidden="true"></i>
+                    </span>
+            </div>
+
+            <!--Remember me-->
+            <div class="form-group form-check">
+                <input name="remember" value="1" type="checkbox" class="form-check-input" id="exampleCheck1">
+                <label class="form-check-label" for="exampleCheck1">Remember me</label>
+            </div>
+
+            <div class="container-login100-form-btn">
+                <button class="login100-form-btn" type="submit" style="background: #57b846;">
+                    Login
+                </button>
+            </div>
+            <hr>
+
+            <p>Or sign in with</p>
+            <!--Login by Facebook and Google-->
+            <div>
+                <div class="container-login100-form-btn">
+                    <button class="login100-form-btn" type="submit" onclick="redirectToFacebook()"
+                            style="background: #ffffff; color: #0022ff; border-style: solid; border-color: black;border-width: 1px;">
+                        <img th:src="@{images/Facebook_Logo_(2019).png}" alt="IMG" width="20" height="20"/>&nbsp;
+                        Facebook
+                    </button>
+                </div>
+                <script>
+                    function redirectToFacebook() {
+                        window.location.href = "https://www.facebook.com/v19.0/dialog/oauth" +
+                            "?client_id=982073830115458" +
+                            "&redirect_uri=http://localhost:8080/login" +
+                            "&scope=email,public_profile" +
+                            "&response_type=code" +
+                            "&state=facebook";
+                    }
+                </script>
+
+                <div class="container-login100-form-btn">
+                    <button class="login100-form-btn" type="submit" onclick="redirectToGoogle()"
+                            style="background: #ffffff; color: #ff0000; border-style: solid; border-color: black; border-width: 1px;">
+                        <img th:src="@{/images/Google.png}" alt="IMG" width="20" height="20"/>&nbsp;
+                        Google
+                    </button>
+                </div>
+                <script>
+                    function redirectToGoogle() {
+                        // redirect_uri: duong dan tra ve sau khi xac thuc thanh cong
+                        // response type: kieu tra ve
+                        window.location.href = "https://accounts.google.com/o/oauth2/auth" +
+                            "?scope=email profile openid" +
+                            "&redirect_uri=http://localhost:8080/login" +
+                            "&response_type=code" +
+                            "&client_id=124534860310-fd5vphc76171q4dfsu22rcisso934ktd.apps.googleusercontent.com" +
+                            "&approval_prompt=force" +
+                            "&state=google" +
+                            "&access_type=offline";
+                    }
+                </script>
+            </div>
+
+            <div class="text-center p-t-136">
+                <a class="txt2" th:href="@{/forgotPassword}">Forgot your password?</a><br>
+                <p class="txt2">----------- or -----------</p>
+                <a class="txt2" th:href="@{/createAccount}">
+                    Create your Account
+                    <i class="fa fa-long-arrow-right m-l-5" aria-hidden="true"></i>
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+        integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+        crossorigin="anonymous"></script>
+<script th:src="@{/js/login.js}"></script>
+<script th:src="@{/js/main.js}"></script>
+<script th:src="@{/vendor/jquery/jquery-3.2.1.min.js}"></script>
+<script th:src="@{/vendor/bootstrap/js/popper.js}"></script>
+<script th:src="@{/vendor/bootstrap/js/bootstrap.min.js}"></script>
+<script th:src="@{/vendor/select2/select2.min.js}"></script>
+<script th:src="@{/vendor/tilt/tilt.jquery.min.js}"></script>
+</body>
+
+</html>

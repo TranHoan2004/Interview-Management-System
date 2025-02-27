@@ -1,0 +1,76 @@
+.sidebar {
+    height: 100vh;
+    position: sticky;
+    top: 0;
+}
+
+.sidebar h1 {
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+
+.sidebar .nav-link {
+    padding: 15px 0;
+    text-align: center;
+    color: #333;
+    transition: color 0.3s;
+}
+
+.sidebar .nav-link:hover,
+.sidebar .nav-link.active {
+    color: #007bff; /* Màu xanh khi hover hoặc active */
+}
+
+.sidebar .nav-link i {
+    margin-bottom: 5px;
+}
+
+.sidebar .nav-link span {
+    font-size: 0.9rem;
+    line-height: 1.2;
+}
+
+.sidebar .text-dark {
+    color: #333 !important;
+}
+
+.nav-link.active {
+    font-weight: bold;
+    color: #007bff;
+}
+
+.btn-success, .btn-info {
+    padding: 10px 20px;
+    font-size: 1.1rem;
+}
+
+.btn-sm {
+    font-size: 0.9rem;
+    padding: 5px 10px;
+}
+
+.nav-link {
+    padding: 10px;
+    text-align: center;
+}
+
+.nav-link i {
+    font-size: 1.5rem; /* Tăng kích thước biểu tượng */
+    margin-bottom: 5px; /* Khoảng cách giữa biểu tượng và văn bản */
+}
+
+.nav-link span {
+    font-size: 0.9rem; /* Kích thước văn bản */
+}
+.d-flex.flex-column.align-items-end span {
+    font-size: 1rem; /* Điều chỉnh kích thước chữ nếu cần */
+}
+.fw-bold {
+    font-size: 0.9rem; /* Điều chỉnh kích thước chữ in đậm nếu cần */
+}
+.btn-sm {
+     padding: 2px 6px; /* Điều chỉnh padding nếu nút quá lớn */
+ }
+.btn-outline-secondary {
+    border-color: #6c757d; /* Đảm bảo màu viền phù hợp với giao diện */
+}

@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chỉnh sửa công việc</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+<h2>Chỉnh sửa công việc</h2>
+<!--<form th:action="@{/jobs/edit/{id}(id=${job.id})}" method="post">-->
+<!--    <input type="hidden" name="id" th:value="${job.id}">-->
+
+<!--    <label for="title">Tiêu đề:</label>-->
+<!--    <input type="text" id="title" name="title" th:value="${job.title}" required>-->
+
+<!--    <label for="salaryFrom">Lương tối thiểu:</label>-->
+<!--    <input type="number" id="salaryFrom" name="salaryFrom" th:value="${job.salaryFrom}" required>-->
+
+<!--    <label for="salaryTo">Lương tối đa:</label>-->
+<!--    <input type="number" id="salaryTo" name="salaryTo" th:value="${job.salaryTo}" required>-->
+
+<!--    <label for="location">Địa điểm:</label>-->
+<!--    <input type="text" id="location" name="location" th:value="${job.location}" required>-->
+
+<!--    <button type="submit" class="btn">Cập nhật</button>-->
+<!--    <a href="/jobs" class="btn btn-secondary">Quay lại</a>-->
+<!--</form>-->
+<form method="post">
+    <input type="hidden" name="id">
+
+    <label for="title">Tiêu đề:</label>
+    <input type="text" id="title" name="title" required>
+
+    <label for="salaryFrom">Lương tối thiểu:</label>
+    <input type="number" id="salaryFrom" name="salaryFrom"  required>
+
+    <label for="salaryTo">Lương tối đa:</label>
+    <input type="number" id="salaryTo" name="salaryTo"  required>
+
+    <label for="location">Địa điểm:</label>
+    <input type="text" id="location" name="location"  required>
+
+    <button type="submit" class="btn">Cập nhật</button>
+    <a href="/jobs" class="btn btn-secondary">Quay lại</a>
+</form>
+</body>
+</html>

@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Job</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="/css/jobs.css">
+</head>
+<body class="bg-light">
+<div class="d-flex">
+
+        <!-- Thanh Bên (Sidebar) -->
+        <div class="col-md-2 col-lg-3 sidebar p-3" style="background-color: #f5f5dc;">
+            <h1 class="d-flex justify-content-center align-items-center mb-4 ">
+                <img src="https://storage.googleapis.com/a1aa/image/xDzzS0JC5qea4CbpCUszLzoRX5p4YvCBTrUncvJpdX4.jpg"
+                     alt="logo" width="10%" class="me-2">
+                IMS
+            </h1>
+            <nav>
+                <ul class="nav flex-column">
+                    <li class="nav-item">
+                        <a href="#" class="nav-link d-flex flex-column align-items-center text-dark">
+                            <i class="bi bi-house-door-fill" style="font-size: 1.5rem;"></i>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link d-flex flex-column align-items-center text-dark">
+                            <i class="bi bi-people-fill" style="font-size: 1.5rem;"></i>
+                            <span>Candidate</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link d-flex flex-column align-items-center text-dark active">
+                            <i class="bi bi-briefcase-fill" style="font-size: 1.5rem;"></i>
+                            <span>Job</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link d-flex flex-column align-items-center text-dark">
+                            <i class="bi bi-calendar-check-fill" style="font-size: 1.5rem;"></i>
+                            <span>Interview</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link d-flex flex-column align-items-center text-dark">
+                            <i class="bi bi-file-earmark-text-fill" style="font-size: 1.5rem;"></i>
+                            <span>Offer</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link d-flex flex-column align-items-center text-dark">
+                            <i class="bi bi-person-fill" style="font-size: 1.5rem;"></i>
+                            <span>User</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+
+        <!-- Nội Dung Chính -->
+        <div class="flex-grow-1 p-4">
+            <!-- Tiêu Đề -->
+            <div class="d-flex justify-content-between align-items-center mb-5">
+                <h2 class="fs-3 fw-bold">Job</h2>
+                <div class="d-flex align-items-center gap-3">
+                    <div class="d-flex flex-column align-items-end me-3">
+                        <span class="me-3 fw-bold">HoanNK</span>
+                        <span class="me-3">HR Department</span>
+                    </div>
+                    <a href="#" class="btn btn-outline-danger btn-sm">Logout</a>
+                </div>
+            </div>
+            <!-- Chuyển hướng-->
+            <div class="d-flex align-items-center mb-4">
+                <span>Job List</span>
+            </div>
+            <div class="bg-info bg-opacity-10 p-4 rounded">
+                <!-- Search and Filter -->
+                <div class="d-flex mb-3 ps-2">
+                    <input type="text" class="form-control me-2" placeholder="search">
+                    <select class="form-select me-2" style="max-width: 150px;">
+                        <option value="">Status</option>
+                        <option value="open">Open</option>
+                        <option value="closed">Closed</option>
+                    </select>
+                    <button class="btn btn-primary">Search</button>
+                </div>
+
+                <!-- Button Add New and Import -->
+                <div class="d-flex justify-content-end mb-3">
+                    <a th:href="@{/jobs/create-job}" class="btn btn-success btn-sm me-2">
+                        <i class="bi bi-plus-lg"></i> Add New
+                    </a>
+                    <a th:href="@{/jobs/import}" class="btn btn-info btn-sm">
+                        <i class="bi bi-upload"></i> Import
+                    </a>
+                </div>
+
+
+                <table class="table table-bordered">
+                    <thead>
+                    <tr>
+                        <th>Job Title</th>
+                        <th>Required Skills</th>
+                        <th>Start date</th>
+                        <th>End date</th>
+                        <th>Level</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="job : ${jobs}">
+                        <td th:text="${job.title}"></td>
+                        <td th:text="${job.skillRequired}"></td>
+                        <td th:text="${job.startDate}"></td>
+                        <td th:text="${job.endDate}"></td>
+                        <td th:text="${job.level}"></td>
+                        <td th:text="${job.status} ? 'Open' : 'Closed'"></td>
+                        <td>
+                            <a th:href="@{/jobs/job-detail/{id}(id=${job.id})}" class="btn btn-sm btn-outline-secondary me-1">
+                                <i class="bi bi-eye"></i>
+                            </a>
+                            <button class="btn btn-sm btn-outline-primary me-1">
+                                <i class="bi bi-pencil"></i>
+                            </button>
+                            <button class="btn btn-sm btn-outline-danger">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                        </td>
+
+                    </tr>
+                    <!-- Hiển thị khi danh sách trống -->
+                    <tr th:if="${#lists.isEmpty(jobs)}">
+                        <td colspan="7" class="text-center text-muted">Không có công việc nào</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>
