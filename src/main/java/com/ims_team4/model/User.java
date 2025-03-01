@@ -13,7 +13,6 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
 import java.time.LocalDate;
-import java.util.Set;
 
 @Data
 @SuperBuilder
@@ -23,6 +22,7 @@ import java.util.Set;
 @Table(name = "users")
 // HoanTX
 public class User implements Constants.Regex {
+    // <editor-fold> desc="properties"
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -60,20 +60,17 @@ public class User implements Constants.Regex {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private UserRole role;
+    // </editor-fold>
 
-    @Column(nullable = false, length = 32)
-    @Size(min = 8, max = 32, message = "Password must have length from 8 to 32")
-    private String password;
+    // 18. User 1-1 Candidate
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "user")
+    private Candidate candidates;
 
-    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "user")
-    private Set<Candidate> candidates;
+    // 13 User 1-1 Candidate
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "user")
+    private Employee employees;
 
-    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "user")
-    private Set<Employee> employees;
-
-    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "recruiter")
-    private Set<Employee> recruiters;
-
+    // 16. User 1-1 Notification
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private Notification notification;
 }

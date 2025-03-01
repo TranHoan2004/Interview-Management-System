@@ -19,6 +19,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.io.IOException;
 import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -26,53 +27,75 @@ import java.util.logging.Logger;
 @Controller
 public class LoginController implements Constants.GoogleAndFacebookAuthentication {
     private final UserService userService;
-    private final String LOGIN_TYPE_FACEBOOK = "facebook";
-    private final String LOGIN_TYPE_GOOGLE = "google";
     private static final Logger logger = Logger.getLogger(LoginController.class.getName());
     private final GetUserDetailsFromSession details;
+    private final String LOGIN_TYPE_FACEBOOK = "facebook";
+    private final String LOGIN_TYPE_GOOGLE = "google";
 
-    public LoginController(UserServiceImpl impl, GetUserDetailsFromSession details) {
+    public LoginController(UserServiceImpl impl) {
         this.userService = impl;
-        this.details = details;
+        this.details = new GetUserDetailsFromSession();
     }
 
-    // HoanTX
+    /**
+     * Login by Facebook or Google module. <br/> Args: {@code code}, {@code error}, {@code type}
+     * <p>
+     * When we send authorization request to Facebook and Google (in the login page), we will receive authorization
+     * grant uri contains authorized {@code code} and value of state.
+     * </p>
+     * <p>
+     * We use this {@code code} value to send an authorization grant uri to get an access token.
+     * </p>
+     * <p>
+     * After having an access token, we send it to resource server to get account information. Finally, they will send
+     * us back all information of log in account.
+     * </p>
+     * <p>
+     * If login process has {@code error}, we will throw that {@code error} to login page that do not solve anything
+     * with OAuth2 authentication system.
+     * </p>
+     *
+     * @author HoanTX
+     */
     @GetMapping("/login")
-    public String index(@RequestParam(name = "code") String code,
+    public String login(@RequestParam(name = "code", required = false) String code,
                         @RequestParam(value = "error", required = false) boolean error,
-                        @RequestParam(name = "state") String type,
+                        @RequestParam(name = "state", required = false) String type,
                         Model model,
                         HttpSession session) {
         String email = "";
         String accessToken;
         try {
-            if (error || code == null || type == null) {
+            if (error) {
                 throw new Exception("Error occurred");
             }
-            switch (type) {
-                case LOGIN_TYPE_FACEBOOK -> {
-                    accessToken = getFacebookToken(code);
-                    email = getFacebookUserInfo(accessToken).getEmail();
+            if (code != null && type != null) {
+                switch (type) {
+                    case LOGIN_TYPE_FACEBOOK -> {
+                        accessToken = getFacebookToken(code);
+                        email = getFacebookUserInfo(accessToken).getEmail();
+                    }
+                    case LOGIN_TYPE_GOOGLE -> {
+                        accessToken = getGoogleToken(code);
+                        email = getGoogleUserInfo(accessToken).getEmail();
+                    }
                 }
-                case LOGIN_TYPE_GOOGLE -> {
-                    accessToken = getGoogleToken(code);
-                    email = getGoogleUserInfo(accessToken).getEmail();
+                Optional<UserDTO> user = userService.getUserByEmail(email);
+                if (user.isPresent()) {
+                    session.setAttribute("account", user.get());
+                } else {
+                    throw new UsernameNotFoundException("User not found");
                 }
-            }
-            Optional<UserDTO> user = userService.getUserByEmail(email);
-            if (user.isPresent()) {
-                session.setAttribute("account", user.get());
+                details.getUserDTOFromSession(session);
             } else {
-                throw new UsernameNotFoundException("User not found");
+                return "login-logout-features/login";
             }
-            details.getUserDTOFromSession(session);
         } catch (UsernameNotFoundException u) {
             logger.log(Level.SEVERE, u.getMessage(), u);
             model.addAttribute("errorMessage", u.getMessage());
             return "login-logout-features/login";
         } catch (Exception e) {
             logger.log(Level.SEVERE, e.getMessage(), e);
-            model.addAttribute("error_message", e.getMessage());
             return "login-logout-features/login";
         }
         return "index";
@@ -83,18 +106,18 @@ public class LoginController implements Constants.GoogleAndFacebookAuthenticatio
     @NotNull
     private static String getGoogleToken(String code) throws Exception {
         String response = Request.Post(GOOGLE_LINK_GET_TOKEN).bodyForm(
-                Form
-                        .form()
-                        .add("client_id", GOOGLE_CLIENT_ID)
-                        .add("client_secret", GOOGLE_CLIENT_SECRET)
-                        .add("redirect_uri", GOOGLE_REDIRECT_URI)
-                        .add("code", code)
-                        .add("grant_type", GOOGLE_GRANT_TYPE)
-                        .build()
-        ).execute().returnContent().asString();
+                        Form
+                                .form()
+                                .add("client_id", GOOGLE_CLIENT_ID)
+                                .add("client_secret", GOOGLE_CLIENT_SECRET)
+                                .add("redirect_uri", GOOGLE_REDIRECT_URI)
+                                .add("code", code)
+                                .add("grant_type", GOOGLE_GRANT_TYPE)
+                                .build())
+                .execute().returnContent().asString();
         JsonObject obj = new Gson().fromJson(response, JsonObject.class);
         if (!obj.has("access_token")) {
-            throw new Exception("Failed to retrieve access token from Google");
+            throw new IOException("Failed to retrieve access token from Google");
         }
         return obj.get("access_token").toString().replaceAll("\"", "");
     }
@@ -111,17 +134,17 @@ public class LoginController implements Constants.GoogleAndFacebookAuthenticatio
     @NotNull
     private static String getFacebookToken(String code) throws Exception {
         String response = Request.Post(FACEBOOK_LINK_GET_TOKEN).bodyForm(
-                Form
-                        .form()
-                        .add("client_id", FACEBOOK_CLIENT_ID)
-                        .add("client_secret", FACEBOOK_CLIENT_SECRET)
-                        .add("redirect_uri", FACEBOOK_REDIRECT_URI)
-                        .add("code", code)
-                        .build()
-        ).execute().returnContent().asString();
+                        Form
+                                .form()
+                                .add("client_id", FACEBOOK_CLIENT_ID)
+                                .add("client_secret", FACEBOOK_CLIENT_SECRET)
+                                .add("redirect_uri", FACEBOOK_REDIRECT_URI)
+                                .add("code", code)
+                                .build())
+                .execute().returnContent().asString();
         JsonObject obj = new Gson().fromJson(response, JsonObject.class);
         if (!obj.has("access_token")) {
-            throw new Exception("Failed to retrieve access token from Facebook");
+            throw new IOException("Failed to retrieve access token from Facebook");
         }
         return obj.get("access_token").toString().replaceAll("\"", "");
     }

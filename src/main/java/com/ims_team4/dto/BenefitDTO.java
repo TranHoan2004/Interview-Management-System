@@ -1,6 +1,8 @@
 package com.ims_team4.dto;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
 @Data
@@ -10,4 +12,5 @@ import lombok.experimental.SuperBuilder;
 public class BenefitDTO {
     private Long id;
     private String name;
+    private Long jobID;
 }

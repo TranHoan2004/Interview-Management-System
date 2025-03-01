@@ -82,7 +82,6 @@ public class UserServiceImpl implements UserService {
                 .status(user.isStatus())
                 .note(user.getNote())
                 .role(user.getRole())
-                .notificationID(user.getNotification() != null ? user.getNotification().getId() : 0)
                 .build();
     }
 }

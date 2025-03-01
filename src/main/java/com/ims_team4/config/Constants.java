@@ -37,4 +37,12 @@ public interface Constants {
         String FACEBOOK_LINK_GET_USER_INFO = "";
     }
 
+    interface ProfileStatus {
+        String WAITING_STATUS = "Waiting for interview";
+        String OPEN_STATUS = "Open";
+        String INTERVIEWED_STATUS = "Interviewed";
+        String OFFERED_STATUS = "Offered";
+        String FAILED_STATUS = "Failed";
+    }
+
 }

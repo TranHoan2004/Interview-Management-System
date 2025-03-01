@@ -3,7 +3,7 @@ spring:
     name: IMS_Team4
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://127.0.0.1:3306/ims?useSSL=false&serverTimezone=UTC&characterEncoding=UTF-8
+    url: jdbc:mysql://127.0.0.1:3306/ims?useSSL=false&serverTimezone=UTC&characterEncoding=UTF-8&autoReconnect=true&allowPublicKeyRetrieval=true
     username: root
     password: hoan2709
   jpa:

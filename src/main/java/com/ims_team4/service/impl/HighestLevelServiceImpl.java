@@ -1,7 +1,7 @@
 package com.ims_team4.service.impl;
 
 import com.ims_team4.dto.HighestLevelDTO;
-import com.ims_team4.model.HighestLevel;
+import com.ims_team4.model.HighestEducation;
 import com.ims_team4.repository.HighestLevelRepository;
 import com.ims_team4.service.HighestLevelService;
 import org.jetbrains.annotations.NotNull;
@@ -26,7 +26,7 @@ public class HighestLevelServiceImpl implements HighestLevelService {
                 .collect(Collectors.toList());
     }
 
-    private HighestLevelDTO convertToDTO(@NotNull HighestLevel highestLevel) {
+    private HighestLevelDTO convertToDTO(@NotNull HighestEducation highestLevel) {
         return HighestLevelDTO.builder()
                 .id(highestLevel.getId())
                 .name(highestLevel.getName())

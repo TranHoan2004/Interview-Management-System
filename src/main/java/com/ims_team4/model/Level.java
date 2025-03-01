@@ -24,4 +24,7 @@ public class Level {
 
     @OneToMany(mappedBy = "level", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Set<Offer> offers;
+
+    @ManyToMany
+    private Set<Job> jobs;
 }

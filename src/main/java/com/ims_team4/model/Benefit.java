@@ -1,7 +1,9 @@
 package com.ims_team4.model;
 
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
 import java.util.Set;
@@ -13,14 +15,13 @@ import java.util.Set;
 @AllArgsConstructor
 @SuperBuilder
 public class Benefit {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, length = 100)
+    @Column(nullable = false, length = 100, unique = true)
     private String name;
 
-    @OneToMany(mappedBy = "benefit", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @ManyToMany
     private Set<Job> jobs;
 }

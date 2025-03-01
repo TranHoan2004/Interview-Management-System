@@ -1,12 +1,12 @@
 package com.ims_team4.controller;
 
-import  com.ims_team4.dto.InterviewDTO;
+import com.ims_team4.dto.InterviewDTO;
 import com.ims_team4.service.InterviewService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
-import  java.util.List;
+import java.util.List;
 
 /**
  * VuTD

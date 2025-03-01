@@ -35,7 +35,6 @@ public class InterviewServiceImpl implements InterviewService {
         Interview interview = interviewRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Interview not found with id: " + id));
         interview.setFeedback(interviewDTO.getFeedback());
-        interview.setInterviewerId(interviewDTO.getInterviewerId());
         interview.setScheduleTime(interviewDTO.getScheduleTime().toLocalDate());
         interview.setStatus(interviewDTO.isStatus());
         interview.setLocations(interviewDTO.getLocations());
@@ -92,7 +91,6 @@ public class InterviewServiceImpl implements InterviewService {
         return InterviewDTO.builder()
                 .id(interview.getId())
                 .feedback(interview.getFeedback())
-                .interviewerId(interview.getInterviewerId())
                 .jobId(interview.getJob() != null ? interview.getJob().getId() : 0L)
                 .scheduleTime(interview.getScheduleTime() != null
                         ? interview.getScheduleTime().atStartOfDay()
@@ -108,7 +106,6 @@ public class InterviewServiceImpl implements InterviewService {
         return Interview.builder()
                 .id(dto.getId())
                 .feedback(dto.getFeedback())
-                .interviewerId(dto.getInterviewerId())
                 .scheduleTime(dto.getScheduleTime() != null ? dto.getScheduleTime().toLocalDate() : null)
                 .status(dto.isStatus())
                 .locations(dto.getLocations())

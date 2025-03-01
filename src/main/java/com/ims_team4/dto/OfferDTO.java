@@ -1,6 +1,7 @@
 package com.ims_team4.dto;
 
-import com.ims_team4.model.StatusOffer;
+// import com.test_new_database.model.StatusOffer;
+import com.ims_team4.model.utils.OfferStatus;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -8,27 +9,25 @@ import lombok.experimental.SuperBuilder;
 
 import java.time.LocalDate;
 
-// Duc Long
 @Data
 @SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
+// Duc Long
 public class OfferDTO {
     private Long id;
-    private long position;
+    private Long positionID;
     private String interviewInfo;
     private LocalDate contractPeriodFrom;
     private LocalDate contractPeriodTo;
     private String interviewNotes;
-    private StatusOffer statusOffer;
-    private long contractType;
-    private long level;
-    private long department;
-    private String recruiterOwner;
+    private OfferStatus status;
+    private Long contractTypeID;
+    private Long levelID;
+    private Long departmentID;
+    private String recruiterOwnerName;
     private LocalDate dueDate;
-    private long basicSalary;
+    private Long basicSalary;
     private String note;
-    private long candidateId;
-    private long employeeId;
+    private String approvedMan;
 }
-// </editor-fold>

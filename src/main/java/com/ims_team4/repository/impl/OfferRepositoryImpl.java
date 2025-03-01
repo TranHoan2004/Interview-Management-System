@@ -37,10 +37,9 @@ public class OfferRepositoryImpl implements OfferRepository {
         String hql = "SELECT o FROM Offer o "
                 + "JOIN o.candidate u "
                 + "JOIN o.department d "
-                + "JOIN o.statusOffer s "
                 + "WHERE (:text IS NULL OR u.user.fullname LIKE :text OR u.user.fullname LIKE :text) "
                 + "AND (:dep = 0 OR d.id = :dep) "
-                + "AND (:status = 0 OR s.id = :status)";
+                + "AND (:status = 0 OR o.status = :status)";
 
         Query query = session.createQuery(hql, Offer.class);
 
@@ -53,6 +52,22 @@ public class OfferRepositoryImpl implements OfferRepository {
         return offers;
     }
 
+    @Override
+    public Offer getOfferById(long id) {
+        Session session = em.unwrap(Session.class);
+        Offer offer = null;
+        try {
+            offer = session.createQuery("select o from Offer o where o.id = :id", Offer.class)
+                    .setParameter("id", id)
+                    .uniqueResult();
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+        return offer;
+    }
+
+
+    // </editor-fold>
     @NotNull
     @Override
     public <S extends Offer> S save(@NotNull S entity) {
@@ -118,5 +133,6 @@ public class OfferRepositoryImpl implements OfferRepository {
     public void deleteAll() {
 
     }
+
 
 }

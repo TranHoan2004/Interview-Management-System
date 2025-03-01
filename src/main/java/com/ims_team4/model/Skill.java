@@ -1,7 +1,9 @@
 package com.ims_team4.model;
 
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.Set;
 
@@ -19,6 +21,9 @@ public class Skill {
     @Column(nullable = false, length = 100)
     private String name;
 
-    @OneToMany(mappedBy = "skill", cascade = CascadeType.ALL, orphanRemoval = true)
+    @ManyToMany
     private Set<Candidate> candidates;
+
+    @ManyToMany
+    private Set<Job> jobs;
 }

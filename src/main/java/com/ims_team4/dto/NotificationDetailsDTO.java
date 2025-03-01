@@ -14,5 +14,5 @@ public class NotificationDetailsDTO {
     private String link;
     private String message;
     private boolean status;
-    private long notificationID;
+    private Long notificationID;
 }

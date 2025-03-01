@@ -5,7 +5,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
-import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -14,5 +13,4 @@ import java.util.List;
 public class PositionDTO {
     private Long id;
     private String name;
-    private List<Long> offerIds;
 }

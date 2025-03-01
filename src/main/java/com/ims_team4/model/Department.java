@@ -5,7 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
-import java.util.List;
+
+import java.util.Set;
 
 @Entity
 @Table(name = "department")
@@ -22,5 +23,5 @@ public class Department {
     private String name;
 
     @OneToMany(mappedBy = "department", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<Offer> offers;
+    private Set<Offer> offers;
 }

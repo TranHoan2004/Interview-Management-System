@@ -5,22 +5,24 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
-import java.util.List;
+
+import java.util.Set;
 
 @Entity
-@Table(name = "status_offer")
+@Table(name = "highest_level")
 @Data
 @SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
-public class StatusOffer {
+public class HighestEducation {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, unique = true)
-    private String statusName;
+    @Column(nullable = false, length = 100)
+    private String name;
 
-    @OneToMany(mappedBy = "statusOffer", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<Offer> offers;
+    @OneToMany(mappedBy = "education", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private Set<Candidate> candidates;
+
 }

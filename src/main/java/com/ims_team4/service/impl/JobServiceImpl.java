@@ -58,20 +58,17 @@ public class JobServiceImpl implements JobService {
         job.setSalaryTo(jobDTO.getSalaryTo());
         job.setLocation(jobDTO.getLocation());
         job.setStatus(jobDTO.isStatus());
-        job.setLevel(jobDTO.getLevel());
-        job.setSkill(jobDTO.getSkill());
-        job.setSkillRequired(jobDTO.getSkillRequired());
         job.setStartDate(jobDTO.getStartDate());
         job.setEndDate(jobDTO.getEndDate());
 
         // Cập nhật Benefit từ ID
-        if (jobDTO.getBenefit() > 0) {
-            Benefit benefit = benefitRepository.findById(jobDTO.getBenefit())
-                    .orElseThrow(() -> new EntityNotFoundException("Benefit not found with id: " + jobDTO.getBenefit()));
-            job.setBenefit(benefit);
-        } else {
-            job.setBenefit(null);
-        }
+//        if (jobDTO.getBenefitID() > 0) {
+//            Benefit benefit = benefitRepository.findById(jobDTO.getBenefit())
+//                    .orElseThrow(() -> new EntityNotFoundException("Benefit not found with id: " + jobDTO.getBenefit()));
+//            job.setBenefit(benefit);
+//        } else {
+//            job.setBenefit(null);
+//        }
 
         jobRepository.save(job);
     }
@@ -89,16 +86,12 @@ public class JobServiceImpl implements JobService {
         return JobDTO.builder()
                 .id(job.getId())
                 .title(job.getTitle())
-                .skillRequired(job.getSkillRequired())
                 .startDate(job.getStartDate())
                 .salaryFrom(job.getSalaryFrom())
                 .salaryTo(job.getSalaryTo())
-                .skill(job.getSkill())
                 .endDate(job.getEndDate())
                 .location(job.getLocation())
-                .benefit(job.getBenefit() != null ? job.getBenefit().getId() : 0) // Chỉ lấy ID
                 .status(job.isStatus())
-                .level(job.getLevel())
                 .description(job.getDescription())
                 .build();
     }
@@ -108,25 +101,22 @@ public class JobServiceImpl implements JobService {
         Job job = new Job();
         job.setId(jobDTO.getId());
         job.setTitle(jobDTO.getTitle());
-        job.setSkillRequired(jobDTO.getSkillRequired());
         job.setStartDate(jobDTO.getStartDate());
         job.setSalaryFrom(jobDTO.getSalaryFrom());
         job.setSalaryTo(jobDTO.getSalaryTo());
-        job.setSkill(jobDTO.getSkill());
         job.setEndDate(jobDTO.getEndDate());
         job.setLocation(jobDTO.getLocation());
         job.setStatus(jobDTO.isStatus());
-        job.setLevel(jobDTO.getLevel());
         job.setDescription(jobDTO.getDescription());
 
         // Gán Benefit từ ID
-        if (jobDTO.getBenefit() > 0) {
-            Benefit benefit = benefitRepository.findById(jobDTO.getBenefit())
-                    .orElseThrow(() -> new EntityNotFoundException("Benefit not found with id: " + jobDTO.getBenefit()));
-            job.setBenefit(benefit);
-        } else {
-            job.setBenefit(null);
-        }
+//        if (jobDTO.getBenefit() > 0) {
+//            Benefit benefit = benefitRepository.findById(jobDTO.getBenefit())
+//                    .orElseThrow(() -> new EntityNotFoundException("Benefit not found with id: " + jobDTO.getBenefit()));
+//            job.setBenefit(benefit);
+//        } else {
+//            job.setBenefit(null);
+//        }
 
         return job;
     }

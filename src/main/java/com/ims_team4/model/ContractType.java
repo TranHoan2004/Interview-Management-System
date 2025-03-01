@@ -5,7 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
-import java.util.List;
+
 import java.util.Set;
 
 @Entity
@@ -15,13 +15,11 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ContractType {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
     private Long id;
 
-    @Column(name = "name", nullable = false, length = 100)
+    @Column(nullable = false, length = 100, unique = true)
     private String name;
 
     @OneToMany(mappedBy = "contractType", cascade = CascadeType.ALL, orphanRemoval = true)

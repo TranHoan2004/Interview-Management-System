@@ -1,5 +1,6 @@
 package com.ims_team4.model;
 
+import com.ims_team4.model.utils.OfferStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -8,71 +9,83 @@ import lombok.experimental.SuperBuilder;
 
 import java.time.LocalDate;
 
-// <editor-fold desc="Code bởi @Duc Long- getALlOffer">
 @Entity
 @Table(name = "offer")
 @Data
 @SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
+// Duc Long
 public class Offer {
-    // Khoa ngoai cua Employee (Employee 1-M Offer)
+    // <editor-fold> desc="properties"
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @JoinColumn(name = "candidate_id")
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "position_id", nullable = false)
-    private Position position;
-
+    @Column(name = "interview_info", nullable = false)
     private String interviewInfo;
 
     @Temporal(TemporalType.DATE)
-    @Column(nullable = false)
+    @Column(name = "contract_period_from", nullable = false)
     private LocalDate contractPeriodFrom;
 
     @Temporal(TemporalType.DATE)
-    @Column(nullable = false)
+    @Column(name = "contract_period_to", nullable = false)
     private LocalDate contractPeriodTo;
 
+    @Column(name = "interview_notes")
     private String interviewNotes;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "status_offer_id", nullable = false)
-    private StatusOffer statusOffer;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "contract_type_id", nullable = false)
-    private ContractType contractType;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "level_id", nullable = false)
-    private Level level;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "department_id", nullable = false)
-    private Department department;
-
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private String recruiterOwner;
+    private OfferStatus status;
 
     @Temporal(TemporalType.DATE)
     @Column(nullable = false)
     private LocalDate dueDate;
 
+    @Column(name = "basic_salary", nullable = false)
     private long basicSalary;
 
     private String note;
+    // </editor-fold>
 
-    @OneToOne
-    @JoinColumn(name = "candidate_id", unique = true, nullable = false)
-    private Candidate candidate;
-// thieu Employee, doi tuong employee
-    // Offer M-1 Employee (Manager)
+    // <editor-fold> desc="Many To Many relationship"
 
+    // 7. Offer M-1 Position
+    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JoinColumn(name = "position_id")
+    private Position position;
+
+    // 8. Offer M-1 ContractType
+    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JoinColumn(name = "contract_type_id")
+    private ContractType contractType;
+
+    // 9. Offer M-1 Level
+    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JoinColumn(name = "level_id")
+    private Level level;
+
+    // 10. Department 1-M Offer
+    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JoinColumn(name = "department_id")
+    private Department department;
+
+    // 11. Employee 1-M Offer
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JoinColumn(name = "employee_id", nullable = false)
-    private Employee employee;
+    @JoinColumn(name = "recruiter_owner_id")
+    private Employee recruiterOwner;
+
+    // 21. Employee 1-M Offer
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinColumn(name = "approve_man_id")
+    private Employee approveMan;
+    // </editor-fold>
+
+    // 15 Candidate 1-1 Offer
+    @OneToOne
+    @MapsId
+    private Candidate candidate;
 
 }
-// </editor-fold>

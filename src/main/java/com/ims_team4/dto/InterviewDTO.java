@@ -12,12 +12,11 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @SuperBuilder
 public class InterviewDTO {
-    private long id;
+    private Long id;
     private String feedback;
-    private long jobId;
-    private long interviewerId;
     private LocalDateTime scheduleTime;
     private boolean status;
     private String locations;
     private String result;
+    private Long jobId;
 }

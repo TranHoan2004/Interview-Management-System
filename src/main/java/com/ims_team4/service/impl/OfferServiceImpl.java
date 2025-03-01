@@ -35,24 +35,28 @@ public class OfferServiceImpl implements OfferService {
                 .collect(Collectors.toList());
     }
 
+    @Override
+    public OfferDTO getOfferById(long id) {
+        return convertToDTO(offerRepository.getOfferById(id));
+    }
+
     private OfferDTO convertToDTO(@NotNull Offer offer) {
         return OfferDTO.builder()
                 .id(offer.getId())
-                .position(offer.getPosition().getId())
+                .positionID(offer.getPosition().getId())
                 .interviewInfo(offer.getInterviewInfo())
                 .contractPeriodFrom(offer.getContractPeriodFrom())
                 .contractPeriodTo(offer.getContractPeriodTo())
                 .interviewNotes(offer.getInterviewNotes())
-                .statusOffer(offer.getStatusOffer())
-                .contractType(offer.getContractType().getId())
-                .level(offer.getLevel().getId())
-                .department(offer.getDepartment().getId())
-                .recruiterOwner(offer.getRecruiterOwner())
+                .contractTypeID(offer.getContractType().getId())
+                .levelID(offer.getLevel().getId())
+                .departmentID(offer.getDepartment().getId())
+                .recruiterOwnerName(offer.getRecruiterOwner().getUser().getFullname())
                 .dueDate(offer.getDueDate())
                 .basicSalary(offer.getBasicSalary())
                 .note(offer.getNote())
-                .candidateId(offer.getCandidate().getId())
-                .employeeId(offer.getEmployee().getId())
+                .approvedMan(offer.getApproveMan().getUser().getFullname())
+                .interviewInfo(offer.getInterviewInfo())
                 .build();
     }
 }

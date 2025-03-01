@@ -24,6 +24,4 @@ public class UserDTO {
     private boolean status;
     private String note;
     private UserRole role;
-    private String password;
-    private long notificationID;
 }

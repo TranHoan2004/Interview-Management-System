@@ -1,6 +1,6 @@
 package com.ims_team4.repository.impl;
 
-import com.ims_team4.model.HighestLevel;
+import com.ims_team4.model.HighestEducation;
 import com.ims_team4.repository.HighestLevelRepository;
 import jakarta.persistence.EntityManager;
 import org.hibernate.Session;
@@ -23,28 +23,30 @@ public class HighestLevelRepositoryImpl implements HighestLevelRepository {
     }
 
     @Override
-    public List<HighestLevel> getAllHighestLevel() {
+    public List<HighestEducation> getAllHighestLevel() {
         Session session = em.unwrap(Session.class);
-        List<HighestLevel> highestLevels = session.createQuery("select h from HighestLevel h", HighestLevel.class).getResultList();
+        List<HighestEducation> highestLevels = session
+                .createQuery("from HighestEducation", HighestEducation.class)
+                .getResultList();
         session.close();
         return highestLevels;
     }
 
     @NotNull
     @Override
-    public <S extends HighestLevel> S save(@NotNull S entity) {
+    public <S extends HighestEducation> S save(@NotNull S entity) {
         return null;
     }
 
     @NotNull
     @Override
-    public <S extends HighestLevel> Iterable<S> saveAll(@NotNull Iterable<S> entities) {
+    public <S extends HighestEducation> Iterable<S> saveAll(@NotNull Iterable<S> entities) {
         return null;
     }
 
     @NotNull
     @Override
-    public Optional<HighestLevel> findById(@NotNull Integer integer) {
+    public Optional<HighestEducation> findById(@NotNull Integer integer) {
         return Optional.empty();
     }
 
@@ -55,13 +57,13 @@ public class HighestLevelRepositoryImpl implements HighestLevelRepository {
 
     @NotNull
     @Override
-    public Iterable<HighestLevel> findAll() {
+    public Iterable<HighestEducation> findAll() {
         return null;
     }
 
     @NotNull
     @Override
-    public Iterable<HighestLevel> findAllById(@NotNull Iterable<Integer> integers) {
+    public Iterable<HighestEducation> findAllById(@NotNull Iterable<Integer> integers) {
         return null;
     }
 
@@ -76,7 +78,7 @@ public class HighestLevelRepositoryImpl implements HighestLevelRepository {
     }
 
     @Override
-    public void delete(@NotNull HighestLevel entity) {
+    public void delete(@NotNull HighestEducation entity) {
 
     }
 
@@ -86,7 +88,7 @@ public class HighestLevelRepositoryImpl implements HighestLevelRepository {
     }
 
     @Override
-    public void deleteAll(@NotNull Iterable<? extends HighestLevel> entities) {
+    public void deleteAll(@NotNull Iterable<? extends HighestEducation> entities) {
 
     }
 
