@@ -1,8 +1,2 @@
-Facebook: vao meta developers, tao ung dung
-
-Google: - vao trang web https://developers.google.com/identity/sign-in/web/sign-in?hl=vi&form=MG0AV3 de xem huong dan
-        - tao project, tao credentials va OAuth 2.0 Client IDs, sau do copy ClientID, them vao duong dan kieu nhu sau:
-          "https://accounts.google.com/o/oauth2/auth?scope=email profile openid&redirect_uri=http://localhost:8080/login&response_type=code&client_id="Client IDs"&approval_prompt=force"
-        - Them cai uri chuyen huong vao phan edit cua OAuth 2.0 Client IDs, phan Authorized redirect URIs
 
 

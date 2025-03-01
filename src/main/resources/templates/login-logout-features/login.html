@@ -55,7 +55,8 @@
             <div class="form-group form-check">
                 <label class="form-check-label" for="exampleCheck1">
                     <input name="remember-me" value="1" type="checkbox" class="form-check-input" id="exampleCheck1">
-                    Remember me</label>
+                    Remember me
+                </label>
             </div>
 
             <div class="container-login100-form-btn">
@@ -77,9 +78,9 @@
                 </div>
                 <script>
                     function redirectToFacebook() {
-                        window.location.href = "https://www.facebook.com/v19.0/dialog/oauth" +
-                            "?client_id=982073830115458" +
-                            "&redirect_uri=http://localhost:8080/login" +
+                        window.location.href = "https://www.facebook.com/" +
+                            "?client_id=" +
+                            "&redirect_uri=http://" +
                             "&scope=email,public_profile" +
                             "&response_type=code" +
                             "&state=facebook";
@@ -97,11 +98,11 @@
                     function redirectToGoogle() {
                         // redirect_uri: duong dan tra ve sau khi xac thuc thanh cong
                         // response type: kieu tra ve
-                        window.location.href = "https://accounts.google.com/o/oauth2/auth" +
+                        window.location.href = "https://" +
                             "?scope=email profile openid" +
-                            "&redirect_uri=http://localhost:8080/login" +
+                            "&redirect_uri=http:///" +
                             "&response_type=code" +
-                            "&client_id=124534860310-fd5vphc76171q4dfsu22rcisso934ktd.apps.googleusercontent.com" +
+                            "&client_id=-..." +
                             "&approval_prompt=force" +
                             "&state=google" +
                             "&access_type=offline";
@@ -111,11 +112,6 @@
 
             <div class="text-center p-t-136">
                 <a class="txt2" th:href="@{/forgotPassword}">Forgot your password?</a><br>
-<!--                <p class="txt2">-&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45; or -&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;</p>-->
-<!--                <a class="txt2" th:href="@{/createAccount}">-->
-<!--                    Create your Account-->
-<!--                    <i class="fa fa-long-arrow-right m-l-5" aria-hidden="true"></i>-->
-<!--                </a>-->
             </div>
         </form>
     </div>
