@@ -1,19 +1,14 @@
 package com.ims_team4.service;
 
+
 import com.ims_team4.dto.JobDTO;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
-import java.util.Optional;
 
 public interface JobService {
     List<JobDTO> getAllJobs();
 
-    Optional<JobDTO> getJobById(Long id);
-
-    void createdJob(JobDTO jobDTO);
-
-    void updateJob(Long id, JobDTO jobDTO);
-
-    boolean deleteJob(Long id);
-
+    Page<JobDTO> filterJobs(String title, Boolean status, Pageable pageable);
 }

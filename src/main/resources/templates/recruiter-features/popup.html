@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Popup Notification</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background-color: #4CAF50;
+            color: white;
+            padding: 15px;
+            border-radius: 5px;
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2);
+            display: none;
+            opacity: 0;
+            transition: opacity 0.5s ease-in-out;
+        }
+
+        .notification.show {
+            display: block;
+            opacity: 1;
+        }
+
+        .close-btn {
+            margin-left: 15px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+    </style>
+</head>
+<body>
+
+<button onclick="showNotification()">Show Notification</button>
+
+<div id="notification" class="notification">
+    This is a notification! <span class="close-btn" onclick="hideNotification()">×</span>
+</div>
+
+<script>
+    function showNotification() {
+        let notification = document.getElementById("notification");
+        notification.classList.add("show");
+
+        // Auto-hide after 3 seconds
+        setTimeout(() => {
+            hideNotification();
+        }, 3000);
+    }
+
+    function hideNotification() {
+        let notification = document.getElementById("notification");
+        notification.classList.remove("show");
+    }
+</script>
+
+</body>
+</html>

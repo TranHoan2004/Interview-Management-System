@@ -3,13 +3,13 @@ spring:
     name: IMS_Team4
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://127.0.0.1:3306/ims?useSSL=false&serverTimezone=UTC&characterEncoding=UTF-8&autoReconnect=true&allowPublicKeyRetrieval=true
+    url: jdbc:mysql://localhost:3306/ims?useSSL=false&allowPublicKeyRetrieval=true
     username: root
-    password: hoan2709
+    password: Longlan@2004
   jpa:
     hibernate:
       ddl-auto: update
-    show-sql: true
+    show-sql: false
     properties:
       hibernate:
         dialect: org.hibernate.dialect.MySQLDialect

@@ -1,8 +1,10 @@
 package com.ims_team4.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
@@ -15,7 +17,7 @@ import java.util.Set;
 @SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
-// Duc Long
+@EqualsAndHashCode(exclude = {"skills", "levels", "benefits", "candidates", "interviews"}) // ✅ Ngăn vòng lặp vô hạn
 public class Job {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -25,7 +27,6 @@ public class Job {
     private String title;
 
     @Column(name = "start_date", nullable = false)
-    @Temporal(TemporalType.DATE)
     private LocalDate startDate;
 
     @Column(name = "salary_from", nullable = false)
@@ -34,26 +35,28 @@ public class Job {
     @Column(name = "salary_to", nullable = false)
     private Long salaryTo;
 
+    @ManyToMany(mappedBy = "jobs")
+    @JsonIgnore // ✅ Tránh vòng lặp khi serialize JSON
+    private Set<Skill> skills;
+
     @Column(name = "end_date", nullable = false)
-    @Temporal(TemporalType.DATE)
     private LocalDate endDate;
 
     @Column(columnDefinition = "TEXT")
     private String location;
 
+    @ManyToMany
+    @JoinTable(
+            name = "Job_Benefit",
+            joinColumns = @JoinColumn(name = "job_id"),
+            inverseJoinColumns = @JoinColumn(name = "benefit_id")
+    )
+    @JsonIgnore
+    private Set<Benefit> benefits;
+
     @Column(nullable = false)
     private boolean status;
 
-    @Column(columnDefinition = "TEXT")
-    private String description;
-
-    // Job 1-M Interview
-    @OneToMany(mappedBy = "job")
-    private Set<Interview> interviews;
-
-    // <editor-fold> desc="Many To Many relationship"
-
-    // Job M-M Level
     @ManyToMany
     @JoinTable(
             name = "Job_Level",
@@ -62,24 +65,14 @@ public class Job {
     )
     private Set<Level> levels;
 
+    @Column(columnDefinition = "TEXT")
+    private String description;
+
     @ManyToMany
+    @JsonIgnore
     private Set<Candidate> candidates;
 
-    // Skill M-M Job
-    @ManyToMany
-    @JoinTable(
-            name = "Job_Skill",
-            joinColumns = @JoinColumn(name = "job_id"),
-            inverseJoinColumns = @JoinColumn(name = "skill_id")
-    )
-    private Set<Skill> skills;
-
-    @ManyToMany
-    @JoinTable(
-            name = "Job_Benefit",
-            joinColumns = @JoinColumn(name = "job_id"),
-            inverseJoinColumns = @JoinColumn(name = "benefit_id")
-    )
-    private Set<Benefit> benefits;
-    // </editor-fold>
+    @OneToMany(mappedBy = "job", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JsonIgnore
+    private Set<Interview> interviews;
 }

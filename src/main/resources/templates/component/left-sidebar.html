@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<body>
+<div class="col-md-2 col-sm-3 sidebar p-3"
+     style="background-color: #f5f5dc; height: 100vh; position: sticky; top: 0;" th:fragment="leftSidebar">
+    <h1 class="d-flex justify-content-center align-items-center mb-4 ">
+        <img src="https://storage.googleapis.com/a1aa/image/xDzzS0JC5qea4CbpCUszLzoRX5p4YvCBTrUncvJpdX4.jpg"
+             alt="logo" width="10%" class="me-2">
+        IMS
+    </h1>
+    <nav>
+        <ul class="nav flex-column">
+            <li class="nav-item">
+                <a th:href="@{/dashboard}" class="nav-link d-flex flex-column align-items-center text-dark">
+                    <i class="bi bi-house-door-fill" style="font-size: 1.5rem;"></i>
+                    <span>Home</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a th:href="@{/candidate}" class="nav-link d-flex flex-column align-items-center text-dark">
+                    <i class="bi bi-people-fill" style="font-size: 1.5rem;"></i>
+                    <span>Candidate</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a th:href="@{/job}" class="nav-link d-flex flex-column align-items-center text-dark active">
+                    <i class="bi bi-briefcase-fill" style="font-size: 1.5rem;"></i>
+                    <span>Job</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a th:href="@{/interview}" class="nav-link d-flex flex-column align-items-center text-dark">
+                    <i class="bi bi-calendar-check-fill" style="font-size: 1.5rem;"></i>
+                    <span>Interview</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a th:href="@{/offer}" class="nav-link d-flex flex-column align-items-center text-dark">
+                    <i class="bi bi-file-earmark-text-fill" style="font-size: 1.5rem;"></i>
+                    <span>Offer</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a th:href="@{/user/list}" class="nav-link d-flex flex-column align-items-center text-dark">
+                    <i class="bi bi-person-fill" style="font-size: 1.5rem;"></i>
+                    <span>User</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</div>
+</body>
+
+</html>

@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Job Details</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link rel="stylesheet" href="/css/jobs.css">
+</head>
+<body class="bg-light">
+<div class="d-flex">
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <h4><span class="logo">DEV</span> IMS</h4>
+        <a href="#"><i class="fa-solid fa-house"></i> Home</a>
+        <a href="#"><i class="fa-solid fa-user"></i> Candidate</a>
+        <a href="#"><i class="fa-solid fa-briefcase"></i> Job</a>
+        <a href="#"><i class="fa-solid fa-comments"></i> Interview</a>
+        <a href="#" class="fw-bold"><i class="fa-solid fa-file-alt"></i> Offer</a>
+        <a href="#"><i class="fa-solid fa-users"></i> User</a>
+    </div>
+    <!-- Main Content -->
+    <div class="content flex-grow-1 p-4">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h1 class="fs-3 fw-bold">Job</h1>
+            <div class="d-flex align-items-center gap-3">
+                <span>hoannik</span>
+                <span class="fw-bold">HR Department</span>
+                <i class="bi bi-person"></i>
+                <a class="text-primary text-decoration-none" href="#">Logout</a>
+            </div>
+        </div>
+        <div class="d-flex align-items-center mb-4">
+            <a class="text-primary text-decoration-none" href="#">Job List</a>
+            <span class="mx-2">></span>
+            <span>Job details</span>
+        </div>
+        <div class="text-muted mb-3">
+            Created on 22/02/2022, last updated by admin1 today
+        </div>
+        <div class="bg-info bg-opacity-10 p-4 rounded">
+            <div class="row g-4">
+                <div class="col-md-6">
+                    <label class="form-label fw-bold">Job Title</label>
+                    <input class="form-control" th:value="${job.title}" disabled>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label fw-bold">Skills</label>
+                    <input class="form-control" th:value="${#strings.listJoin(job.skills.![name], ', ')}" disabled>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label fw-bold">Start Date</label>
+                    <input class="form-control" th:value="${job.startDate}" disabled>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label fw-bold">End Date</label>
+                    <input class="form-control" th:value="${job.endDate}" disabled>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label fw-bold">Salary Range</label>
+                    <div class="d-flex gap-3">
+                        <input class="form-control" th:value="${job.salaryFrom}" disabled> To
+                        <input class="form-control" th:value="${job.salaryTo}" disabled>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label fw-bold">Benefits</label>
+                    <input class="form-control" th:value="${#strings.listJoin(job.benefits.![name], ', ')}" disabled>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label fw-bold">Working Address</label>
+                    <input class="form-control" th:value="${job.location}" disabled>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label fw-bold">Level</label>
+                    <input class="form-control" th:value="${#strings.listJoin(job.levels.![name], ', ')}" disabled>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label fw-bold">Status</label>
+                    <input class="form-control" th:value="${job.status} ? 'Open' : 'Closed'" disabled>
+                </div>
+                <div class="col-12">
+                    <label class="form-label fw-bold">Description</label>
+                    <textarea class="form-control" th:text="${job.description}" disabled></textarea>
+                </div>
+            </div>
+            <div class="d-flex justify-content-end gap-3 mt-5">
+                <a href="/jobs" class="btn btn-light border text-dark">Cancel</a>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

@@ -2,9 +2,8 @@ package com.ims_team4.utils.hashfile;
 
 import org.jetbrains.annotations.NotNull;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
+import java.io.*;
+import java.nio.file.*;
 
 public class FileToBinary {
     public static void main(String[] args) {

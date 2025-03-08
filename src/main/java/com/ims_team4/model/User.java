@@ -1,7 +1,6 @@
 package com.ims_team4.model;
 
 import com.ims_team4.config.Constants;
-import com.ims_team4.model.utils.UserRole;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Past;
 import jakarta.validation.constraints.Pattern;
@@ -22,7 +21,6 @@ import java.time.LocalDate;
 @Table(name = "users")
 // HoanTX
 public class User implements Constants.Regex {
-    // <editor-fold> desc="properties"
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -57,20 +55,12 @@ public class User implements Constants.Regex {
 
     private String note;
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private UserRole role;
-    // </editor-fold>
-
-    // 18. User 1-1 Candidate
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "user")
-    private Candidate candidates;
+    private Candidate candidate;
 
-    // 13 User 1-1 Candidate
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.MERGE, mappedBy = "user")
+    private Employee employee;
+
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "user")
-    private Employee employees;
-
-    // 16. User 1-1 Notification
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private Notification notification;
 }

@@ -184,6 +184,7 @@
     <!-- Thanh tìm kiếm và bộ lọc -->
     <form th:action="@{/search}" method="get">
         <div class="filter-bar mb-3">
+            <input type="hidden" name="rid" th:value="${rid}"/>
             <div class="search input-group">
                 <span class="input-group-text"><i class="fa-solid fa-search"></i></span>
                 <input type="text" name="text" class="form-control" th:value="${text}">
@@ -205,10 +206,39 @@
                 </option>
             </select>
             <button type="submit" class="btn btn-secondary">Search</button>
-            <button class="btn btn-primary">Add new</button>
-            <button class="btn btn-outline-secondary">Export</button>
+            <a th:href="@{/createoffer/{rid}(rid=${rid})}" class="btn btn-primary">Add new</a>
+            <button type="button" class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#exportModal">
+                Export
+            </button>
         </div>
     </form>
+
+    <div class="modal fade" id="exportModal" tabindex="-1" aria-labelledby="exportModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <form th:action="@{/export}" class="modal-content rounded-3 shadow-lg p-3">
+                <div class="modal-header bg-primary-subtle text-dark position-relative">
+                    <h5 class="modal-title" id="exportModalLabel">Export Offer</h5>
+                    <button type="button" class="btn btn-danger btn-close position-absolute top-0 end-0 m-2 p-2" data-bs-dismiss="modal" aria-label="Close"></button>                </div>
+                <div class="modal-body">
+                    <input type="hidden" name="rid" th:value="${rid}">
+
+                    <div class="mb-3">
+                        <label for="from" class="form-label fw-bold">From:</label>
+                        <input type="date" id="from" name="from" class="form-control" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="to" class="form-label fw-bold">To:</label>
+                        <input type="date" id="to" name="to" class="form-control" required>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
 
     <!-- Bảng dữ liệu -->
     <div class="table-container">
@@ -233,15 +263,15 @@
                             <td th:text="${user.getEmail()}"></td>
                             <td th:each="emp : ${listU}" th:if="${emp.getId() == offer.getEmployeeId()}"
                                 th:text="${emp.getFullname()}"></td>
-                            <td th:text="${offer.getDepartment().getName()}"></td>
+                            <td th:text="${offer.getDepartmentName()}"></td>
                             <td th:text="${offer.note} ?: 'N/A'"></td>
                             <td>
-                                <span th:text="${offer.getStatusOffer().getStatusName()}"></span>
+                                <span th:text="${offer.getStatusOfferName()}"></span>
                             </td>
                             <td>
-                                <a th:href="@{/offerdetail/{id}(id=${offer.id})}" class="me-2"><i
+                                <a th:href="@{/offerdetail/{id}(id=${offer.getId()}, rid=${offer.getRecruiterOwner()})}" class="me-2"><i
                                         class="fa-solid fa-eye"></i></a>
-                                <a th:href="@{/offerdetail/{id}(id=${offer.id})}"><i class="fa-solid fa-edit"></i></a>
+                                <a th:href="@{/editoffer/{id}(id=${offer.getId()}, rid=${offer.getRecruiterOwner()})}"><i class="fa-solid fa-edit"></i></a>
                             </td>
                         </th:block>
                     </th:block>

@@ -120,6 +120,7 @@
             border: none;
             border-radius: 20px;
             padding: 8px 20px;
+            width: 100px;
         }
 
         .btn-primary:hover {
@@ -135,6 +136,13 @@
 
         .btn-secondary:hover {
             background-color: #2c3e50;
+        }
+
+        .offer-info {
+            display: flex;
+            justify-content: flex-end;
+            font-size: 14px;
+            color: #666;
         }
     </style>
 </head>
@@ -152,7 +160,7 @@
 </div>
 
 <div class="content">
-    <div class="d-flex justify-content-between align-items-center mb-1">
+    <div class="d-flex justify-content-between align-items-center mb-0">
         <div class="container py-1 flex-grow-1" style="flex-basis: 97%;">
             <h3 class="page-title fw-bold text-dark">
                 <i class="fa-solid fa-clipboard-list text-primary"></i> Offer List
@@ -160,7 +168,8 @@
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb bg-white shadow-sm p-2 rounded">
                     <li class="breadcrumb-item">
-                        <a href="/offer" class="text-decoration-none text-primary fw-bold">Offer List</a>
+                        <a th:href="@{/offer/{rid}(rid=${rid})}" class="text-decoration-none text-primary fw-bold">Offer
+                            List</a>
                     </li>
                     <li class="breadcrumb-item active text-secondary" aria-current="page">Offer Detail</li>
                 </ol>
@@ -182,38 +191,236 @@
     </div>
 
     <!-- Candidate Offer -->
-    <div class="info-card mt-2">
-        <h4 class="text-dark">Offer Detail</h4>
-        <hr>
-        <div class="row">
+    <div class="info-card mt-0 p-4 shadow-lg rounded bg-white">
+        <div class="offer-info">
+            <span>Created on&nbsp;</span><span th:text="${#temporals.format(offer.getCreateAt(), 'dd/MM/yyyy')}"></span>,
+            <span>&nbsp;last updated by&nbsp;</span><span th:text="${offer.getUpdateBy()}"></span>
+        </div>
+        <div class="d-flex justify-content-between align-items-center">
+            <h4 class="text-primary fw-bold">Offer Detail</h4>
+            <div>
+                <th:block th:if="${offer.getStatusOfferId()} == 1">
+                    <th:block th:if="${roleR == 'ROLE_MANAGER'}">
+                        <a th:href="@{/approveoffer/{id}(id=${offer.getId()}, rid=${offer.getEmployeeId()})}"
+                           class="btn btn-success px-3">
+                            Approve
+                        </a>
+                        <a th:href="@{/rejectoffer/{id}(id=${offer.getId()}, rid=${offer.getRecruiterOwner()})}"
+                           class="btn btn-danger px-3">
+                            Reject
+                        </a>
+                        <a th:href="@{/canceloffer/{id}(id=${offer.getId()}, rid=${offer.getRecruiterOwner()})}"
+                           class="btn btn-danger px-3"
+                           onclick="return confirm('Are you sure you want to cancel this offer?');">
+                            Cancel
+                        </a>
+                    </th:block>
+                    <th:block th:if="${roleR == 'ROLE_ADMINISTRATOR'}">
+                        <a th:href="@{/approveoffer/{id}(id=${offer.getId()}, rid=${offer.getRecruiterOwner()})}"
+                           class="btn btn-success px-3">
+                            Approve
+                        </a>
+                        <a th:href="@{/rejectoffer/{id}(id=${offer.getId()}, rid=${offer.getRecruiterOwner()})}"
+                           class="btn btn-danger px-3">
+                            Reject
+                        </a>
+                        <a th:href="@{/canceloffer/{id}(id=${offer.getId()}, rid=${offer.getRecruiterOwner()})}"
+                           class="btn btn-danger px-3"
+                           onclick="return confirm('Are you sure you want to cancel this offer?');">
+                            Cancel
+                        </a>
+                    </th:block>
+                    <th:block th:if="${roleR == 'ROLE_RECRUITER'}">
+                        <a th:href="@{/canceloffer/{id}(id=${offer.getId()}, rid=${offer.getRecruiterOwner()})}"
+                           class="btn btn-danger px-3"
+                           onclick="return confirm('Are you sure you want to cancel this offer?');">
+                            Cancel
+                        </a>
+                    </th:block>
+                </th:block>
 
-            <div class="col-md-6">
-                <p><span class="info-title">Candidate:</span> <span th:each="user : ${listU}" th:if="${user.getId() == offer.getCandidateId()}" th:text="${user.getFullname()}"></span></p>
-                <p><span class="info-title">Position:</span> <span th:each="position : ${listP}" th:if="${position.getId() == offer.getPosition()}" th:text="${position.getName()}"></span></p>
-                <p><span class="info-title">Approver:</span> Nguyễn Hòa</p>
-                <p><span class="info-title">Interview Info:</span> Interview SBA (ThuyNT, HaNN2, AnhLM1)</p>
-                <p><span class="info-title">Contract Period:</span> 12/02/2022 - 12/02/2023</p>
-                <p><span class="info-title">Interview Notes:</span> Candidate is fully-matched with 5 years of
-                    experience in IT industry</p>
-                <p><span class="info-title">Status:</span> <span class="text-warning">Waiting for Approval</span>
-                </p>
-            </div>
-            <div class="col-md-6">
-                <p><span class="info-title">Contract Type:</span> Full-time</p>
-                <p><span class="info-title">Level:</span> Senior</p>
-                <p><span class="info-title">Department:</span> IT</p>
-                <p><span class="info-title">Recruiter Owner:</span> Dainv</p>
-                <p><span class="info-title">Due Date:</span> 25/12/2021</p>
-                <p><span class="info-title">Basic Salary:</span> <span
-                        class="text-danger text-highlight">25.000.000 VND</span>
-                </p>
-                <p><span class="info-title">Note:</span> N/A</p>
+                <th:block th:if="${offer.getStatusOfferId()} == 2">
+                    <a th:href="@{/mark/{id}(id=${offer.getId()}, rid=${offer.getRecruiterOwner()})}"
+                       class="btn btn-primary px-3" style="width: 300px !important; border-radius: 9px !important;">
+                        Mark as Sent to Candidate
+                    </a>
+                    <a th:href="@{/canceloffer/{id}(id=${offer.getId()}, rid=${offer.getRecruiterOwner()})}"
+                       class="btn btn-danger px-3"
+                       onclick="return confirm('Are you sure you want to cancel this offer?');">
+                        Cancel
+                    </a>
+
+                </th:block>
+
+                <th:block th:if="${offer.getStatusOfferId()} == 4">
+                    <a th:href="@{/acceptoffer/{id}(id=${offer.getId()}, rid=${offer.getRecruiterOwner()})}"
+                       class="btn btn-success px-3">
+                        Accept
+                    </a>
+                    <a th:href="@{/declineoffer/{id}(id=${offer.getId()}, rid=${offer.getRecruiterOwner()})}"
+                       class="btn btn-danger px-3"
+                       onclick="return confirm('Are you sure you want to cancel this offer?');">
+                        Decline
+                    </a>
+
+                    <a th:href="@{/canceloffer/{id}(id=${offer.getId()}, rid=${offer.getRecruiterOwner()})}"
+                       class="btn btn-danger px-3"
+                       onclick="return confirm('Are you sure you want to cancel this offer?');">
+                        Cancel
+                    </a>
+                </th:block>
+
+                <th:block th:if="${offer.getStatusOfferId()} == 5">
+                    <a th:href="@{/canceloffer/{id}(id=${offer.getId()}, rid=${offer.getRecruiterOwner()})}"
+                       class="btn btn-danger px-3"
+                       onclick="return confirm('Are you sure you want to cancel this offer?');">
+                        Cancel
+                    </a>
+                </th:block>
+
             </div>
         </div>
         <hr>
+        <div class="row">
+            <div class="col-md-6">
+                <p><strong>Candidate:</strong> <span th:each="user : ${listU}"
+                                                     th:if="${user.getId() == offer.getCandidateId()}"
+                                                     th:text="${user.getFullname()}"></span></p>
+
+                <p><strong>Position:</strong> <span th:each="position : ${listP}"
+                                                    th:if="${position.getId() == offer.getPosition()}"
+                                                    th:text="${position.getName()}"></span></p>
+
+                <p><strong>Approver:</strong> <span th:each="user : ${listU}"
+                                                    th:if="${user.getId() == offer.getEmployeeId()}"
+                                                    th:text="${user.getFullname()}"></span></p>
+
+                <div class="d-flex mb-3">
+                    <div class="info-title me-1">Interview Info:</div>
+                    <div>
+                        <div th:text="${offer.getInterviewTitle()}"></div>
+                        <!--                        <div th:each="interview : ${listI}">-->
+                        <!--                            <div th:each="candidate :${listC}"-->
+                        <!--                                 th:if="${candidate.getInterviewIds().getId() == interview.getId()}">-->
+                        <!--                                <div th:if="${offer.getCandidateId() == candidate.getId()}"-->
+                        <!--                                     th:text="${interview.getTitle()}"></div>-->
+                        <!--                            </div>-->
+                        <!--                        </div>-->
+                        <div class="d-flex">
+                            <div class="info-title me-1">Interviewer:</div>
+                            <div>
+                                <span th:each="interview : ${listI}" th:remove="tag">
+                                    <span th:each="employee : ${listE}" th:if="${employee.getInterviewID() == interview.getId()}" th:remove="tag">
+                                        <span th:if="${offer.getInterviewId() == interview.getId()}" th:remove="tag">
+            <!-- Sử dụng th:with để tạo biến tạm thời -->
+                                            <span th:each="user, iterStat : ${listU}" th:if="${user.getId() == employee.getUser()}" th:remove="tag">
+                                                <span th:with="nameParts=${#strings.arraySplit(user.fullname, ' ')}"
+                                                    th:text="${nameParts[#lists.size(nameParts) - 1] +
+                                                    #strings.substring(nameParts[0], 0, 1) +
+                                                    (#lists.size(nameParts) > 2 ? #strings.substring(nameParts[1], 0, 1) : '')}"></span>
+                <!-- Thêm dấu phẩy và khoảng trắng nếu không phải phần tử cuối cùng -->
+                                                <span th:if="${!iterStat.last}">, </span>
+                                            </span>
+                                        </span>
+                                    </span>
+                                </span>
+                            </div>
+                            <!--                            <div class="d-flex" th:with="totalInterviewers=${#lists.size(listE)}">-->
+                            <!--                                <div th:each="employee, iterStat : ${listE}">-->
+                            <!--                                    <div th:each="interview : ${listI}"-->
+                            <!--                                         th:if="${interview.getId() == employee.getInterviewID()}">-->
+                            <!--                                        <div th:each="candidate : ${listC}"-->
+                            <!--                                             th:if="${candidate.getInterviewIds().getId() == interview.getId()}">-->
+                            <!--                                            <span th:if="${offer.getCandidateId() == candidate.getId()}">-->
+                            <!--                                                <span th:each="user : ${listU}"-->
+                            <!--                                                      th:if="${user.id == employee.getUser()}">-->
+                            <!--                                                    <span th:with="nameParts=${#strings.arraySplit(user.fullname, ' ')}"-->
+                            <!--                                                          th:text="${nameParts[#lists.size(nameParts) - 1] +-->
+                            <!--                                                            #strings.substring(nameParts[0], 0, 1) +-->
+                            <!--                                                            (#lists.size(nameParts) > 2 ? #strings.substring(nameParts[1], 0, 1) : '')}"></span>-->
+                            <!--                                                    <span th:if="${!iterStat.last}">,</span>&nbsp;-->
+                            <!--                                                </span>-->
+                            <!--                                            </span>-->
+                            <!--                                        </div>-->
+                            <!--                                    </div>-->
+                            <!--                                </div>-->
+                            <!--                            </div>-->
+                        </div>
+                    </div>
+                </div>
+
+                <p><strong>Contract Period:</strong> From <span
+                        th:text="${#temporals.format(offer.getContractPeriodFrom(), 'dd/MM/yyyy')}"></span> to <span
+                        th:text="${#temporals.format(offer.getContractPeriodTo(), 'dd/MM/yyyy')}"></span></p>
+
+                <p><strong>Interview Notes:</strong> <span th:text="${offer.interviewNotes}" class="text-muted"></span>
+                </p>
+                <div>
+                    <strong>Status:</strong>
+                    <span>
+                        <span th:if="${offer.getStatusOfferId()} == 1"
+                              class="rounded-pill px-2 py-2 fw-bold" style="background-color: #FFD700; color: #000000"
+                              th:text="${offer.getStatusOfferName()}"></span>
+                        <span th:if="${offer.getStatusOfferId()} == 2"
+                              class="rounded-pill px-2 py-2 fw-bold" style="background-color: #90EE90; color: #006400"
+                              th:text="${offer.getStatusOfferName()}"></span>
+                        <span th:if="${offer.getStatusOfferId()} == 3"
+                              class="rounded-pill px-2 py-2 fw-bold" style="background-color: #FF6347; color: #8B0000"
+                              th:text="${offer.getStatusOfferName()}"></span>
+                        <span th:if="${offer.getStatusOfferId()} == 4"
+                              class="rounded-pill px-2 py-2 fw-bold" style="background-color: #87CEEB; color: #00008B"
+                              th:text="${offer.getStatusOfferName()}"></span>
+                        <span th:if="${offer.getStatusOfferId()} == 5"
+                              class="rounded-pill px-2 py-2 fw-bold" style="background-color: #32CD32; color: #FFFFFF"
+                              th:text="${offer.getStatusOfferName()}"></span>
+                        <span th:if="${offer.getStatusOfferId()} == 6"
+                              class="rounded-pill px-2 py-2 fw-bold" style="background-color: #FF4500; color: #FFFFFF"
+                              th:text="${offer.getStatusOfferName()}"></span>
+                        <span th:if="${offer.getStatusOfferId()} == 7"
+                              class="rounded-pill px-2 py-2 fw-bold" style="background-color: #808080; color: #FFFFFF"
+                              th:text="${offer.getStatusOfferName()}"></span>
+                    </span>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <p><strong>Contract Type:</strong> <span th:text="${offer.getContractTypeName()}"></span></p>
+                <p><strong>Level:</strong> <span th:text="${offer.getLevelName()}"></span></p>
+                <p><strong>Department:</strong> <span th:text="${offer.getDepartmentName()}"></span></p>
+                <p><strong>Recruiter Owner:</strong> <span th:each="user : ${listU}"
+                                                           th:if="${user.id == offer.getRecruiterOwner()}"
+                                                           th:text="${user.fullname}"></span></p>
+
+                <p><strong>Due Date:</strong> <span
+                        th:text="${#temporals.format(offer.getDueDate(), 'dd/MM/yyyy')}"></span></p>
+                <p><strong>Basic Salary:</strong> <span class="text-success fw-bold"
+                                                        th:text="${offer.getBasicSalary()}"></span></p>
+                <p><strong>Note:</strong> <span th:text="${offer.getNote()}" class="text-muted"></span></p>
+            </div>
+
+
+        </div>
+        <hr>
         <div class="d-flex justify-content-end">
-            <button class="btn btn-secondary me-2">Cancel</button>
-            <button class="btn btn-primary">Edit</button>
+            <a th:href="@{/offer/{rid}(rid=${rid})}" class="btn btn-outline-secondary me-2">Cancel</a>
+            <form th:action="@{/editoffer/{id}(id=${offer.getId()})}" method="get">
+                <input type="hidden" name="rid" th:value="${offer.getRecruiterOwner()}">
+                <!--                <div style="display: none;">-->
+                <!--                    <div th:each="employee : ${listE}">-->
+                <!--                        <div th:each="interview : ${listI}" th:if="${interview.getId() == employee.getInterviewID()}">-->
+                <!--                            <div th:each="candidate : ${listC}" th:if="${candidate.getInterviewIds().getId() == interview.getId()}">-->
+                <!--                            <span th:if="${offer.getCandidateId() == candidate.getId()}">-->
+                <!--                                <input name="employees" th:value="${employee.getUser()}"/>-->
+                <!--                            </span>-->
+                <!--                            </div>-->
+                <!--                        </div>-->
+                <!--                    </div>-->
+                <!--                </div>-->
+                <th:block th:if="${offer.getStatusOfferId() == 1}">
+                    <button type="submit" class="btn btn-primary">Edit</button>
+                </th:block>
+            </form>
+
         </div>
     </div>
 </div>

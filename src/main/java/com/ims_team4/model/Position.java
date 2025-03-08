@@ -1,5 +1,6 @@
 package com.ims_team4.model;
 
+import com.ims_team4.model.Candidate;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -27,4 +28,7 @@ public class Position {
 
     @OneToMany(mappedBy = "position", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Set<Candidate> candidates;
+
+    @OneToMany(mappedBy = "position", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private Set<Employee> employees;
 }

@@ -38,6 +38,11 @@ public class PositionRepositoryImpl implements PositionRepository {
     }
 
     @Override
+    public Optional<Position> findByName(String name) {
+        return Optional.empty();
+    }
+
+    @Override
     public void flush() {
 
     }
@@ -71,12 +76,14 @@ public class PositionRepositoryImpl implements PositionRepository {
 
     @NotNull
     @Override
+    @Deprecated
     public Position getOne(@NotNull Long aLong) {
         return null;
     }
 
     @NotNull
     @Override
+    @Deprecated
     public Position getById(@NotNull Long aLong) {
         return null;
     }

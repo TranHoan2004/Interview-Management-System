@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Offer</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <style>
+        /* Loading overlay */
+        #loading-overlay {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            background: #f5f7fa;
+            z-index: 9999;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Loading animation */
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid rgba(0, 0, 0, 0.1);
+            border-top-color: #1abc9c;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        body {
+            background-color: #f5f7fa;
+            font-family: 'Arial', sans-serif;
+        }
+
+        .logo {
+            font-weight: bold;
+            background: #fff;
+            color: #16a085;
+            padding: 2px 8px;
+            border-radius: 4px;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 240px;
+            background: #2c3e50;
+            height: 100vh;
+            position: fixed;
+            padding: 20px;
+            color: white;
+            transition: 0.3s;
+        }
+
+        .sidebar h4 {
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .sidebar a.fw-bold {
+            background: #34495e;
+        }
+
+        .sidebar a {
+            display: flex;
+            align-items: center;
+            padding: 12px;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: all 0.3s;
+        }
+
+        .sidebar a:hover {
+            background: #1abc9c;
+            color: white;
+        }
+
+        .sidebar i {
+            margin-right: 10px;
+        }
+
+        /* Content */
+        .content {
+            margin-left: 260px;
+            padding: 30px;
+        }
+
+        .page-title {
+            font-size: 32px;
+            font-weight: bold;
+            background: linear-gradient(to right, #2c3e50, #1abc9c);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* Profile */
+        .profile-card {
+            display: flex;
+            align-items: center;
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .profile-card img {
+            border-radius: 50%;
+            border: 2px solid #2c3e50;
+            width: 50px;
+            height: 50px;
+        }
+
+        .profile-info {
+            margin-left: 15px;
+        }
+
+        /* Table Section */
+        .info-card {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .info-title {
+            font-weight: bold;
+            color: #2c3e50;
+        }
+
+        .text-highlight {
+            font-weight: bold;
+            color: #1abc9c;
+        }
+
+        /* Buttons */
+        .btn-primary {
+            background-color: #1abc9c;
+            border: none;
+            border-radius: 20px;
+            padding: 8px 20px;
+        }
+
+        .btn-primary:hover {
+            background-color: #16a085;
+        }
+
+        .btn-secondary {
+            background-color: #34495e;
+            border: none;
+            border-radius: 20px;
+            padding: 8px 20px;
+        }
+
+        .btn-secondary:hover {
+            background-color: #2c3e50;
+        }
+
+        /* Form elements */
+        .form-select, .form-control {
+            border-radius: 5px;
+            border: 1px solid #ddd;
+            padding: 8px;
+            width: 100%;
+        }
+
+        .form-select:focus, .form-control:focus {
+            border-color: #1abc9c;
+            box-shadow: 0 0 5px rgba(26, 188, 156, 0.5);
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            margin-bottom: 5px;
+            display: block;
+            font-weight: bold;
+        }
+
+        .form-group input, .form-group select {
+            width: 100%;
+        }
+
+        .form-group .info-title {
+            margin-right: 10px;
+        }
+
+
+    </style>
+</head>
+<body>
+
+<div id="loading-overlay">
+    <div class="spinner"></div>
+</div>
+<!-- Sidebar -->
+<div class="sidebar">
+    <h4><span class="logo">DEV</span> IMS</h4>
+    <a href="#"><i class="fa-solid fa-house"></i> Home</a>
+    <a href="#"><i class="fa-solid fa-user"></i> Candidate</a>
+    <a href="#"><i class="fa-solid fa-briefcase"></i> Job</a>
+    <a href="#"><i class="fa-solid fa-comments"></i> Interview</a>
+    <a href="#" class="fw-bold"><i class="fa-solid fa-file-alt"></i> Offer</a>
+    <a href="#"><i class="fa-solid fa-users"></i> User</a>
+</div>
+
+<div class="content">
+    <div class="d-flex justify-content-between align-items-center mb-0">
+        <div class="container py-1 flex-grow-1" style="flex-basis: 97%;">
+            <h3 class="page-title fw-bold text-dark">
+                <i class="fa-solid fa-clipboard-list text-primary"></i> Edit Offer
+            </h3>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb bg-white shadow-sm p-2 rounded">
+                    <li class="breadcrumb-item">
+                        <a th:href="@{/offer/{rid}(rid=${rid})}" class="text-decoration-none text-primary fw-bold">Offer List</a>
+                    </li>
+                    <li class="breadcrumb-item active text-secondary" aria-current="page">Create Offer</li>
+                </ol>
+            </nav>
+        </div>
+        <div class="mb-2 p-3 bg-white rounded shadow-sm flex-grow-1 d-flex align-items-center" style="flex-basis: 35%;">
+            <div class="d-flex align-items-center">
+                <img src="https://anhanime.me/wp-content/uploads/2024/03/anh-conan_5.jpg" alt="Avatar"
+                     class="rounded-circle border border-2" width="45" height="45">
+                <div class="ms-2">
+                    <span class="fw-bold text-dark d-block">longpd</span>
+                    <small class="text-muted">HR Department</small>
+                </div>
+            </div>
+            <a href="#" class="ms-auto btn btn-outline-danger btn-sm d-flex align-items-center px-3">
+                <i class="fa-solid fa-sign-out-alt me-2"></i> Logout
+            </a>
+        </div>
+    </div>
+
+    <form th:action="@{/create}" method="get" class="info-card mt-2">
+        <div class="d-flex justify-content-between align-items-center">
+            <h4 class="text-dark">Create Offer</h4>
+        </div>
+        <hr>
+        <input type="hidden" name="rid" th:value="${rid}">
+        <div class="row">
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label class="info-title">Candidate:</label>
+                    <select class="form-select" name="candidate" required>
+                        <option th:value="0">Select Candidate Name</option>
+                        <th:block th:each="candidate : ${listC}">
+                            <option th:each="user : ${listU}" th:value="${candidate.getId()}" th:if="${user.getId() == candidate.getId()}" th:text="${user.getFullname()}"></option>
+                        </th:block>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="info-title">Position:</label>
+                    <select class="form-select" name="position" required>
+                        <option th:value="0">Select a Position</option>
+                        <option th:each="position : ${listP}" th:value="${position.getId()}" th:text="${position.getName()}"></option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="info-title">Approver:</label>
+                    <select class="form-select" name="approver" required>
+                        <option th:value="0">Select an approver</option>
+                        <th:block th:each="employee : ${listE}">
+                            <option th:each="user : ${listU}" th:value="${employee.getUser()}" th:if="${user.getId() == employee.getUser()}" th:text="${user.getFullname()}"></option>
+                        </th:block>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="info-title">Interview Info:</label>
+                    <select class="form-select" name="interviewId" required>
+                        <option th:value="0">Select an interview schedule title</option>
+                        <th:block th:each="interview : ${listI}">
+                            <option th:value="${interview.getId()}" th:text="${interview.getTitle()}"></option>
+                        </th:block>
+                    </select>
+                    <br/>
+                </div>
+
+                <div class="form-group">
+                    <label class="info-title">Contract Period:</label>
+                    <div class="d-flex">
+                        <input name="from" id="from" type="date" class="form-control me-2" required/>
+                        <input name="to" id="to" type="date" class="form-control" required/>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="info-title">Interview Notes:</label>
+                    <input type="text" name="interviewNote" class="form-control" required>
+                </div>
+
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label class="info-title">Contract Type:</label>
+                    <select class="form-select" name="contractType" required>
+                        <option th:value="0">Select a type of contract</option>
+                        <option th:each="contractType : ${listCo}" th:value="${contractType.getId()}" th:text="${contractType.getName()}" ></option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="info-title">Level:</label>
+                    <select class="form-select" name="level" required>
+                        <option th:value="0">Select a level</option>
+                        <option th:each="level : ${listL}" th:value="${level.getId()}" th:text="${level.getName()}"></option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="info-title">Department:</label>
+                    <select class="form-select" name="department" required>
+                        <option th:value="0">Select a department</option>
+                        <option th:each="department : ${listD}" th:value="${department.getId()}" th:text="${department.getName()}" ></option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="info-title">Recruiter Owner:</label>
+                    <select class="form-select" name="recruiterOwner" id="userSelect" required>
+                        <option th:value="0">Select a recruiter</option>
+                        <th:block th:each="employee : ${listR}">
+                            <option th:each="user : ${listU}" th:value="${employee.getUser()}" th:if="${user.getId() == employee.getUser()}" th:text="${user.getFullname()}" ></option>
+                        </th:block>
+                    </select>
+                    <a id="assignButton" class="text-decoration-none" style="cursor: pointer">Assigned to me</a>
+                </div>
+
+                <div class="form-group">
+                    <label for="duedate" class="info-title">Due Date:</label>
+                    <input id="duedate" name="duedate" type="date" class="form-control" required/>
+                </div>
+
+                <div class="form-group">
+                    <label for="salary" class="info-title">Basic Salary:</label>
+                    <input required id="salary" name="salary" type="text" class="form-control" placeholder="Enter basic salary"/>
+                </div>
+
+                <div class="form-group">
+                    <label for="note" class="info-title">Note:</label>
+                    <textarea required rows="4" id="note" name="note" type="text" class="form-control"></textarea>
+                </div>
+            </div>
+        </div>
+        <hr>
+        <div class="d-flex justify-content-end">
+            <a href="/offer" class="btn btn-secondary me-2">Cancel</a>
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </div>
+    </form>
+</div>
+
+</body>
+
+<script>
+    window.onload = function () {
+        document.getElementById("loading-overlay").style.display = "none";
+    };
+    document.getElementById("assignButton").addEventListener("click", function(){
+        const path = window.location.pathname.split("/");
+        const idSelect = path[path.length - 1];
+
+        if(idSelect){
+            const select = document.getElementById("userSelect");
+            for (const option of select.options) {
+                if (option.value === idSelect) {
+                    option.selected = true;
+                    break;
+                }
+            }
+        }
+    })
+
+    document.addEventListener("DOMContentLoaded", function () {
+        const dueDateInput = document.getElementById("duedate");
+        const fromDateInput = document.getElementById("from");
+        const toDateInput = document.getElementById("to");
+
+        function validateDates(event) {
+            const today = new Date().toISOString().split("T")[0];
+            const dueDate = dueDateInput.value;
+            const fromDate = fromDateInput.value;
+            const toDate = toDateInput.value;
+
+            if (dueDate && dueDate < today) {
+                alert("Due Date phải lớn hơn hoặc bằng ngày hiện tại.");
+                event.preventDefault();
+                return;
+            }
+
+            if (fromDate && toDate && fromDate > toDate) {
+                alert("End Date (To) phải lớn hơn Start Date (From).");
+                event.preventDefault();
+            }
+        }
+
+        document.querySelector("form").addEventListener("submit", validateDates);
+    });
+</script>
+</html>

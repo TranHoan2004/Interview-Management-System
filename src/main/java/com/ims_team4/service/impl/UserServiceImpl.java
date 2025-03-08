@@ -31,8 +31,12 @@ public class UserServiceImpl implements UserService {
 
 
     @Override
-    public Optional<UserDTO> getUserByEmail(String email) {
-        return userRepository.findByEmail(email).map(this::convertToDTO);
+    public List<UserDTO> getUserByEmail(String email) throws Exception {
+        Optional<User> list = userRepository.findByEmail(email);
+        if (list.isEmpty()) {
+            throw new Exception("Email not found");
+        }
+        return list.map(this::convertToDTO).stream().toList();
     }
 
     @Override
@@ -60,7 +64,7 @@ public class UserServiceImpl implements UserService {
         user.setPhone(userDTO.getPhone());
         user.setStatus(userDTO.isStatus());
         user.setNote(userDTO.getNote());
-        user.setRole(userDTO.getRole());
+        //user.setRole(userDTO.getRole());
 
         // Nếu có thông tin notification, xử lý thêm ở đây
         // Ví dụ: user.setNotification(someNotification);
@@ -81,7 +85,8 @@ public class UserServiceImpl implements UserService {
                 .phone(user.getPhone())
                 .status(user.isStatus())
                 .note(user.getNote())
-                .role(user.getRole())
+                //.role(user.getRole())
+                .notificationID(user.getNotification() != null ? user.getNotification().getId() : 0)
                 .build();
     }
 }

@@ -14,5 +14,7 @@ public interface UserRepository extends CrudRepository<User, Long> {
 
     // <editor-fold desc="Code bởi @Duc Long- getALlUser">
     List<User> getAllUser();
+
+    User getUserById(long id);
     // </editor-fold>
 }

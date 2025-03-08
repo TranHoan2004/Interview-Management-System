@@ -23,9 +23,10 @@ public class CandidateServiceImpl implements CandidateService {
     private CandidateDTO convertToDTO(@NotNull Candidate candidate) {
         return CandidateDTO.builder()
                 .id(candidate.getId())
-                .highestEducation(candidate.getEducation().getId())
+//                .skill(candidate.getSkills())
+//                .highestEducation(candidate.getHighestLevel().getId())
                 .experience(candidate.getExperience())
-                .positionID(candidate.getPosition().getId())
+//                .position(candidate.getPosition())
                 .cv(candidate.getCv())
                 .build();
     }

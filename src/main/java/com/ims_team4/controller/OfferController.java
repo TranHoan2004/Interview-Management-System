@@ -1,71 +1,445 @@
 package com.ims_team4.controller;
 
 import com.ims_team4.dto.*;
+import com.ims_team4.model.utils.HrRole;
 import com.ims_team4.service.*;
+import com.ims_team4.utils.excel.ExportExcelFile;
+import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.io.IOException;
+import java.time.LocalDate;
 import java.util.List;
-// Duc Long
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 @Controller
+// Duc Long
 public class OfferController {
     private final OfferService offerService;
     private final CandidateService candidateService;
     private final UserService userService;
     private final DepartmentService departmentService;
+    private final StatusOfferService statusOfferService;
     private final PositionService positionService;
+    private final EmployeeService employeeService;
+    private final InterviewService interviewService;
+    private final ContractTypeService contractTypeService;
+    private final LevelService levelService;
+    private final Logger logger = Logger.getLogger(OfferController.class.getName());
 
-    public OfferController(OfferService offerService, CandidateService candidateService, UserService userService, DepartmentService departmentService, PositionService positionService) {
-        this.offerService = offerService;
+    public OfferController(CandidateService candidateService, UserService userService, DepartmentService departmentService, StatusOfferService statusOfferService, PositionService positionService, EmployeeService employeeService, InterviewService interviewService, ContractTypeService contractTypeService, LevelService levelService, OfferService offerService) {
         this.candidateService = candidateService;
         this.userService = userService;
         this.departmentService = departmentService;
+        this.statusOfferService = statusOfferService;
         this.positionService = positionService;
+        this.employeeService = employeeService;
+        this.interviewService = interviewService;
+        this.contractTypeService = contractTypeService;
+        this.levelService = levelService;
+        this.offerService = offerService;
     }
 
-    @GetMapping("/offer")
-    public String index(Model model) {
-        List<OfferDTO> listO = offerService.getAllOffer();
+    @GetMapping("/offer/{id}")
+    public String index(@RequestParam(name = "page", defaultValue = "1") int page,
+                        @RequestParam(name = "size", defaultValue = "5") int size, @PathVariable("id") String idStr, Model model) {
+        int id = Integer.parseInt(idStr);
+        Page<OfferDTO> offerPage = offerService.findPaginated(page, size);
+        model.addAttribute("listO", offerPage.getContent());
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", offerPage.getTotalPages());
+        List<OfferDTO> listO = offerService.getAllOfferByRecruiter(id);
         List<CandidateDTO> listC = candidateService.getAllCandidate();
         List<UserDTO> listU = userService.getAllUsers();
-        List<DepartmentDTO> listD = departmentService.getAllDepartment();
+        List<DepartmentDTO> listD = departmentService.getAllDepartments();
+        List<StatusOfferDTO> listS = statusOfferService.getStatusOffer();
+        List<InterviewDTO> listI = interviewService.getAllInterviews();
         model.addAttribute("listO", listO);
         model.addAttribute("listC", listC);
         model.addAttribute("listU", listU);
         model.addAttribute("listD", listD);
+        model.addAttribute("listS", listS);
+        model.addAttribute("listI", listI);
+        model.addAttribute("rid", id);
+        if (model.containsAttribute("msg")) {
+            model.addAttribute("msg", model.asMap().get("msg"));
+        }
         return "/recruiter-features/offer";
     }
 
 
     @GetMapping("/search")
-    public String search(@RequestParam("text") String text, @RequestParam("dep") String dep, @RequestParam("status") String status, Model model) {
+    public String search(@RequestParam("rid") String ridStr, @RequestParam("text") String text, @RequestParam("dep") String dep, @RequestParam("status") String status, Model model) {
+        int rid = Integer.parseInt(ridStr);
         int depid = Integer.parseInt(dep);
         int statusid = Integer.parseInt(status);
-        List<OfferDTO> listO1 = offerService.getAllOfferByNameMailDepStatus(text, depid, statusid);
+        List<OfferDTO> listO1 = offerService.getAllOfferByNameMailDepStatus(text, depid, statusid, rid);
         List<CandidateDTO> listC = candidateService.getAllCandidate();
         List<UserDTO> listU = userService.getAllUsers();
-        List<DepartmentDTO> listD = departmentService.getAllDepartment();
+        List<DepartmentDTO> listD = departmentService.getAllDepartments();
+        List<StatusOfferDTO> listS = statusOfferService.getStatusOffer();
         model.addAttribute("listO1", listO1);
         model.addAttribute("listC", listC);
         model.addAttribute("listU", listU);
         model.addAttribute("listD", listD);
+        model.addAttribute("listS", listS);
         model.addAttribute("text", text);
         model.addAttribute("dep", depid);
         model.addAttribute("status", statusid);
+        model.addAttribute("rid", rid);
         return "/recruiter-features/resultSearchOffer";
     }
 
     @GetMapping("/offerdetail/{id}")
-    public String offerDetail(@PathVariable Long id, Model model) {
+    public String offerDetail(@RequestParam("rid") int rid, @PathVariable Long id, Model model) {
         OfferDTO offer = offerService.getOfferById(id);
         List<UserDTO> listU = userService.getAllUsers();
         List<PositionDTO> listP = positionService.getAllPosition();
+        List<EmployeeDTO> listE = employeeService.getAllEmployee();
+        List<InterviewDTO> listI = interviewService.getAllInterviews();
+        List<CandidateDTO> listC = candidateService.getAllCandidate();
         model.addAttribute("listU", listU);
         model.addAttribute("offer", offer);
         model.addAttribute("listP", listP);
+        model.addAttribute("listE", listE);
+        model.addAttribute("listI", listI);
+        model.addAttribute("listC", listC);
+        model.addAttribute("rid", rid);
+        EmployeeDTO e = employeeService.getEmployeeById(rid);
+        String roleR = e.getRole().name();
+        model.addAttribute("roleR", roleR);
         return "/recruiter-features/offerDetail";
     }
+
+    @GetMapping("/editoffer/{id}")
+    public String editOffer(@PathVariable Long id, @RequestParam("rid") int rid, Model model) {
+        List<CandidateDTO> listC = candidateService.getAllCandidate();
+        model.addAttribute("listC", listC);
+        OfferDTO offer = offerService.getOfferById(id);
+        model.addAttribute("offer", offer);
+        List<UserDTO> listU = userService.getAllUsers();
+        model.addAttribute("listU", listU);
+        List<PositionDTO> listP = positionService.getAllPosition();
+        model.addAttribute("listP", listP);
+        HrRole role = HrRole.valueOf("ROLE_MANAGER");
+        List<EmployeeDTO> listE = employeeService.getAllEmployeeByRole(role);
+        model.addAttribute("listE", listE);
+        List<ContractTypeDTO> listCo = contractTypeService.getAllContractType();
+        model.addAttribute("listCo", listCo);
+        List<LevelDTO> listL = levelService.getAllLevels();
+        model.addAttribute("listL", listL);
+        List<DepartmentDTO> listD = departmentService.getAllDepartments();
+        model.addAttribute("listD", listD);
+        HrRole r = HrRole.valueOf("ROLE_RECRUITER");
+        List<EmployeeDTO> listR = employeeService.getAllEmployeeByRole(r);
+        model.addAttribute("listR", listR);
+        model.addAttribute("rid", rid);
+        List<InterviewDTO> listI = interviewService.getAllInterviews();
+        model.addAttribute("listI", listI);
+        List<EmployeeDTO> listAE = employeeService.getAllEmployee();
+        model.addAttribute("listAE", listAE);
+        return "/recruiter-features/editOffer";
+    }
+
+    @GetMapping("/edit")
+    public String editOffer(@RequestParam("candidate") String candidateStr,
+                            @RequestParam("position") String positionStr,
+                            @RequestParam("approver") String approverStr,
+                            @RequestParam("interviewId") String interviewIdStr,
+                            @RequestParam("from") String fromStr,
+                            @RequestParam("to") String toStr,
+                            @RequestParam("interviewNote") String interviewNote,
+                            @RequestParam("contractType") String contractTypeStr,
+                            @RequestParam("level") String levelStr,
+                            @RequestParam("department") String departmentStr,
+                            @RequestParam("recruiterOwner") String recruiterOwnerStr,
+                            @RequestParam("duedate") String dueDateStr,
+                            @RequestParam("salary") String salaryStr,
+                            @RequestParam("note") String note,
+                            @RequestParam("offerid") String offeridStr,
+                            RedirectAttributes redirectAttributes) {
+        int id = 0;
+        try {
+            if (offeridStr == null || offeridStr.isEmpty()) {
+                throw new IllegalArgumentException("Offer ID cannot be null or empty");
+            }
+            int interviewId = Integer.parseInt(interviewIdStr);
+            int offerid = Integer.parseInt(offeridStr);
+            int approverid = Integer.parseInt(approverStr);
+            int candidateId = Integer.parseInt(candidateStr);
+            int salary = Integer.parseInt(salaryStr);
+            int level = Integer.parseInt(levelStr);
+            int department = Integer.parseInt(departmentStr);
+            int recruiterOwner = Integer.parseInt(recruiterOwnerStr);
+            id = recruiterOwner;
+            int positionId = Integer.parseInt(positionStr);
+            int contractTypeId = Integer.parseInt(contractTypeStr);
+
+            LocalDate from = LocalDate.parse(fromStr);
+            LocalDate to = LocalDate.parse(toStr);
+            LocalDate dueDate = LocalDate.parse(dueDateStr);
+
+            boolean success = offerService.editOffer(offerid, salary, from, to, dueDate,
+                    interviewNote, interviewId, note, recruiterOwner, candidateId,
+                    contractTypeId, department, approverid, level, positionId);
+
+            redirectAttributes.addFlashAttribute("msg", success ? "Change has been successfully updated" : "Failed to update change");
+        } catch (Exception e) {
+            logger.log(Level.ALL, e.getMessage(), e);
+        }
+
+        return "redirect:/offer/" + id;
+    }
+
+    @GetMapping("/createoffer/{rid}")
+    public String createOffer(@PathVariable String rid, Model model) {
+        List<CandidateDTO> listC = candidateService.getAllCandidate();
+        model.addAttribute("listC", listC);
+        List<UserDTO> listU = userService.getAllUsers();
+        model.addAttribute("listU", listU);
+        List<PositionDTO> listP = positionService.getAllPosition();
+        model.addAttribute("listP", listP);
+        HrRole role = HrRole.valueOf("ROLE_MANAGER");
+        List<EmployeeDTO> listE = employeeService.getAllEmployeeByRole(role);
+        model.addAttribute("listE", listE);
+        List<ContractTypeDTO> listCo = contractTypeService.getAllContractType();
+        model.addAttribute("listCo", listCo);
+        List<LevelDTO> listL = levelService.getAllLevels();
+        model.addAttribute("listL", listL);
+        List<DepartmentDTO> listD = departmentService.getAllDepartments();
+        model.addAttribute("listD", listD);
+        HrRole r = HrRole.valueOf("ROLE_RECRUITER");
+        List<EmployeeDTO> listR = employeeService.getAllEmployeeByRole(r);
+        model.addAttribute("listR", listR);
+        List<InterviewDTO> listI = interviewService.getAllInterviews();
+        model.addAttribute("listI", listI);
+        model.addAttribute("rid", Integer.parseInt(rid));
+        return "/recruiter-features/createOffer";
+    }
+
+    @GetMapping("/create")
+    public String createOffer(@RequestParam("rid") String rid, @RequestParam("candidate") String candidateStr,
+                              @RequestParam("position") String positionStr,
+                              @RequestParam("approver") String approverStr,
+                              @RequestParam("interviewId") String interviewIdStr,
+                              @RequestParam("from") String fromStr,
+                              @RequestParam("to") String toStr,
+                              @RequestParam("interviewNote") String interviewNote,
+                              @RequestParam("contractType") String contractTypeStr,
+                              @RequestParam("level") String levelStr,
+                              @RequestParam("department") String departmentStr,
+                              @RequestParam("recruiterOwner") String recruiterOwnerStr,
+                              @RequestParam("duedate") String dueDateStr,
+                              @RequestParam("salary") String salaryStr,
+                              @RequestParam("note") String note,
+                              RedirectAttributes redirectAttributes) {
+        try {
+            int interviewId = Integer.parseInt(interviewIdStr);
+            int approverid = Integer.parseInt(approverStr);
+            int candidateId = Integer.parseInt(candidateStr);
+            int salary = Integer.parseInt(salaryStr);
+            int level = Integer.parseInt(levelStr);
+            int department = Integer.parseInt(departmentStr);
+            int recruiterOwner = Integer.parseInt(recruiterOwnerStr);
+            int positionId = Integer.parseInt(positionStr);
+            int contractTypeId = Integer.parseInt(contractTypeStr);
+            LocalDate from = LocalDate.parse(fromStr);
+            LocalDate to = LocalDate.parse(toStr);
+            LocalDate dueDate = LocalDate.parse(dueDateStr);
+
+            boolean success = offerService.createOffer(salary, from, to, dueDate,
+                    interviewNote, interviewId, note, recruiterOwner, candidateId,
+                    contractTypeId, department, approverid, level, positionId);
+
+            redirectAttributes.addFlashAttribute("msg", success ? "Sucessfully created offer" : "Failed to created offer");
+        } catch (Exception e) {
+            logger.log(Level.ALL, e.getMessage(), e);
+        }
+
+        return "redirect:/offer/" + Integer.parseInt(rid);
+    }
+
+    @GetMapping("/popup")
+    public String popup() {
+        return "/recruiter-features/popup";
+    }
+
+    @GetMapping("/canceloffer/{id}")
+    public String canceloffer(@PathVariable String id, @RequestParam("rid") String rid) {
+        int oid = Integer.parseInt(id);
+        int rid1 = Integer.parseInt(rid);
+        if (offerService.updateStatusOffer(oid, 7)) {
+            return "redirect:/offer/" + rid1;
+        }
+        return "";
+    }
+
+    @GetMapping("/approveoffer/{id}")
+    public String approveoffer(@PathVariable String id, @RequestParam("rid") String rid) {
+        int oid = Integer.parseInt(id);
+        int rid1 = Integer.parseInt(rid);
+        offerService.updateStatusOffer(oid, 2);
+        String role = employeeService.getEmployeeById(Integer.parseInt(rid)).getRole().name();
+        if (role.equals("ROLE_MANAGER")) {
+            return "redirect:/managerOffer/" + rid1;
+        } else {
+            return "redirect:/adminOffer/" + rid1;
+        }
+    }
+
+    @GetMapping("/rejectoffer/{id}")
+    public String rejectoffer(@PathVariable String id, @RequestParam("rid") String rid) {
+        int oid = Integer.parseInt(id);
+        int rid1 = Integer.parseInt(rid);
+        offerService.updateStatusOffer(oid, 3);
+        String role = employeeService.getEmployeeById(Integer.parseInt(rid)).getRole().name();
+        if (role.equals("ROLE_MANAGER")) {
+            return "redirect:/managerOffer/" + rid1;
+        } else {
+            return "redirect:/adminOffer/" + rid1;
+        }
+    }
+
+    @GetMapping("/mark/{id}")
+    public String mark(@PathVariable String id, @RequestParam("rid") String rid) {
+        int oid = Integer.parseInt(id);
+        int rid1 = Integer.parseInt(rid);
+        offerService.updateStatusOffer(oid, 4);
+        String role = employeeService.getEmployeeById(Integer.parseInt(rid)).getRole().name();
+        if (role.equals("ROLE_MANAGER")) {
+            return "redirect:/managerOffer/" + rid1;
+        } else if (role.equals("ROLE_RECRUITER")) {
+            return "redirect:/offer/" + rid1;
+        } else {
+            return "redirect:/adminOffer/" + rid1;
+        }
+    }
+
+    @GetMapping("/acceptoffer/{id}")
+    public String acceptoffer(@PathVariable String id, @RequestParam("rid") String rid) {
+        int oid = Integer.parseInt(id);
+        int rid1 = Integer.parseInt(rid);
+        offerService.updateStatusOffer(oid, 5);
+        String role = employeeService.getEmployeeById(Integer.parseInt(rid)).getRole().name();
+        if (role.equals("ROLE_MANAGER")) {
+            return "redirect:/managerOffer/" + rid1;
+        } else if (role.equals("ROLE_RECRUITER")) {
+            return "redirect:/offer/" + rid1;
+        } else {
+            return "redirect:/adminOffer/" + rid1;
+        }
+    }
+
+    @GetMapping("/declineoffer/{id}")
+    public String declineoffer(@PathVariable String id, @RequestParam("rid") String rid) {
+        int oid = Integer.parseInt(id);
+        int rid1 = Integer.parseInt(rid);
+        offerService.updateStatusOffer(oid, 6);
+        String role = employeeService.getEmployeeById(Integer.parseInt(rid)).getRole().name();
+        if (role.equals("ROLE_MANAGER")) {
+            return "redirect:/managerOffer/" + rid1;
+        } else if (role.equals("ROLE_RECRUITER")) {
+            return "redirect:/offer/" + rid1;
+        } else {
+            return "redirect:/adminOffer/" + rid1;
+        }
+    }
+
+    @GetMapping("/candidateOffer/{id}")
+    public String candidateOffer(@PathVariable int id, Model model) {
+        OfferDTO offer = offerService.getOfferOfCandidate(id);
+        List<UserDTO> listU = userService.getAllUsers();
+        List<PositionDTO> listP = positionService.getAllPosition();
+        List<EmployeeDTO> listE = employeeService.getAllEmployee();
+        List<InterviewDTO> listI = interviewService.getAllInterviews();
+        List<CandidateDTO> listC = candidateService.getAllCandidate();
+        model.addAttribute("listU", listU);
+        model.addAttribute("offer", offer);
+        model.addAttribute("listP", listP);
+        model.addAttribute("listE", listE);
+        model.addAttribute("listI", listI);
+        model.addAttribute("listC", listC);
+        model.addAttribute("cid", id);
+        return "/recruiter-features/candidateOffer";
+    }
+
+    @GetMapping("/managerOffer/{id}")
+    public String managerOffer(@RequestParam(name = "page", defaultValue = "1") int page,
+                               @RequestParam(name = "size", defaultValue = "5") int size, @PathVariable("id") String idStr, Model model) {
+        int id = Integer.parseInt(idStr);
+        Page<OfferDTO> offerPage = offerService.findPaginated(page, size);
+        model.addAttribute("listO", offerPage.getContent());
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", offerPage.getTotalPages());
+        List<OfferDTO> listO = offerService.getAllOfferOfManager(id);
+        List<CandidateDTO> listC = candidateService.getAllCandidate();
+        List<UserDTO> listU = userService.getAllUsers();
+        List<DepartmentDTO> listD = departmentService.getAllDepartments();
+        List<StatusOfferDTO> listS = statusOfferService.getStatusOffer();
+        List<InterviewDTO> listI = interviewService.getAllInterviews();
+        model.addAttribute("listO", listO);
+        model.addAttribute("listC", listC);
+        model.addAttribute("listU", listU);
+        model.addAttribute("listD", listD);
+        model.addAttribute("listS", listS);
+        model.addAttribute("listI", listI);
+        model.addAttribute("rid", id);
+        if (model.containsAttribute("msg")) {
+            model.addAttribute("msg", model.asMap().get("msg"));
+        }
+        return "/recruiter-features/managerOffer";
+    }
+
+    @GetMapping("/adminOffer/{id}")
+    public String adminOffer(@RequestParam(name = "page", defaultValue = "1") int page,
+                             @RequestParam(name = "size", defaultValue = "5") int size, @PathVariable("id") String idStr, Model model) {
+        int id = Integer.parseInt(idStr);
+        Page<OfferDTO> offerPage = offerService.findPaginated(page, size);
+        model.addAttribute("listO", offerPage.getContent());
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", offerPage.getTotalPages());
+        List<OfferDTO> listO = offerService.getAllOfferOfAdmin(id);
+        List<CandidateDTO> listC = candidateService.getAllCandidate();
+        List<UserDTO> listU = userService.getAllUsers();
+        List<DepartmentDTO> listD = departmentService.getAllDepartments();
+        List<StatusOfferDTO> listS = statusOfferService.getStatusOffer();
+        List<InterviewDTO> listI = interviewService.getAllInterviews();
+        model.addAttribute("listO", listO);
+        model.addAttribute("listC", listC);
+        model.addAttribute("listU", listU);
+        model.addAttribute("listD", listD);
+        model.addAttribute("listS", listS);
+        model.addAttribute("listI", listI);
+        model.addAttribute("rid", id);
+        if (model.containsAttribute("msg")) {
+            model.addAttribute("msg", model.asMap().get("msg"));
+        }
+        return "/recruiter-features/managerOffer";
+    }
+
+    @GetMapping("/export")
+    public void exportToExcel(@RequestParam("rid") String rid, @RequestParam("from") String fromStr, @RequestParam("to") String toStr, HttpServletResponse response) throws IOException {
+        // Setup response headers for file download
+        response.setContentType("application/octet-stream");
+        response.setHeader("Content-Disposition", "attachment; filename=OfferList-" + fromStr + "_" + toStr + ".xlsx");
+//+ new SimpleDateFormat("yyyy-MM-dd_HH:mm:ss").format(new Date()) +
+        LocalDate from = LocalDate.parse(fromStr);
+        LocalDate to = LocalDate.parse(toStr);
+        List<OfferDTO> listOffers = offerService.getAllOfferFromToOfEid(from, to, Integer.parseInt(rid));
+
+        new ExportExcelFile<>(listOffers)
+                .writeHeaderLine(new String[]{"STT", "Candidate", "Position", "Approver", "Interview Info", "Contract Period From", "Contract Period To", "Interview Note", "Status", "Contract Type", "Level", "Department", "Recruiter Owner", "Due date", "Salary", "Note", "Create At"})
+                .writeDataLines(new String[]{"id", "candidateName", "positionName", "employeeName", "interviewTitle", "contractPeriodFrom", "contractPeriodTo", "interviewNotes", "statusOfferName", "contractTypeName", "levelName", "departmentName", "recruiterName", "dueDate", "basicSalary", "note", "createAt"}, OfferDTO.class)
+                .export(response);
+    }
+//, "Candidate", "Position", "Approver", "Interview Info", "Contract Period From", "Contract Period To", "Interview Note", "Status", "Contract Type", "Level", "Department", "Recruiter Owner", "Due date", "Salary", "Note", "Create At"
+//"candidate", "position", "employee", "interview", "contractPeriodFrom", "contractPeriodTo", "interviewNotes", "statusOffer", "contractType", "level", "department", "recruiterOwner", "dueDate", "basicSalary", "note", "createdAt"
 }
+// </editor-fold>

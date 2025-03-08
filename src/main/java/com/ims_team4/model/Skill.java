@@ -1,9 +1,9 @@
 package com.ims_team4.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.Set;
 
@@ -21,9 +21,15 @@ public class Skill {
     @Column(nullable = false, length = 100)
     private String name;
 
-    @ManyToMany
+    @ManyToMany(mappedBy = "skills")
     private Set<Candidate> candidates;
 
     @ManyToMany
+    @JoinTable(
+            name = "job_skill",
+            joinColumns = @JoinColumn(name = "skill_id"),
+            inverseJoinColumns = @JoinColumn(name = "job_id")
+    )
+    @JsonIgnore
     private Set<Job> jobs;
 }

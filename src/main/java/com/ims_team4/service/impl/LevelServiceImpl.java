@@ -5,6 +5,7 @@ import com.ims_team4.model.Level;
 import com.ims_team4.repository.LevelRepository;
 import com.ims_team4.service.LevelService;
 import org.jetbrains.annotations.NotNull;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -13,16 +14,14 @@ import java.util.stream.Collectors;
 @Service
 public class LevelServiceImpl implements LevelService {
 
-    private final LevelRepository levelRepository;
+    @Autowired
+    private LevelRepository levelRepository;
 
-    public LevelServiceImpl(LevelRepository levelRepository) {
-        this.levelRepository = levelRepository;
-    }
 
     @Override
-    public List<LevelDTO> getAllLevel() {
-        return levelRepository.getAllLevel().stream()
-                .map(this::convertToDTO)
+    public List<LevelDTO> getAllLevels() {
+        return levelRepository.findAll().stream()
+                .map(level -> new LevelDTO(level.getId(), level.getName()))
                 .collect(Collectors.toList());
     }
 

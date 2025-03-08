@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Offer</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+
+  <style>
+    /* Tổng thể */
+    body {
+      background-color: #eef1f6;
+      font-family: 'Arial', sans-serif;
+    }
+
+    .logo {
+      font-weight: bold;
+      background: #fff;
+      color: #16a085;
+      padding: 2px 8px;
+      border-radius: 4px;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      width: 240px;
+      background: #2c3e50;
+      height: 100vh;
+      position: fixed;
+      padding: 20px;
+      color: white;
+    }
+
+    .sidebar h4 {
+      font-weight: bold;
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .sidebar a {
+      display: flex;
+      align-items: center;
+      padding: 12px;
+      color: white;
+      text-decoration: none;
+      border-radius: 5px;
+      transition: background 0.3s;
+    }
+
+    .sidebar a.fw-bold {
+      background: #34495e;
+    }
+
+    .sidebar a:hover{
+      background: #1abc9c;
+    }
+
+    .sidebar i {
+      margin-right: 10px;
+    }
+
+    /* Nội dung chính */
+    .content {
+      margin-left: 260px;
+      padding: 30px;
+    }
+
+    /* Thanh tìm kiếm và bộ lọc */
+    .filter-bar {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .filter-bar .form-control, .filter-bar .form-select {
+      max-width: 220px;
+    }
+
+    /* Bảng dữ liệu */
+    .table-container {
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .table th {
+      background-color: #2c3e50;
+      color: white;
+      text-align: center;
+    }
+
+    .table td {
+      vertical-align: middle;
+    }
+
+    .table a {
+      color: #2c3e50;
+      transition: color 0.3s;
+    }
+
+    .table a:hover {
+      color: #1abc9c;
+    }
+
+    /* Tiêu đề */
+    .page-title {
+      font-size: 35px;
+      font-weight: bold;
+      color: #2c3e50;
+    }
+
+    /* Nút bấm */
+    .btn-primary {
+      background-color: #1abc9c;
+      border: none;
+    }
+
+    .btn-primary:hover {
+      background-color: #16a085;
+    }
+
+    .btn-secondary {
+      background-color: #34495e;
+      border: none;
+    }
+
+    .btn-secondary:hover {
+      background-color: #2c3e50;
+    }
+
+    .search {
+      width: 24% !important;
+    }
+
+    .status {
+      margin-right: 6rem;
+    }
+
+    .title {
+      margin-bottom: -10px;
+    }
+
+    /* Popup container */
+    .custom-popup {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: rgba(255, 255, 255, 0.95);
+      padding: 15px 20px;
+      border-radius: 8px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+      display: none;
+      z-index: 1050;
+      min-width: 250px;
+      max-width: 300px;
+      animation: fadeInSlideDown 0.5s ease-out;
+    }
+
+    /* Nội dung popup */
+    .popup-content {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 16px;
+      color: #333;
+    }
+
+    /* Nút đóng */
+    .btn-close {
+      background: none;
+      border: none;
+      font-size: 16px;
+      cursor: pointer;
+      margin-left: auto;
+    }
+
+    /* Hiệu ứng xuất hiện */
+    @keyframes fadeInSlideDown {
+      from {
+        opacity: 0;
+        transform: translateY(-20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* Nút đóng popup đẹp hơn */
+    .btn-close-custom {
+      background: #ff5e57; /* Màu đỏ nổi bật */
+      border: none;
+      width: 30px;
+      height: 30px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      transition: all 0.3s ease;
+    }
+
+    .btn-close-custom:hover {
+      background: #e74c3c; /* Màu đậm hơn khi hover */
+      transform: scale(1.1);
+    }
+
+    .btn-close-custom i {
+      color: white;
+      font-size: 16px;
+    }
+
+  </style>
+</head>
+<body>
+<div id="notification" class="custom-popup">
+  <div class="popup-content">
+    <i class="fa-solid fa-circle-check text-success fa-2x"></i>
+    <span id="notification-text"></span>
+    <button type="button" class="btn-close-custom" onclick="closeNotification()">
+      <i class="fa-solid fa-xmark"></i>
+    </button>
+  </div>
+</div>
+<!-- Sidebar -->
+<div class="sidebar">
+  <h4><span class="logo">DEV</span> IMS</h4>
+  <a href="#"><i class="fa-solid fa-house"></i> Home</a>
+  <a href="#"><i class="fa-solid fa-user"></i> Candidate</a>
+  <a href="#"><i class="fa-solid fa-briefcase"></i> Job</a>
+  <a href="#"><i class="fa-solid fa-comments"></i> Interview</a>
+  <a href="#" class="fw-bold"><i class="fa-solid fa-file-alt"></i> Offer</a>
+  <a href="#"><i class="fa-solid fa-users"></i> User</a>
+</div>
+
+<!-- Nội dung -->
+<div class="content">
+  <div class="d-flex justify-content-between align-items-center mb-0">
+    <div class="container py-2 flex-grow-1" style="flex-basis: 97%;">
+      <h3 class="page-title fw-bold text-dark">
+        <i class="fa-solid fa-clipboard-list text-primary"></i> Offer List
+      </h3>
+      <nav aria-label="breadcrumb">
+        <ol class="breadcrumb bg-white shadow-sm p-2 rounded">
+          <li class="breadcrumb-item">
+            <a th:href="@{/offer/{rid}(rid=${rid})}" class="text-decoration-none text-primary fw-bold">Offer List</a>
+          </li>
+        </ol>
+      </nav>
+    </div>
+    <div class="mb-1 p-3 bg-white rounded shadow-sm flex-grow-1 d-flex align-items-center" style="flex-basis: 35%;">
+      <div class="d-flex align-items-center">
+        <img src="https://anhanime.me/wp-content/uploads/2024/03/anh-conan_5.jpg" alt="Avatar"
+             class="rounded-circle border border-2" width="45" height="45">
+        <div class="ms-2">
+          <span class="fw-bold text-dark d-block">longpd</span>
+          <small class="text-muted">HR Department</small>
+        </div>
+      </div>
+      <a href="#" class="ms-auto btn btn-outline-danger btn-sm d-flex align-items-center px-3">
+        <i class="fa-solid fa-sign-out-alt me-2"></i> Logout
+      </a>
+    </div>
+  </div>
+
+  <!-- Thanh tìm kiếm và bộ lọc -->
+  <form th:action="@{/search}" method="get">
+    <div class="filter-bar mb-3">
+      <input type="hidden" name="rid" th:value="${rid}"/>
+      <div class="search input-group">
+        <span class="input-group-text"><i class="fa-solid fa-search"></i></span>
+        <input type="text" name="text" class="form-control" placeholder="Search">
+      </div>
+      <select class="form-select" name="dep">
+        <option value="0">Department</option>
+        <option th:each="department : ${listD}" th:value="${department.getId()}"
+                th:text="${department.getName()}"></option>
+      </select>
+      <select class="form-select status" name="status">
+        <option value="0">Status</option>
+        <option th:each="statusOffer : ${listS}" th:value="${statusOffer.getId()}"
+                th:text="${statusOffer.getStatusName()}"></option>
+      </select>
+      <button type="submit" class="btn btn-secondary">Search</button>
+      <button type="button" class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#exportModal">
+        Export
+      </button>
+    </div>
+  </form>
+
+  <div class="modal fade" id="exportModal" tabindex="-1" aria-labelledby="exportModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <form th:action="@{/export}" class="modal-content rounded-3 shadow-lg p-3">
+        <div class="modal-header bg-primary-subtle text-dark position-relative">
+          <h5 class="modal-title" id="exportModalLabel">Export Offer</h5>
+          <button type="button" class="btn btn-danger btn-close position-absolute top-0 end-0 m-2 p-2" data-bs-dismiss="modal" aria-label="Close"></button>                </div>
+        <div class="modal-body">
+          <input type="hidden" name="rid" th:value="${rid}">
+
+          <div class="mb-3">
+            <label for="from" class="form-label fw-bold">From:</label>
+            <input type="date" id="from" name="from" class="form-control" required>
+          </div>
+
+          <div class="mb-3">
+            <label for="to" class="form-label fw-bold">To:</label>
+            <input type="date" id="to" name="to" class="form-control" required>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-primary">Submit</button>
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Bảng dữ liệu -->
+  <div class="table-container">
+    <table class="table table-bordered table-hover">
+      <thead>
+      <tr>
+        <th>Candidate Name</th>
+        <th>Email</th>
+        <th>Approver</th>
+        <th>Department</th>
+        <th>Notes</th>
+        <th>Status</th>
+        <th>Action</th>
+      </tr>
+      </thead>
+      <tbody>
+      <th:block th:each="offer : ${listO}">
+        <tr>
+          <th:block th:each="candidate : ${listC}" th:if="${candidate.getId() == offer.getCandidateId()}">
+            <th:block th:each="user : ${listU}" th:if="${user.getId() == candidate.getId()}">
+              <td th:text="${user.getFullname()}"></td>
+              <td th:text="${user.getEmail()}"></td>
+              <td th:each="emp : ${listU}" th:if="${emp.getId() == offer.getEmployeeId()}"
+                  th:text="${emp.getFullname()}"></td>
+              <td th:text="${offer.getDepartmentName()}"></td>
+              <td th:text="${offer.note} ?: 'N/A'"></td>
+              <td>
+                <span th:text="${offer.getStatusOfferName()}"></span>
+              </td>
+              <td>
+                <a th:href="@{/offerdetail/{id}(id=${offer.getId()}, rid=${offer.getEmployeeId()})}" class="me-2"><i
+                        class="fa-solid fa-eye"></i></a>
+                <a th:href="@{/editoffer/{id}(id=${offer.getId()}, rid=${offer.getRecruiterOwner()})}"><i class="fa-solid fa-edit"></i></a>
+              </td>
+            </th:block>
+          </th:block>
+        </tr>
+      </th:block>
+      </tbody>
+    </table>
+    <nav aria-label="Page navigation">
+      <ul class="pagination justify-content-center">
+        <li class="page-item" th:classappend="${currentPage == 1} ? 'disabled'">
+          <a class="page-link" th:href="@{/offer/{id}(id=${id}, page=${currentPage - 1})}" aria-label="Previous">
+            <span aria-hidden="true">&laquo;</span>
+          </a>
+        </li>
+        <li class="page-item" th:each="page : ${#numbers.sequence(1, totalPages)}" th:classappend="${page == currentPage} ? 'active'">
+          <a class="page-link" th:href="@{/offer/{id}(id=${id}, page=${page})}" th:text="${page}"></a>
+        </li>
+        <li class="page-item" th:classappend="${currentPage == totalPages} ? 'disabled'">
+          <a class="page-link" th:href="@{/offer/{id}(id=${id}, page=${currentPage + 1})}" aria-label="Next">
+            <span aria-hidden="true">&raquo;</span>
+          </a>
+        </li>
+      </ul>
+    </nav>
+
+  </div>
+</div>
+</body>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    var msg = `[[${msg}]]`;  // Thymeleaf lấy msg từ session
+    if (msg && msg !== "null") {
+      showNotification(msg);
+    }
+  });
+  function showNotification(message) {
+    var notification = document.getElementById("notification");
+    var notificationText = document.getElementById("notification-text");
+    notificationText.innerText = message;
+    notification.style.display = "block";
+
+    // Tự động ẩn sau 3 giây
+    setTimeout(() => {
+      closeNotification();
+    }, 3000);
+  }
+
+  function closeNotification() {
+    var notification = document.getElementById("notification");
+    notification.style.display = "none";
+  }
+</script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</html>

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -52,7 +52,7 @@
             background: #34495e;
         }
 
-        .sidebar a:hover{
+        .sidebar a:hover {
             background: #1abc9c;
         }
 
@@ -141,9 +141,88 @@
         .title {
             margin-bottom: -10px;
         }
+
+        /* Popup container */
+        .custom-popup {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 15px 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            display: none;
+            z-index: 1050;
+            min-width: 250px;
+            max-width: 300px;
+            animation: fadeInSlideDown 0.5s ease-out;
+        }
+
+        /* Nội dung popup */
+        .popup-content {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 16px;
+            color: #333;
+        }
+
+        /* Nút đóng */
+        .btn-close {
+            background: none;
+            border: none;
+            font-size: 16px;
+            cursor: pointer;
+            margin-left: auto;
+        }
+
+        /* Hiệu ứng xuất hiện */
+        @keyframes fadeInSlideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Nút đóng popup đẹp hơn */
+        .btn-close-custom {
+            background: #ff5e57; /* Màu đỏ nổi bật */
+            border: none;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+        }
+
+        .btn-close-custom:hover {
+            background: #e74c3c; /* Màu đậm hơn khi hover */
+            transform: scale(1.1);
+        }
+
+        .btn-close-custom i {
+            color: white;
+            font-size: 16px;
+        }
+
     </style>
 </head>
 <body>
+<div id="notification" class="custom-popup">
+    <div class="popup-content">
+        <i class="fa-solid fa-circle-check text-success fa-2x"></i>
+        <span id="notification-text"></span>
+        <button type="button" class="btn-close-custom" onclick="closeNotification()">
+            <i class="fa-solid fa-xmark"></i>
+        </button>
+    </div>
+</div>
 <!-- Sidebar -->
 <div class="sidebar">
     <h4><span class="logo">DEV</span> IMS</h4>
@@ -165,7 +244,8 @@
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb bg-white shadow-sm p-2 rounded">
                     <li class="breadcrumb-item">
-                        <a href="/offer" class="text-decoration-none text-primary fw-bold">Offer List</a>
+                        <a th:href="@{/offer/{rid}(rid=${rid})}" class="text-decoration-none text-primary fw-bold">Offer
+                            List</a>
                     </li>
                 </ol>
             </nav>
@@ -188,6 +268,7 @@
     <!-- Thanh tìm kiếm và bộ lọc -->
     <form th:action="@{/search}" method="get">
         <div class="filter-bar mb-3">
+            <input type="hidden" name="rid" th:value="${rid}"/>
             <div class="search input-group">
                 <span class="input-group-text"><i class="fa-solid fa-search"></i></span>
                 <input type="text" name="text" class="form-control" placeholder="Search">
@@ -203,10 +284,40 @@
                         th:text="${statusOffer.getStatusName()}"></option>
             </select>
             <button type="submit" class="btn btn-secondary">Search</button>
-            <button class="btn btn-primary">Add new</button>
-            <button class="btn btn-outline-secondary">Export</button>
+            <a th:href="@{/createoffer/{rid}(rid=${rid})}" class="btn btn-primary">Add new</a>
+            <button type="button" class="btn btn-outline-secondary" data-bs-toggle="modal"
+                    data-bs-target="#exportModal">
+                Export
+            </button>
         </div>
     </form>
+
+    <div class="modal fade" id="exportModal" tabindex="-1" aria-labelledby="exportModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <form th:action="@{/export}" class="modal-content rounded-3 shadow-lg p-3">
+                <div class="modal-header bg-primary-subtle text-dark position-relative">
+                    <h5 class="modal-title" id="exportModalLabel">Export Offer</h5>
+                    <button type="button" class="btn btn-danger btn-close position-absolute top-0 end-0 m-2 p-2" data-bs-dismiss="modal" aria-label="Close"></button>                </div>
+                <div class="modal-body">
+                    <input type="hidden" name="rid" th:value="${rid}">
+
+                    <div class="mb-3">
+                        <label for="from" class="form-label fw-bold">From:</label>
+                        <input type="date" id="from" name="from" class="form-control" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="to" class="form-label fw-bold">To:</label>
+                        <input type="date" id="to" name="to" class="form-control" required>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
 
     <!-- Bảng dữ liệu -->
     <div class="table-container">
@@ -231,15 +342,17 @@
                             <td th:text="${user.getEmail()}"></td>
                             <td th:each="emp : ${listU}" th:if="${emp.getId() == offer.getEmployeeId()}"
                                 th:text="${emp.getFullname()}"></td>
-                            <td th:text="${offer.getDepartment().getName()}"></td>
+                            <td th:text="${offer.getDepartmentName()}"></td>
                             <td th:text="${offer.note} ?: 'N/A'"></td>
                             <td>
-                                <span th:text="${offer.getStatusOffer().getStatusName()}"></span>
+                                <span th:text="${offer.getStatusOfferName()}"></span>
                             </td>
                             <td>
-                                <a th:href="@{/offerdetail/{id}(id=${offer.id})}" class="me-2"><i
+                                <a th:href="@{/offerdetail/{id}(id=${offer.getId()}, rid=${offer.getRecruiterOwner()})}"
+                                   class="me-2"><i
                                         class="fa-solid fa-eye"></i></a>
-                                <a th:href="@{/offerdetail/{id}(id=${offer.id})}"><i class="fa-solid fa-edit"></i></a>
+                                <a th:href="@{/editoffer/{id}(id=${offer.getId()}, rid=${offer.getRecruiterOwner()})}"><i
+                                        class="fa-solid fa-edit"></i></a>
                             </td>
                         </th:block>
                     </th:block>
@@ -247,7 +360,54 @@
             </th:block>
             </tbody>
         </table>
+        <nav aria-label="Page navigation">
+            <ul class="pagination justify-content-center">
+                <li class="page-item" th:classappend="${currentPage == 1} ? 'disabled'">
+                    <a class="page-link" th:href="@{/offer/{id}(id=${id}, page=${currentPage - 1})}"
+                       aria-label="Previous">
+                        <span aria-hidden="true">&laquo;</span>
+                    </a>
+                </li>
+                <li class="page-item" th:each="page : ${#numbers.sequence(1, totalPages)}"
+                    th:classappend="${page == currentPage} ? 'active'">
+                    <a class="page-link" th:href="@{/offer/{id}(id=${id}, page=${page})}" th:text="${page}"></a>
+                </li>
+                <li class="page-item" th:classappend="${currentPage == totalPages} ? 'disabled'">
+                    <a class="page-link" th:href="@{/offer/{id}(id=${id}, page=${currentPage + 1})}" aria-label="Next">
+                        <span aria-hidden="true">&raquo;</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+
     </div>
 </div>
 </body>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        var msg = `[[${msg}]]`;  // Thymeleaf lấy msg từ session
+        if (msg && msg !== "null") {
+            showNotification(msg);
+        }
+    });
+
+    function showNotification(message) {
+        var notification = document.getElementById("notification");
+        var notificationText = document.getElementById("notification-text");
+        notificationText.innerText = message;
+        notification.style.display = "block";
+
+        // Tự động ẩn sau 3 giây
+        setTimeout(() => {
+            closeNotification();
+        }, 3000);
+    }
+
+    function closeNotification() {
+        var notification = document.getElementById("notification");
+        notification.style.display = "none";
+    }
+</script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </html>

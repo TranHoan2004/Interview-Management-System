@@ -1,5 +1,6 @@
 package com.ims_team4.repository.impl;
 
+import com.ims_team4.model.Offer;
 import com.ims_team4.model.User;
 import com.ims_team4.repository.UserRepository;
 import jakarta.persistence.EntityManager;
@@ -25,7 +26,11 @@ public class UserRepositoryImpl implements UserRepository {
 
     @Override
     public Optional<User> findByEmail(String email) {
-        return Optional.empty();
+        Session session = em.unwrap(Session.class);
+        return session
+                .createQuery("from User u where u.email=:email", User.class)
+                .setParameter("email", email)
+                .uniqueResultOptional();
     }
 
     @Override
@@ -36,6 +41,14 @@ public class UserRepositoryImpl implements UserRepository {
                 .getResultList();
         session.close();
         return users;
+    }
+
+    @Override
+    public User getUserById(long id) {
+        Session session = em.unwrap(Session.class);
+        User user = session.createQuery("select u from com.ims_team4.model.User u where u.id = :id", User.class).setParameter("id", id).getSingleResult();
+        session.close();
+        return user;
     }
 
     @NotNull

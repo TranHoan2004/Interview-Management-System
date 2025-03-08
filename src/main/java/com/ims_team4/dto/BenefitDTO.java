@@ -12,5 +12,4 @@ import lombok.experimental.SuperBuilder;
 public class BenefitDTO {
     private Long id;
     private String name;
-    private Long jobID;
 }

@@ -3,10 +3,11 @@ package com.ims_team4.controller;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.ims_team4.config.Constants;
-import com.ims_team4.controller.utils.GetUserDetailsFromSession;
+import com.ims_team4.controller.utils.SessionController;
 import com.ims_team4.dto.UserDTO;
 import com.ims_team4.dto.authentication_entities.FacebookAccount;
 import com.ims_team4.dto.authentication_entities.GoogleAccount;
+import com.ims_team4.service.EmployeeService;
 import com.ims_team4.service.UserService;
 import com.ims_team4.service.impl.UserServiceImpl;
 import jakarta.servlet.http.HttpSession;
@@ -20,7 +21,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.io.IOException;
-import java.util.Optional;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -28,13 +29,11 @@ import java.util.logging.Logger;
 public class LoginController implements Constants.GoogleAndFacebookAuthentication {
     private final UserService userService;
     private static final Logger logger = Logger.getLogger(LoginController.class.getName());
-    private final GetUserDetailsFromSession details;
-    private final String LOGIN_TYPE_FACEBOOK = "facebook";
-    private final String LOGIN_TYPE_GOOGLE = "google";
+    private final SessionController details;
 
-    public LoginController(UserServiceImpl impl) {
+    public LoginController(UserServiceImpl impl, UserService uSrv, EmployeeService empSrv) {
         this.userService = impl;
-        this.details = new GetUserDetailsFromSession();
+        this.details = new SessionController(empSrv, uSrv);
     }
 
     /**
@@ -80,16 +79,15 @@ public class LoginController implements Constants.GoogleAndFacebookAuthenticatio
                         email = getGoogleUserInfo(accessToken).getEmail();
                     }
                 }
-                Optional<UserDTO> user = userService.getUserByEmail(email);
-                if (user.isPresent()) {
-                    session.setAttribute("account", user.get());
-                } else {
-                    throw new UsernameNotFoundException("User not found");
-                }
-                details.getUserDTOFromSession(session);
             } else {
                 return "login-logout-features/login";
             }
+            List<UserDTO> user = userService.getUserByEmail(email);
+            if (user == null) {
+                throw new UsernameNotFoundException("User not found");
+            }
+            // ensure that spring context has saved the user information
+            details.getUserDetailsFromSession(session);
         } catch (UsernameNotFoundException u) {
             logger.log(Level.SEVERE, u.getMessage(), u);
             model.addAttribute("errorMessage", u.getMessage());
@@ -98,7 +96,7 @@ public class LoginController implements Constants.GoogleAndFacebookAuthenticatio
             logger.log(Level.SEVERE, e.getMessage(), e);
             return "login-logout-features/login";
         }
-        return "index";
+        return "redirect:/dashboard";
     }
 
     // HoanTX

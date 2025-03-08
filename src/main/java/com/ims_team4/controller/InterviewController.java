@@ -2,8 +2,8 @@ package com.ims_team4.controller;
 
 import com.ims_team4.dto.InterviewDTO;
 import com.ims_team4.service.InterviewService;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -12,6 +12,7 @@ import java.util.List;
  * VuTD
  */
 @Controller
+@RequestMapping("/interview")
 public class InterviewController {
     private final InterviewService interviewService;
 
@@ -20,72 +21,90 @@ public class InterviewController {
     }
 
     /**
+     * Get all interviews
+     */
+    @GetMapping("/list")
+    public String listInterviews(Model model) {
+        List<InterviewDTO> interviews = interviewService.getAllInterviews();
+        model.addAttribute("interviews", interviews);
+        return "interview-list";
+    }
+
+    /**
      * Create a new interview
      */
+    @GetMapping("/createInterview")
+    public String createInterview(Model model) {
+        model.addAttribute("interview", new InterviewDTO());
+        return "interview-create";
+    }
+
     @PostMapping("/createInterview")
-    @ResponseBody
-    public InterviewDTO createInterview(@RequestBody InterviewDTO interviewDTO) {
-        return interviewService.createInterview(interviewDTO);
+    public String createInterview(@ModelAttribute("interview") InterviewDTO interviewDTO) {
+        interviewService.createInterview(interviewDTO);
+        return "redirect:/interviews";
     }
 
     /**
      * Update an interview
      */
-    @PutMapping("/updateInterview/{id}")
-    @ResponseBody
-    public InterviewDTO updateInterview(@PathVariable("id") Long id,
-                                        @RequestBody InterviewDTO interviewDTO) {
-        return interviewService.updateInterview(id, interviewDTO);
+    @GetMapping("/editInterview/{id}")
+    public String editInterview(@PathVariable("id") Long id, Model model) {
+        InterviewDTO interview = interviewService.getInterviewById(id);
+        model.addAttribute("interview", interview);
+        return "interview-edit";
     }
+
+//    @PostMapping("/editInterview/{id}")
+//    public String updateInterview(@PathVariable("id") Long id, @ModelAttribute("interview") InterviewDTO interviewDTO) {
+//        interviewService.updateInterview(id, interviewDTO);
+//        return "redirect:/interviews";
+//    }
 
     /**
      * Get a single interview by ID
      */
-    @GetMapping("/getInterview/{id}")
-    @ResponseBody
-    public InterviewDTO getInterviewById(@PathVariable("id") Long id) {
-        return interviewService.getInterviewById(id);
+    @GetMapping("/interviewDetail/{id}")
+    public String detailInterview(@PathVariable("id") Long id, Model model) {
+        InterviewDTO interview = interviewService.getInterviewById(id);
+        model.addAttribute("interview", interview);
+        return "interview-detail";
     }
 
-    /**
-     * Get all interviews
-     */
-    @GetMapping("/getAllInterviews")
-    @ResponseBody
-    public List<InterviewDTO> getALlInterviews() {
-        return interviewService.getAllInterviews();
-    }
 
     /**
      * Cancel an interview
      */
-    @PutMapping("/cancelInterview/{id}")
-    @ResponseBody
-    public ResponseEntity<Void> cancelInterview(@PathVariable("id") Long id) {
+    @GetMapping("/cancelInterview/{id}")
+    public String cancelInterview(@PathVariable("id") Long id) {
         interviewService.cancelInterview(id);
-        return ResponseEntity.noContent().build();
+        return "redirect:/interviews";
     }
 
     /**
      * Submit result and feedback for an interview
      */
-    @PutMapping("/submit/{id}")
-    @ResponseBody
-    public InterviewDTO submitInterviewResult(@PathVariable("id") Long id,
-                                              @RequestParam String result,
-                                              @RequestParam String feedback) {
-        return interviewService.submitInterviewResult(id, result, feedback);
+    @GetMapping("/submit/{id}")
+    public String submitInterview(@PathVariable("id") Long id, Model model) {
+        InterviewDTO interview = interviewService.getInterviewById(id);
+        model.addAttribute("interview", interview);
+        return "interview-submit";
     }
+
+//    @PostMapping("/submit/{id}")
+//    public String submitInterviewResult(@PathVariable("id") Long id, @RequestParam("result") String result, @RequestParam("feedback") String feedback) {
+//        interviewService.submitInterviewResult(id, result, feedback);
+//        return "redirect:/interviews";
+//    }
 
     /**
      * Send reminder
      */
-    @PostMapping("/sendReminders")
-    @ResponseBody
-    public ResponseEntity<Void> sendReminders() {
-        interviewService.sendReminderForUpcoming();
-        return ResponseEntity.noContent().build();
-    }
+//    @GetMapping("/sendReminders")
+//    public String sendReminder(){
+//        interviewService.sendReminders();
+//        return "redirect:/interviews?reminders=sent";
+//    }
 
 
 }

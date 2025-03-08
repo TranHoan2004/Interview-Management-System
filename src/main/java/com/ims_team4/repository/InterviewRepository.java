@@ -1,21 +1,22 @@
 package com.ims_team4.repository;
 
 import com.ims_team4.model.Interview;
+import com.ims_team4.model.utils.InterviewStatus;
+import org.springframework.data.repository.CrudRepository;
+import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 /**
  * Tran Dang Vu
  */
-public interface InterviewRepository {
-    Interview save(Interview interview);
+@Repository
+public interface InterviewRepository extends CrudRepository<Interview, Long>, InterviewRepositoryCustom {
 
-    Optional<Interview> findById(Long id);
+    List<Interview> findByStatus(InterviewStatus status);
 
-    List<Interview> findAll();
+    List<Interview> findByScheduleTimeBetween(LocalDateTime start, LocalDateTime end);
 
-    void deleteById(Long id);
-
-    List<Interview> findByInterviewerId(Long interviewId);
+    List<Interview> getAllInterview();
 }

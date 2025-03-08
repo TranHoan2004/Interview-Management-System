@@ -10,6 +10,6 @@ import lombok.experimental.SuperBuilder;
 @AllArgsConstructor
 @SuperBuilder
 public class NotificationDTO {
-    private Long userID;
+    private long userID;
     private String title;
 }

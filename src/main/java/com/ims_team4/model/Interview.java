@@ -1,12 +1,14 @@
 package com.ims_team4.model;
 
+import com.ims_team4.model.utils.InterviewStatus;
+import com.ims_team4.model.Job;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Set;
 @Entity
 @Table(name = "interview")
@@ -20,15 +22,22 @@ public class Interview {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String feedback;
+    @Column(columnDefinition = "TEXT")
+    private String title;
+
+    @Column(columnDefinition = "TEXT")
+    private String note;
+
+    @Column(columnDefinition = "TEXT")
+    private String meetId;
 
     @Column(name = "schedule_time", nullable = false)
-    private LocalDate scheduleTime;
+    private LocalDateTime scheduleTime;
 
-    @Column
-    private boolean status;
+    @Enumerated(EnumType.STRING)
+    @Column(length = 20, nullable = false)
+    private InterviewStatus status;
 
-    @Column(nullable = false)
     private String locations;
 
     @Column(length = 100)
@@ -37,10 +46,17 @@ public class Interview {
     @OneToMany(mappedBy = "interview", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Employee> employees;
 
-    @ManyToMany
-    private Set<Candidate> candidates;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "candidate_id")
+    private Candidate candidate;
+
+    @Column(nullable = false)
+    private long recruiterOwner;
 
     @ManyToOne
     @JoinColumn(name = "job_id")
     private Job job;
+
+    @OneToMany(mappedBy = "interview", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<Offer> offers;
 }

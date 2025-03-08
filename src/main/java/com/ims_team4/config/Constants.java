@@ -28,6 +28,7 @@ public interface Constants {
         String GOOGLE_REDIRECT_URI = "";
         String GOOGLE_GRANT_TYPE = "";
         String GOOGLE_LINK_GET_USER_INFO = "";
+        String LOGIN_TYPE_GOOGLE = "google";
 
         // Facebook
         String FACEBOOK_CLIENT_ID = "";
@@ -35,14 +36,14 @@ public interface Constants {
         String FACEBOOK_REDIRECT_URI = "";
         String FACEBOOK_LINK_GET_TOKEN = "";
         String FACEBOOK_LINK_GET_USER_INFO = "";
+        String LOGIN_TYPE_FACEBOOK = "facebook";
     }
 
-    interface ProfileStatus {
-        String WAITING_STATUS = "Waiting for interview";
-        String OPEN_STATUS = "Open";
-        String INTERVIEWED_STATUS = "Interviewed";
-        String OFFERED_STATUS = "Offered";
-        String FAILED_STATUS = "Failed";
+    interface Role {
+        String ROLE_INTERVIEWER = "INTERVIEWER";
+        String ROLE_MANAGER = "MANAGER";
+        String ROLE_ADMINISTRATOR = "ADMINISTRATOR";
+        String ROLE_RECRUITER = "RECRUITER";
     }
 
 }

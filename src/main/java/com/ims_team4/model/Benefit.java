@@ -6,8 +6,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
-import java.util.Set;
-
 @Entity
 @Table(name = "benefit")
 @Data
@@ -19,9 +17,6 @@ public class Benefit {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, length = 100, unique = true)
+    @Column(nullable = false, length = 100)
     private String name;
-
-    @ManyToMany
-    private Set<Job> jobs;
 }
