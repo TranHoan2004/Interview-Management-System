@@ -2,18 +2,17 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 
 <body>
-    <div class="d-flex justify-content-between align-items-center mb-5" th:fragment="topSidebar(account, item)"
-        style="border-bottom: solid 1px #0a1620">
-        <!--<h1 class="fs-3 fw-bold">Job</h1>-->
-        <h1 class="fs-3 fw-bold" th:text="${item}"></h1>
-        <div class="d-flex align-items-center gap-3">
-            <div class="d-flex flex-column align-items-end me-3">
-                <span class="me-3 fw-bold" th:text="${account.getFullname()}"></span>
-                <span class="me-3" th:text="${account.getDepartmentName()}"></span>
-            </div>
-            <div class="btn btn-outline-danger btn-sm" th:replace="~{login-logout-features/logoutPopup::logout}"></div>
+<div class="d-flex justify-content-between align-items-center mb-5" th:fragment="topSidebar(item)"
+     style="border-bottom: solid 1px #0a1620">
+    <h1 class="fs-3 fw-bold" th:text="${item}"></h1>
+    <div class="d-flex align-items-center gap-3">
+        <div class="d-flex flex-column align-items-end me-3">
+            <span class="me-3 fw-bold" th:text="${session.account.getFullname()}"></span>
+            <span class="me-3" th:text="${session.account.getDepartmentName()}"></span>
         </div>
+        <div class="btn btn-outline-danger btn-sm" th:replace="~{login-logout-features/logoutPopup::logout}"></div>
     </div>
+</div>
 </body>
 
 </html>

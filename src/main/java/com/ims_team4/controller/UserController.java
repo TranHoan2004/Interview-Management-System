@@ -30,6 +30,7 @@ public class UserController {
         List<EmployeeDTO> list = empSrv.getAllEmployee();
         model.addAttribute("employees", list);
         details.throwDataToTopSidebar(session, model);
+        model.addAttribute("item", "User");
         return "admin-features/list-user";
     }
 

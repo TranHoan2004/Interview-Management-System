@@ -149,16 +149,16 @@ public class SecurityConfig implements Constants.Role {
     }
 
     // <editor-fold> desc="Authorize the URL"
-//    @Bean
-//    public SecurityFilterChain userFunctionalFilterChain(HttpSecurity http) throws Exception {
-//        return http
-//                .securityMatcher("/user/**")
-//                .csrf(AbstractHttpConfigurer::disable)
-//                .authorizeHttpRequests(authorizeHttpRequests -> authorizeHttpRequests
-//                        .requestMatchers("/user/**").hasRole(ROLE_ADMINISTRATOR) // UC32, UC33, UC34, UC35, UC36
-//                        .anyRequest().authenticated()
-//                ).httpBasic(Customizer.withDefaults()).build();
-//    }
+    @Bean
+    public SecurityFilterChain userFunctionalFilterChain(HttpSecurity http) throws Exception {
+        return http
+                .securityMatcher("/user/**")
+                .csrf(AbstractHttpConfigurer::disable)
+                .authorizeHttpRequests(authorizeHttpRequests -> authorizeHttpRequests
+                        .requestMatchers("/user/**").hasRole(ROLE_ADMINISTRATOR) // UC32, UC33, UC34, UC35, UC36
+                        .anyRequest().authenticated()
+                ).httpBasic(Customizer.withDefaults()).build();
+    }
 //
 //    @Bean
 //    public SecurityFilterChain jobFunctionalFilterChain(HttpSecurity http) throws Exception {

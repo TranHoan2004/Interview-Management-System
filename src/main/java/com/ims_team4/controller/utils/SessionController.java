@@ -47,8 +47,7 @@ public class SessionController {
     }
 
     public void throwDataToTopSidebar(HttpSession session, @NotNull Model model) {
-        model.addAttribute("account", getEntityFromSession(session));
-        model.addAttribute("item", "User");
+        session.setAttribute("account", getEntityFromSession(session));
     }
 
     private EmployeeDTO getEntityFromSession(HttpSession session) {

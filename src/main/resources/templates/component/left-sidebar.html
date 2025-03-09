@@ -34,13 +34,13 @@
                     <span>Interview</span>
                 </a>
             </li>
-            <li class="nav-item">
+            <li class="nav-item" th:if="${!session.account.role.equals('ROLE_INTERVIEWER')}">
                 <a th:href="@{/offer}" class="nav-link d-flex flex-column align-items-center text-dark">
                     <i class="bi bi-file-earmark-text-fill" style="font-size: 1.5rem;"></i>
                     <span>Offer</span>
                 </a>
             </li>
-            <li class="nav-item">
+            <li class="nav-item" th:if="${session.account.role.name().equals('ROLE_ADMINISTRATOR')}">
                 <a th:href="@{/user/list}" class="nav-link d-flex flex-column align-items-center text-dark">
                     <i class="bi bi-person-fill" style="font-size: 1.5rem;"></i>
                     <span>User</span>
