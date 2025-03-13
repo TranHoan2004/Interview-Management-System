@@ -2,16 +2,15 @@ package com.ims_team4.model;
 
 import com.ims_team4.model.Candidate;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import lombok.experimental.SuperBuilder;
 
 import java.util.Set;
 
 @Entity
 @Table(name = "position")
-@Data
+@Getter
+@Setter
 @SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor

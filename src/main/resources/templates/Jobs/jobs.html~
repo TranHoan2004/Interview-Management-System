@@ -11,16 +11,8 @@
 </head>
 <body>
 <div>
-    <!-- Sidebar -->
-    <div class="sidebar">
-        <h4><span class="logo">DEV</span> IMS</h4>
-        <a href="#"><i class="fa-solid fa-house"></i> Home</a>
-        <a href="#"><i class="fa-solid fa-user"></i> Candidate</a>
-        <a href="#"><i class="fa-solid fa-briefcase"></i> Job</a>
-        <a href="#"><i class="fa-solid fa-comments"></i> Interview</a>
-        <a href="#" class="fw-bold"><i class="fa-solid fa-file-alt"></i> Offer</a>
-        <a href="#"><i class="fa-solid fa-users"></i> User</a>
-    </div>
+    <!-- Left sidebar -->
+    <div class="sidebar" th:replace="~{component/left-sidebar::leftSidebar}"></div>
 
     <!-- Content -->
     <div class="content">
@@ -83,9 +75,9 @@
                 </tr>
                 <tr th:each="job : ${jobPage.content}">
                     <td th:text="${job.title}"></td>
-                    <td th:text="${#strings.arrayJoin(job.skillname ', ')}"></td>
-                    <td th:text="${job.startDate}"></td>
-                    <td th:text="${job.endDate}"></td>
+                    <td th:text="${#strings.arrayJoin(job.skillNames, ', ')}"></td>
+                    <td th:text="${#dates.format(job.startDate, 'dd/MM/yyyy')}"></td>
+                    <td th:text="${#dates.format(job.endDate, 'dd/MM/yyyy')}"></td>
                     <td th:text="${#strings.arrayJoin(job.levelNames, ', ')}"></td>
                     <td th:text="${job.status} ? 'Open' : 'Closed'"></td>
                     <td>

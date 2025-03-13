@@ -11,35 +11,27 @@
 </head>
 <body class="bg-light">
 <div class="d-flex">
-    <!-- Sidebar -->
-    <div class="sidebar">
-        <h4><span class="logo">DEV</span> IMS</h4>
-        <a href="#"><i class="fa-solid fa-house"></i> Home</a>
-        <a href="#"><i class="fa-solid fa-user"></i> Candidate</a>
-        <a href="#"><i class="fa-solid fa-briefcase"></i> Job</a>
-        <a href="#"><i class="fa-solid fa-comments"></i> Interview</a>
-        <a href="#" class="fw-bold"><i class="fa-solid fa-file-alt"></i> Offer</a>
-        <a href="#"><i class="fa-solid fa-users"></i> User</a>
-    </div>
+    <!-- Left sidebar -->
+    <div class="sidebar" th:replace="~{component/left-sidebar::leftSidebar}"></div>
+
     <!-- Main Content -->
-    <div class="content flex-grow-1 p-4">
-        <div class="d-flex justify-content-between align-items-center mb-3">
-            <h1 class="fs-3 fw-bold">Job</h1>
-            <div class="d-flex align-items-center gap-3">
-                <span>hoannik</span>
-                <span class="fw-bold">HR Department</span>
-                <i class="bi bi-person"></i>
-                <a class="text-primary text-decoration-none" href="#">Logout</a>
+    <div class="content flex-grow-1">
+        <div class="d-flex justify-content-between align-items-center mb-0">
+            <div class="container py-2 flex-grow-1" style="flex-basis: 68%;">
+                <h3 class="page-title fw-bold text-dark">
+                    <i class="fa fa-briefcase text-primary"></i> Job
+                </h3>
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb bg-white shadow-sm p-2 rounded">
+                        <li class="breadcrumb-item">
+                            <a th:href="@{/jobs/manager/list/{id}(id=${session.account.getUser()})}" class="text-decoration-none text-primary fw-bold">Job List</a>
+                        </li>
+                    </ol>
+                </nav>
             </div>
+            <div th:replace="~{component/top-sidebar::topSidebar}"></div>
         </div>
-        <div class="d-flex align-items-center mb-4">
-            <a class="text-primary text-decoration-none" href="#">Job List</a>
-            <span class="mx-2">></span>
-            <span>Job details</span>
-        </div>
-        <div class="text-muted mb-3">
-            Created on 22/02/2022, last updated by admin1 today
-        </div>
+
         <div class="bg-info bg-opacity-10 p-4 rounded">
             <div class="row g-4">
                 <div class="col-md-6">
@@ -48,14 +40,10 @@
                 </div>
                 <div class="col-md-6">
                     <label class="form-label fw-bold">Skills</label>
-                    <div>
-                        <th:block th:each="skill : ${allSkills}">
-                            <label class="form-check-label">
-                                <input class="form-check-input" type="checkbox" name="skills"
-                                       th:value="${skill.id}" th:checked="${job.skills.![id].contains(skill.id)}">
-                                <span th:text="${skill.name}"></span>
-                            </label>
-                        </th:block>
+                    <div class="d-flex flex-wrap gap-2">
+                        <div th:each="skill : ${job.skills}" class="badge bg-primary text-white px-3 py-2 rounded-pill">
+                            <span th:text="${skill.name}"></span>
+                        </div>
                     </div>
                 </div>
                 <div class="col-md-6">
@@ -75,14 +63,11 @@
                 </div>
                 <div class="col-md-6">
                     <label class="form-label fw-bold">Benefits</label>
-                    <div>
-                        <th:block th:each="benefit : ${allBenefits}">
-                            <label class="form-check-label">
-                                <input class="form-check-input" type="checkbox" name="benefits"
-                                       th:value="${benefit.id}" th:checked="${job.benefits.![id].contains(benefit.id)}">
-                                <span th:text="${benefit.name}"></span>
-                            </label>
-                        </th:block>
+                    <div class="d-flex flex-wrap gap-2">
+                        <div th:each="benefit : ${job.benefits}"
+                             class="badge bg-success text-white px-3 py-2 rounded-pill">
+                            <span th:text="${benefit.name}"></span>
+                        </div>
                     </div>
                 </div>
                 <div class="col-md-6">
@@ -91,14 +76,11 @@
                 </div>
                 <div class="col-md-6">
                     <label class="form-label fw-bold">Level</label>
-                    <div>
-                        <th:block th:each="level : ${allLevels}">
-                            <label class="form-check-label">
-                                <input class="form-check-input" type="checkbox" name="levels"
-                                       th:value="${level.id}" th:checked="${job.levels.![id].contains(level.id)}">
-                                <span th:text="${level.name}"></span>
-                            </label>
-                        </th:block>
+                    <div class="d-flex flex-wrap gap-2">
+                        <div th:each="level : ${job.levels}"
+                             class="badge bg-secondary text-white px-3 py-2 rounded-pill">
+                            <span th:text="${level.name}"></span>
+                        </div>
                     </div>
                 </div>
                 <div class="col-md-6">
@@ -123,7 +105,9 @@
             </div>
             <div class="d-flex justify-content-end gap-3 mt-5">
                 <a th:href="@{/jobs/edit/{id}(id=${job.id})}" class="btn btn-light border text-dark">Edit</a>
-                <a href="/jobs" class="btn btn-light border text-dark">Cancel</a>
+                <a th:href="@{/jobs/manager/list/{id}(id=${session.account.getUser()})}"
+                   class="btn btn-secondary"
+                   type="button">Cancel</a>
             </div>
         </div>
     </div>

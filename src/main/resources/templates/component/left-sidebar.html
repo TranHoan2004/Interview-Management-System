@@ -1,54 +1,73 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Left Sidebar</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <style>
+        .sidebar a.active {
+            background-color: #007bff;
+            color: white;
+        }
+    </style>
+</head>
 <body>
-<div class="col-md-2 col-sm-3 sidebar p-3"
-     style="background-color: #f5f5dc; height: 100vh; position: sticky; top: 0;" th:fragment="leftSidebar">
-    <h1 class="d-flex justify-content-center align-items-center mb-4 ">
-        <img src="https://storage.googleapis.com/a1aa/image/xDzzS0JC5qea4CbpCUszLzoRX5p4YvCBTrUncvJpdX4.jpg"
-             alt="logo" width="10%" class="me-2">
-        IMS
-    </h1>
-    <nav>
-        <ul class="nav flex-column">
-            <li class="nav-item">
-                <a th:href="@{/dashboard}" class="nav-link d-flex flex-column align-items-center text-dark">
-                    <i class="bi bi-house-door-fill" style="font-size: 1.5rem;"></i>
-                    <span>Home</span>
-                </a>
-            </li>
-            <li class="nav-item">
-                <a th:href="@{/candidate}" class="nav-link d-flex flex-column align-items-center text-dark">
-                    <i class="bi bi-people-fill" style="font-size: 1.5rem;"></i>
-                    <span>Candidate</span>
-                </a>
-            </li>
-            <li class="nav-item">
-                <a th:href="@{/job}" class="nav-link d-flex flex-column align-items-center text-dark active">
-                    <i class="bi bi-briefcase-fill" style="font-size: 1.5rem;"></i>
-                    <span>Job</span>
-                </a>
-            </li>
-            <li class="nav-item">
-                <a th:href="@{/interview}" class="nav-link d-flex flex-column align-items-center text-dark">
-                    <i class="bi bi-calendar-check-fill" style="font-size: 1.5rem;"></i>
-                    <span>Interview</span>
-                </a>
-            </li>
-            <li class="nav-item" th:if="${!session.account.role.equals('ROLE_INTERVIEWER')}">
-                <a th:href="@{/offer}" class="nav-link d-flex flex-column align-items-center text-dark">
-                    <i class="bi bi-file-earmark-text-fill" style="font-size: 1.5rem;"></i>
-                    <span>Offer</span>
-                </a>
-            </li>
-            <li class="nav-item" th:if="${session.account.role.name().equals('ROLE_ADMINISTRATOR')}">
-                <a th:href="@{/user/list}" class="nav-link d-flex flex-column align-items-center text-dark">
-                    <i class="bi bi-person-fill" style="font-size: 1.5rem;"></i>
-                    <span>User</span>
-                </a>
-            </li>
-        </ul>
-    </nav>
-</div>
-</body>
 
+<!-- Sidebar -->
+<div class="sidebar col-md-2 col-sm-3" th:fragment="leftSidebar">
+    <h4><span class="logo">DEV</span> IMS</h4>
+
+    <a th:href="@{/dashboard}"><i class="fa-solid fa-house"></i> Home</a>
+    <a th:href="@{/candidate/list}"><i class="fa-solid fa-user"></i> Candidate</a>
+
+    <!--Job-->
+    <div th:if="${session.account.getRole().name().equals('ROLE_MANAGER')}">
+        <a th:href="@{/jobs/manager/list/{id}(id=${session.account.getUser()})}"><i class="fa-solid fa-briefcase"></i>
+            Job</a>
+    </div>
+    <div th:if="${session.account.getRole().name().equals('ROLE_ADMINISTRATOR')}">
+        <a th:href="@{/jobs/admin/listAllJob}"><i class="fa-solid fa-briefcase"></i>
+            Job</a>
+    </div>
+
+    <a th:href="@{/interview/list}"><i class="fa-solid fa-comments"></i> Interview</a>
+    <div th:if="${session.account.getRole().name().equals('ROLE_RECRUITER')}">
+        <a th:href="@{/offer/offer/{id}(id=${session.account.getUser()})}" id="offer-link">
+            <i class="fa-solid fa-file-alt"></i> Offer
+        </a>
+    </div>
+    <div th:if="${session.account.getRole().name().equals('ROLE_MANAGER')}">
+        <a th:href="@{/offer/managerOffer/{id}(id=${session.account.getUser()})}" id="manager-offer-link">
+            <i class="fa-solid fa-file-alt"></i> Offer
+        </a>
+    </div>
+    <div th:if="${session.account.getRole().name().equals('ROLE_ADMINISTRATOR')}">
+        <a th:href="@{/offer/adminOffer/{id}(id=${session.account.getUser()})}" id="admin-offer-link">
+            <i class="fa-solid fa-file-alt"></i> Offer
+        </a>
+        <a th:href="@{/user/list}" id="user-management-link">
+            <i class="fa-solid fa-users"></i> User Management
+        </a>
+    </div>
+</div>
+
+</body>
+<script>
+    // Lấy đường dẫn hiện tại
+    const currentPath = window.location.pathname;
+
+    // Lấy tất cả các liên kết trong sidebar
+    const sidebarLinks = document.querySelectorAll('.sidebar a');
+
+    // Duyệt qua từng liên kết và kiểm tra xem nó có khớp với đường dẫn hiện tại không
+    sidebarLinks.forEach(link => {
+        const linkPath = link.getAttribute('href');
+        if (linkPath === currentPath) {
+            link.classList.add('active');
+        }
+    });
+</script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </html>

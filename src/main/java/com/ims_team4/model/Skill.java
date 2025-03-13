@@ -9,7 +9,8 @@ import java.util.Set;
 
 @Entity
 @Table(name = "skill")
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class Skill {

@@ -41,6 +41,18 @@ public class DepartmentRepositoryImpl implements DepartmentRepository {
         return departments;
     }
 
+    @Override
+    public Department getDepartmentById(long id) {
+            try {
+                return em.createQuery("SELECT d FROM Department d WHERE d.id = :id", Department.class)
+                        .setParameter("id", id)
+                        .getSingleResult();
+            } catch (Exception e) {
+                return null; // hoặc throw new RuntimeException("Department not found");
+            }
+
+    }
+
 
     @Override
     public void flush() {

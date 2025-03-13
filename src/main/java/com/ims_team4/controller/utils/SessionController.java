@@ -9,7 +9,6 @@ import com.ims_team4.service.UserService;
 import jakarta.servlet.http.HttpSession;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.springframework.context.annotation.Bean;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -47,6 +46,9 @@ public class SessionController {
     }
 
     public void throwDataToTopSidebar(HttpSession session, @NotNull Model model) {
+        EmployeeDTO employeeDTO = getEntityFromSession(session);
+        Logger logger = Logger.getLogger(SessionController.class.getName());
+        logger.info(employeeDTO.toString());
         session.setAttribute("account", getEntityFromSession(session));
     }
 

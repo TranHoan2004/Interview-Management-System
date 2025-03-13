@@ -1,18 +1,25 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
-
+<head>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+</head>
 <body>
-<div class="d-flex justify-content-between align-items-center mb-5" th:fragment="topSidebar(item)"
-     style="border-bottom: solid 1px #0a1620">
-    <h1 class="fs-3 fw-bold" th:text="${item}"></h1>
-    <div class="d-flex align-items-center gap-3">
-        <div class="d-flex flex-column align-items-end me-3">
-            <span class="me-3 fw-bold" th:text="${session.account.getFullname()}"></span>
-            <span class="me-3" th:text="${session.account.getDepartmentName()}"></span>
+<div class="d-flex justify-content-between align-items-center mb-0" th:fragment="topSidebar">
+
+    <div class="mb-1 p-3 bg-white rounded shadow-sm flex-grow-1 d-flex align-items-center" style="flex-basis: 35%;">
+        <div class="d-flex align-items-center me-3">
+            <img src="https://anhanime.me/wp-content/uploads/2024/03/anh-conan_5.jpg" alt="Avatar"
+                 class="rounded-circle border border-2" width="45" height="45">
+            <div class="ms-2">
+                <span class="fw-bold text-dark d-block" th:text="${session.account.getFullname()}"></span>
+                <small class="text-muted" th:text="${session.account.getDepartmentName()}"></small>
+            </div>
         </div>
-        <div class="btn btn-outline-danger btn-sm" th:replace="~{login-logout-features/logoutPopup::logout}"></div>
+        <span th:replace="~{login-logout-features/logoutPopup::logout}"></span>
     </div>
 </div>
+
 </body>
 
 </html>

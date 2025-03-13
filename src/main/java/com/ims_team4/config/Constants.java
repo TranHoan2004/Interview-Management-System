@@ -4,8 +4,8 @@ public interface Constants {
     interface MailProperties {
         String HOST_NAME = "smtp.gmail.com";
         int PORT = 465;
-        String APP_EMAIL = "myemail";
-        String APP_PASSWORD = "mypassword";
+        String APP_EMAIL = "";
+        String APP_PASSWORD = "";
         // get app password from 2 steps verification of Google
     }
 
@@ -16,7 +16,7 @@ public interface Constants {
     }
 
     interface Regex {
-        String EMAIL_REGEX = "^[A-Za-z](.*)([@]{1})(.{2,})(\\\\.)(.{2,})";
+        String EMAIL_REGEX = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$";
         String PHONE_REGEX = "^[0-9]{10,11}$";
     }
 

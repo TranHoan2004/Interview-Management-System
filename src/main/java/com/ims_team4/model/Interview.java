@@ -43,9 +43,6 @@ public class Interview {
     @Column(length = 100)
     private String result;
 
-    @OneToMany(mappedBy = "interview", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<Employee> employees;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "candidate_id")
     private Candidate candidate;

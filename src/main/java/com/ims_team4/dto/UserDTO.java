@@ -1,6 +1,6 @@
 package com.ims_team4.dto;
 
-import com.ims_team4.model.utils.UserRole;
+import com.ims_team4.model.utils.HrRole;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -23,7 +23,7 @@ public class UserDTO {
     private String phone;
     private boolean status;
     private String note;
-    private UserRole role;
+    private HrRole role;
     private String password;
     private long notificationID;
 }

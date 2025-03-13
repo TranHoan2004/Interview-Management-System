@@ -1,7 +1,6 @@
 package com.ims_team4.controller;
 
 import com.ims_team4.controller.utils.SessionController;
-import com.ims_team4.service.EmployeeService;
 import com.ims_team4.service.UserService;
 import com.ims_team4.service.impl.EmployeeServiceImpl;
 import jakarta.servlet.http.HttpSession;
@@ -21,7 +20,8 @@ public class HomeController {
 
     @GetMapping("/")
     public String index() {
-        return "login-logout-features/login";
+//        return "login-logout-features/login";
+        return "redirect:/dashboard";
     }
 
     /**
@@ -36,6 +36,10 @@ public class HomeController {
         return "component/dashboard";
     }
 
+    @GetMapping("/error")
+    public String redirectToAccessDeniedPage() {
+        return "component/access-denied";
+    }
 
     public static void main(String[] args) {
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();

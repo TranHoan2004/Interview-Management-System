@@ -11,25 +11,23 @@ import java.util.List;
 public interface OfferRepository extends CrudRepository<Offer, Long> {
     List<Offer> getAllOffer();
 
-    List<Offer> getAllOfferByNameMailDepStatus(String text, int dep, int status, int eid);
+    List<Offer> getAllOfferByNameMailDepStatus(String text, int dep, int status, int eid, Pageable pageable);
+
+    long countAllOfferByNameMailDepStatus(String text, int dep, int status, int eid);
 
     Offer getOfferById(long id);
 
-    List<Offer> getAllOfferByRecruiter(int id);
+    List<Offer> getAllOfferByEmployee(int id, Pageable pageable);
 
-    boolean editOffer(int offerid, int salary, LocalDate from, LocalDate to, LocalDate duedate, String interviewNote, int interviewId, String note, int recruiterOwner, int cid, int coid, int did, int eid, int lid, int pid);
+    boolean editOffer(int offerid, int salary, LocalDate from, LocalDate to, LocalDate duedate, String interviewNote, int interviewId, String note, int recruiterOwner, int cid, int coid, int did, int eid, int lid, int pid, int updateBy);
 
     boolean updateStatusOffer(int offerid, int status);
 
-    List<Offer> findAllOffers(Pageable pageable);
+    long countAllOffers(int id);
 
-    Offer getOfferOfCandidate(int cid);
+    Offer getMaxOfferOfCandidate(int cid);
 
-    List<Offer> getAllOfferOfManager(int mid);
-
-    List<Offer> getAllOfferOfAdmin(int aid);
-
-    boolean createOffer(int salary, LocalDate from, LocalDate to, LocalDate duedate, String interviewNote, int interviewId, String note, int recruiterOwner, int cid, int coid, int did, int eid, int lid, int pid);
+    boolean createOffer(int salary, LocalDate from, LocalDate to, LocalDate duedate, String interviewNote, int interviewId, String note, int recruiterOwner, int cid, int coid, int did, int eid, int lid, int pid, int updateBy);
 
     List<Offer> getAllOfferFromToOfEid(LocalDate from, LocalDate to, int eid);
 }

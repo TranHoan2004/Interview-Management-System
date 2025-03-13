@@ -43,6 +43,17 @@ public class PositionRepositoryImpl implements PositionRepository {
     }
 
     @Override
+    public Position getPosById(long id) {
+            try {
+                return em.createQuery("SELECT p FROM Position p WHERE p.id = :id", Position.class)
+                        .setParameter("id", id)
+                        .getSingleResult();
+            } catch (Exception e) {
+                return null; // hoặc throw new RuntimeException("Position not found");
+            }
+    }
+
+    @Override
     public void flush() {
 
     }

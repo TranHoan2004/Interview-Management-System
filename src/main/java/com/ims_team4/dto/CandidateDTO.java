@@ -8,6 +8,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
+import java.time.LocalDate;
 import java.util.Set;
 // Duc Long
 @Data
@@ -22,4 +23,24 @@ public class CandidateDTO {
     private String positionName;
     private byte[] cv;
     private Long offerId;
+    //Hai Dang
+    private Long userId;
+    private String fullName; // ✅ Thêm tên ứng viên
+    private String email; // ✅ Thêm email
+    private String phone; // ✅ Thêm số điện thoại
+    private String ownerHR; // ✅ Thêm người phụ trách HR
+    private String status; // ✅ Thêm trạng thái ứng viên
+    private Set<String> skills; // ✅ Thêm danh sách kỹ năng (nếu cần)
+    private LocalDate dob;
+    private String address;
+    private Integer gender;
+    private String recruiter;
+    private String note;
+
+
+    // Getter cho cvLink (trả về link giả định nếu có)
+    public String getCvLink() {
+        return (cv != null) ? "/cvs/" + id : null;
+    }
+
 }

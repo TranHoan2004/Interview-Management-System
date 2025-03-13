@@ -1,9 +1,7 @@
 package com.ims_team4.model;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.springframework.security.core.context.SecurityContextHolder;
 
@@ -12,7 +10,8 @@ import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "offer")
-@Data
+@Getter
+@Setter
 @SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -88,21 +87,6 @@ public class Offer {
     @PrePersist
     protected void onCreate() {
         createdAt = LocalDateTime.now();
-        updatedBy = getCurrentUserId();
     }
 
-    @PreUpdate
-    protected void onUpdate() {
-        updatedBy = getCurrentUserId();
-    }
-
-    private Long getCurrentUserId() {
-//        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-//        if (principal instanceof User) {
-//            return ((User) principal).getId();
-//        } else {
-//            return null;
-//        }
-        return Long.valueOf(12);
-    }
 }

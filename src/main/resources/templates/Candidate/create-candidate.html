@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Create Candidate</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <style>
+        body {
+            background-color: #eef2f7;
+            font-family: 'Segoe UI', Arial, sans-serif;
+        }
+
+        .container {
+            background: white;
+            padding: 20px; /* Giảm padding */
+            border-radius: 8px; /* Giữ độ bo tròn nhẹ nhàng */
+            margin-top: 20px;
+            box-shadow: 0px 3px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h2, h3 {
+            color: #212529;
+            font-weight: bold;
+            margin-bottom: 10px; /* Giảm khoảng cách dưới tiêu đề */
+            font-size: 20px; /* Thu nhỏ kích thước chữ */
+        }
+
+        h2 {
+            border-bottom: 2px solid #007bff; /* Đường viền mỏng hơn */
+            padding-bottom: 5px; /* Giảm padding dưới */
+        }
+
+        .form-group {
+            margin-bottom: 10px; /* Thu nhỏ khoảng cách giữa các ô */
+        }
+
+        .form-group label {
+            font-weight: bold;
+            margin-bottom: 3px; /* Thu hẹp khoảng cách giữa label và input */
+            font-size: 14px;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 8px; /* Giảm padding */
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+            background-color: #fff;
+            font-size: 14px; /* Thu nhỏ chữ */
+            box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+
+        input:focus, select:focus {
+            border-color: #007bff;
+            box-shadow: 0 0 4px rgba(0, 123, 255, 0.5);
+            outline: none;
+        }
+
+        .form-actions {
+            text-align: center;
+            margin-top: 20px; /* Thu hẹp khoảng cách trên */
+        }
+
+        .btn-submit {
+            background-color: #007bff;
+            color: white;
+            padding: 8px 20px; /* Thu nhỏ kích thước nút */
+            border: none;
+            cursor: pointer;
+            border-radius: 4px;
+            font-size: 14px; /* Giảm chữ */
+            transition: background-color 0.3s ease;
+        }
+
+        .btn-submit:hover {
+            background-color: #0056b3;
+        }
+
+        .btn-cancel {
+            background-color: #f8f9fa;
+            color: #495057;
+            padding: 8px 20px; /* Thu nhỏ kích thước nút */
+            border: 1px solid #ced4da;
+            cursor: pointer;
+            border-radius: 4px;
+            font-size: 14px; /* Giảm chữ */
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        .btn-cancel:hover {
+            background-color: #e2e6ea;
+            color: #212529;
+        }
+
+        .skill-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px; /* Thu gọn khoảng cách giữa các thẻ */
+            border: 1px solid #ced4da;
+            padding: 8px; /* Giảm padding */
+            min-height: 36px; /* Giảm chiều cao tối thiểu */
+            align-items: center;
+            background-color: #fff;
+            border-radius: 4px;
+            transition: border-color 0.3s ease;
+        }
+
+        .skill-container:hover {
+            border-color: #007bff;
+        }
+
+        .skill-tag {
+            background-color: #007bff;
+            color: white;
+            padding: 6px 12px; /* Thu nhỏ padding */
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            gap: 5px; /* Thu gọn khoảng cách trong thẻ */
+            font-size: 12px; /* Giảm kích thước chữ */
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .skill-tag:hover {
+            background-color: #0056b3;
+        }
+
+        .skill-tag .remove-skill {
+            display: inline;
+            font-weight: bold;
+            color: #ffc107;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+
+        .skill-tag:hover .remove-skill {
+            color: #ffeb3b;
+        }
+
+        .error-message {
+            font-size: 13px;
+            margin-top: 5px;
+            display: none; /* Ẩn mặc định */
+        }
+
+        select {
+            appearance: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            padding: 10px;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+            background-color: #fff;
+            font-size: 14px;
+            background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="gray"><path d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" /></svg>');
+            background-repeat: no-repeat;
+            background-position: right 10px center;
+        }
+
+
+
+    </style>
+</head>
+<body>
+<div class="container">
+    <h2>Candidate</h2>
+    <a href="#" class="back-link" onclick="confirmNavigation(event, 'list')">Candidate List</a> > <strong>Create Candidate</strong>
+
+    <form id="candidateForm" th:action="@{/candidates/add}" method="post" enctype="multipart/form-data">
+        <h3>I. Personal Information</h3>
+        <div class="row">
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label>Full name *</label>
+                    <input type="text" name="fullName" id="fullName" class="form-control" placeholder="Type a name...">
+                    <small class="error-message text-danger"></small>
+                </div>
+                <div class="form-group">
+                    <label>D.O.B</label>
+                    <input type="date" name="dob" id="dob" class="form-control">
+                    <small class="error-message text-danger"></small>
+                </div>
+                <div class="form-group">
+                    <label>Phone number</label>
+                    <input type="text" name="phone" id="phone" class="form-control" placeholder="Type a number...">
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label>Email *</label>
+                    <input type="text" name="email" id="email" class="form-control" placeholder="Type an email...">
+                    <small class="error-message text-danger"></small>
+                </div>
+
+                <div class="form-group">
+                    <label>Address</label>
+                    <input type="text" name="address" id="address" class="form-control" placeholder="Type an address...">
+                </div>
+                <div class="form-group">
+                    <label>Gender *</label>
+                    <select name="gender" id="gender" class="form-control">
+                        <option value="">Select a gender</option>
+                        <option value="0">Male</option>
+                        <option value="1">Female</option>
+                        <option value="2">Other</option>
+                    </select>
+                    <small class="error-message text-danger"></small>
+                </div>
+            </div>
+        </div>
+
+        <h3>II. Professional Information</h3>
+        <div class="row">
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label>CV attachment *</label>
+                    <input type="file" name="cvFile" id="cvFile" class="form-control">
+                    <small class="error-message text-danger"></small>
+                </div>
+                <div class="form-group">
+                    <label>Position *</label>
+                    <select name="positionId" id="position" class="form-control">
+                        <option value="">Select a position...</option>
+                        <option value="1">Backend Developer</option>
+                        <option value="2">Business Analyst</option>
+                        <option value="3">Tester</option>
+                    </select>
+                    <small class="error-message text-danger"></small>
+                </div>
+                <div class="form-group">
+                    <label>Skills *</label>
+                    <div id="selectedSkills" class="skill-container"></div>
+                    <select id="skillSelect" class="form-control">
+                        <option value="">Select a skill...</option>
+                        <option value="Java">Java</option>
+                        <option value="Flutter">Flutter</option>
+                        <option value="Node.js">Node.js</option>
+                        <option value="System Design">System Design</option>
+                    </select>
+                    <small class="error-message text-danger"></small>
+                </div>
+                <div class="form-group">
+                    <label>Recruiter</label>
+                    <select name="recruiterId" id="recruiter" class="form-control">
+                        <option value="">Assign me</option>
+                        <option th:each="r : ${recruiters}" th:value="${r.id}" th:text="${r.name}"></option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label>Note</label>
+                    <input type="text" name="note" id="note" class="form-control" value="N/A">
+                </div>
+                <div class="form-group">
+                    <label>Status *</label>
+                    <select name="status" id="status" class="form-control">
+                        <option value="Open" selected>Open</option>
+                        <option value="Banned">Banned</option>
+                    </select>
+                    <small class="error-message text-danger"></small>
+                </div>
+                <div class="form-group">
+                    <label>Year of Experience *</label>
+                    <input type="number" name="experience" id="experience" class="form-control" placeholder="Type a number">
+                    <small class="error-message text-danger"></small>
+                </div>
+                <div class="form-group">
+                    <label>Highest level *</label>
+                    <select name="highestEducationId" id="highestEducation" class="form-control">
+                        <option value="">Select highest level...</option>
+                        <option value="1">High School</option>
+                        <option value="2">Bachelor’s Degree</option>
+                        <option value="3">Master’s Degree</option>
+                    </select>
+                    <small class="error-message text-danger"></small>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" class="btn-submit">Submit</button>
+            <button type="button" class="btn-cancel" onclick="confirmNavigation(event, 'cancel')">Cancel</button>
+        </div>
+    </form>
+</div>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const skillSelect = document.getElementById("skillSelect");
+        const selectedSkillsContainer = document.getElementById("selectedSkills");
+        const skillInput = document.getElementById("skillInput");
+
+        let selectedSkills = [];
+
+        skillSelect.addEventListener("change", function () {
+            const selectedValue = skillSelect.value;
+            if (selectedValue && !selectedSkills.includes(selectedValue)) {
+                selectedSkills.push(selectedValue);
+                updateSkillDisplay();
+            }
+            skillSelect.value = ""; // Reset dropdown
+        });
+
+        function updateSkillDisplay() {
+            selectedSkillsContainer.innerHTML = ""; // Clear old tags
+            selectedSkills.forEach(skill => {
+                const skillTag = document.createElement("div");
+                skillTag.classList.add("skill-tag");
+                skillTag.innerHTML = `${skill} <span class="remove-skill">✖</span>`;
+                skillTag.querySelector(".remove-skill").addEventListener("click", function () {
+                    selectedSkills = selectedSkills.filter(s => s !== skill);
+                    updateSkillDisplay();
+                });
+                selectedSkillsContainer.appendChild(skillTag);
+            });
+
+            // Update hidden input field
+            skillInput.value = selectedSkills.join(",");
+        }
+    });
+</script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const modal = new bootstrap.Modal(document.getElementById("confirmationModal"));
+        const modalMessage = document.getElementById("modalMessage");
+        const confirmExit = document.getElementById("confirmExit");
+
+        function confirmNavigation(event, actionType) {
+            event.preventDefault(); // Ngăn chặn hành động mặc định
+
+            if (actionType === "list") {
+                modalMessage.textContent = "If you exit, your input will not be saved. Do you want to exit?";
+            } else if (actionType === "cancel") {
+                modalMessage.textContent = "Do you want to cancel creating a new candidate?";
+            }
+
+            confirmExit.onclick = function () {
+                window.location.href = "/candidates";
+            };
+
+            modal.show(); // Hiển thị modal
+        }
+
+        window.confirmNavigation = confirmNavigation;
+    });
+</script>
+
+<!-- Modal -->
+<div id="confirmationModal" class="modal fade" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Confirmation</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p id="modalMessage"></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" id="confirmExit">Yes</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const form = document.getElementById("candidateForm");
+
+        form.addEventListener("submit", function (event) {
+            let isValid = true;
+
+            // Danh sách các trường cần kiểm tra
+            const requiredFields = [
+                "fullName",       // Personal Information
+                "email",
+                "gender",
+                "position",       // Professional Information
+                "status",
+                "highestEducation",
+                "experience"
+            ];
+
+            requiredFields.forEach(fieldId => {
+                const field = document.getElementById(fieldId);
+                const errorMessage = field.nextElementSibling;
+
+                if (!field.value.trim()) {
+                    errorMessage.textContent = "This field is required.";
+                    errorMessage.style.display = "block";
+                    isValid = false;
+                } else {
+                    errorMessage.style.display = "none";
+                }
+            });
+
+            // Kiểm tra file CV
+            const cvFile = document.getElementById("cvFile");
+            const cvError = cvFile.nextElementSibling;
+            if (!cvFile.files.length) {
+                cvError.textContent = "Please upload your CV.";
+                cvError.style.display = "block";
+                isValid = false;
+            } else {
+                cvError.style.display = "none";
+            }
+
+            if (!isValid) {
+                event.preventDefault(); // Ngăn gửi form nếu có lỗi
+            }
+        });
+    });
+
+</script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const form = document.getElementById("candidateForm");
+
+        form.addEventListener("submit", function (event) {
+            let isValid = true;
+
+            // Kiểm tra định dạng email
+            const emailField = document.getElementById("email");
+            const emailErrorMessage = emailField.nextElementSibling;
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(emailField.value.trim())) {
+                emailErrorMessage.textContent = "Invalid email address.";
+                emailErrorMessage.style.display = "block";
+                isValid = false;
+            } else {
+                emailErrorMessage.style.display = "none";
+            }
+
+            // Kiểm tra ngày sinh
+            const dobField = document.getElementById("dob");
+            const dobErrorMessage = dobField.nextElementSibling;
+            const dobValue = new Date(dobField.value);
+            const currentDate = new Date();
+            if (dobValue >= currentDate) {
+                dobErrorMessage.textContent = "Date of Birth must be in the past.";
+                dobErrorMessage.style.display = "block";
+                isValid = false;
+            } else {
+                dobErrorMessage.style.display = "none";
+            }
+
+            // Kiểm tra năm kinh nghiệm
+            const experienceField = document.getElementById("experience");
+            const experienceErrorMessage = experienceField.nextElementSibling;
+            if (isNaN(experienceField.value) || parseInt(experienceField.value) < 0) {
+                experienceErrorMessage.textContent = "Years of Experience must be greater than or equal to 0.";
+                experienceErrorMessage.style.display = "block";
+                isValid = false;
+            } else {
+                experienceErrorMessage.style.display = "none";
+            }
+
+            // Ngăn gửi form nếu có lỗi
+            if (!isValid) {
+                event.preventDefault();
+            }
+        });
+    });
+
+</script>
+
+</body>
+</html>

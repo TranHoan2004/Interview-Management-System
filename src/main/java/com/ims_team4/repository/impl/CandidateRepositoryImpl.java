@@ -1,6 +1,7 @@
 package com.ims_team4.repository.impl;
 
 import com.ims_team4.model.Candidate;
+import com.ims_team4.model.utils.CandidateStatus;
 import com.ims_team4.repository.CandidateRepository;
 import jakarta.persistence.EntityManager;
 import org.hibernate.Session;
@@ -35,6 +36,16 @@ public class CandidateRepositoryImpl implements CandidateRepository {
     public List<Candidate> getAllCandidate() {
         Session session = em.unwrap(Session.class);
         List<Candidate> candidates = session.createQuery("select c from Candidate c", Candidate.class).getResultList();
+        session.close();
+        return candidates;
+    }
+
+    @Override
+    public List<Candidate> getAllCandidateNotBan() {
+        Session session = em.unwrap(Session.class);
+        List<Candidate> candidates = session.createQuery("select c from Candidate c where c.status <> :role", Candidate.class)
+                .setParameter("role", CandidateStatus.BANNED)
+                .getResultList();
         session.close();
         return candidates;
     }
@@ -103,4 +114,40 @@ public class CandidateRepositoryImpl implements CandidateRepository {
     public void deleteAll() {
 
     }
+
+    @Override
+    public List<Candidate> getAllCandidate2() {
+        Session session = em.unwrap(Session.class);
+        return session.createQuery(
+                        "SELECT c FROM Candidate c " +
+                                "INNER JOIN FETCH c.position p " +
+                                "INNER JOIN FETCH c.employee e " +
+                                "INNER JOIN FETCH c.skills s", Candidate.class)
+                .getResultList();
+    }
+
+
+    @Override
+    public Optional<Candidate> getCandidateById2(Long id) {
+        return em.unwrap(Session.class)
+                .createQuery("SELECT c FROM Candidate c LEFT JOIN FETCH c.user u WHERE c.id = :id", Candidate.class)
+                .setParameter("id", id)
+                .uniqueResultOptional();
+    }
+
+
+    public Optional<Candidate> findByUserId(Long id) {
+        return em.createQuery(
+                        "SELECT c FROM Candidate c LEFT JOIN FETCH c.user u WHERE u.id = :id", Candidate.class)
+                .setParameter("id", id)
+                .getResultStream()
+                .findFirst();
+    }
+
+
+
+
+
 }
+
+

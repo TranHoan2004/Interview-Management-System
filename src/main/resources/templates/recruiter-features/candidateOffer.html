@@ -4,297 +4,92 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Offer Detail</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
-
-    <style>
-        body {
-            background-color: #f5f7fa;
-            font-family: 'Arial', sans-serif;
-        }
-
-        .logo {
-            font-weight: bold;
-            background: #fff;
-            color: #16a085;
-            padding: 2px 8px;
-            border-radius: 4px;
-        }
-
-        /* Sidebar */
-        .sidebar {
-            width: 240px;
-            background: #2c3e50;
-            height: 100vh;
-            position: fixed;
-            padding: 20px;
-            color: white;
-            transition: 0.3s;
-        }
-
-        .sidebar h4 {
-            font-weight: bold;
-            text-align: center;
-            margin-bottom: 20px;
-        }
-
-        .sidebar a.fw-bold {
-            background: #34495e;
-        }
-
-        .sidebar a {
-            display: flex;
-            align-items: center;
-            padding: 12px;
-            color: white;
-            text-decoration: none;
-            border-radius: 5px;
-            transition: all 0.3s;
-        }
-
-        .sidebar a:hover {
-            background: #1abc9c;
-            color: white;
-        }
-
-        .sidebar i {
-            margin-right: 10px;
-        }
-
-        /* Content */
-        .content {
-            margin-left: 260px;
-            padding: 30px;
-        }
-
-        .page-title {
-            font-size: 32px;
-            font-weight: bold;
-            background: linear-gradient(to right, #2c3e50, #1abc9c);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        /* Profile */
-        .profile-card {
-            display: flex;
-            align-items: center;
-            background: white;
-            padding: 15px;
-            border-radius: 8px;
-            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
-        }
-
-        .profile-card img {
-            border-radius: 50%;
-            border: 2px solid #2c3e50;
-            width: 50px;
-            height: 50px;
-        }
-
-        .profile-info {
-            margin-left: 15px;
-        }
-
-        /* Table Section */
-        .info-card {
-            background: white;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
-        }
-
-        .info-title {
-            font-weight: bold;
-            color: #2c3e50;
-        }
-
-        .text-highlight {
-            font-weight: bold;
-            color: #1abc9c;
-        }
-
-        /* Buttons */
-        .btn-primary {
-            background-color: #1abc9c;
-            border: none;
-            border-radius: 20px;
-            padding: 8px 20px;
-            width: 100px;
-        }
-
-        .btn-primary:hover {
-            background-color: #16a085;
-        }
-
-        .btn-secondary {
-            background-color: #34495e;
-            border: none;
-            border-radius: 20px;
-            padding: 8px 20px;
-        }
-
-        .btn-secondary:hover {
-            background-color: #2c3e50;
-        }
-    </style>
 </head>
-<body>
-
-<!-- Sidebar -->
-<div class="sidebar">
-    <h4><span class="logo">DEV</span> IMS</h4>
-    <a href="#"><i class="fa-solid fa-house"></i> Home</a>
-    <a href="#"><i class="fa-solid fa-user"></i> Candidate</a>
-    <a href="#"><i class="fa-solid fa-briefcase"></i> Job</a>
-    <a href="#"><i class="fa-solid fa-comments"></i> Interview</a>
-    <a href="#" class="fw-bold"><i class="fa-solid fa-file-alt"></i> Offer</a>
-    <a href="#"><i class="fa-solid fa-users"></i> User</a>
-</div>
-
-<div class="content">
-    <div class="d-flex justify-content-between align-items-center mb-0">
-        <div class="container py-1 flex-grow-1" style="flex-basis: 97%;">
-            <h3 class="page-title fw-bold text-dark">
-                <i class="fa-solid fa-clipboard-list text-primary"></i> Offer List
-            </h3>
-            <nav aria-label="breadcrumb">
-                <ol class="breadcrumb bg-white shadow-sm p-2 rounded">
-                    <li class="breadcrumb-item">
-                        <a th:href="@{/offer/{rid}(rid=${rid})}" class="text-decoration-none text-primary fw-bold">Offer
-                            List</a>
-                    </li>
-                    <li class="breadcrumb-item active text-secondary" aria-current="page">Offer Detail</li>
-                </ol>
-            </nav>
-        </div>
-        <div class="mb-2 p-3 bg-white rounded shadow-sm flex-grow-1 d-flex align-items-center" style="flex-basis: 35%;">
-            <div class="d-flex align-items-center">
-                <img src="https://anhanime.me/wp-content/uploads/2024/03/anh-conan_5.jpg" alt="Avatar"
-                     class="rounded-circle border border-2" width="45" height="45">
-                <div class="ms-2">
-                    <span class="fw-bold text-dark d-block">longpd</span>
-                    <small class="text-muted">HR Department</small>
-                </div>
-            </div>
-            <a href="#" class="ms-auto btn btn-outline-danger btn-sm d-flex align-items-center px-3">
-                <i class="fa-solid fa-sign-out-alt me-2"></i> Logout
-            </a>
-        </div>
+<body style="background-color: #f5f7fa; font-family: Arial, sans-serif; margin: 0; padding: 0; color: #333;">
+<!-- Container -->
+<div style="width: 75%; margin: 0 auto; padding: 20px;">
+    <!-- Header -->
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+        <h3 style="font-size: 32px; font-weight: bold; background: linear-gradient(to right, #2c3e50, #1abc9c); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin: 0;">
+            <i class="fa-solid fa-clipboard-list" style="color: #1abc9c;"></i> Offer Detail
+        </h3>
     </div>
 
-    <!-- Candidate Offer -->
-    <div class="info-card mt-0 p-4 shadow-lg rounded bg-white">
-        <div class="d-flex justify-content-between align-items-center">
-            <h4 class="text-primary fw-bold">Offer Detail</h4>
-
+    <!-- Content -->
+    <div style="background-color: white; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);">
+        <!-- Created and Updated Info -->
+        <div style="margin-bottom: 10px; text-align: end">
+            <span>Created on</span>
+            <span th:text="${#temporals.format(offer.getCreateAt(), 'dd/MM/yyyy') == #temporals.format(#temporals.createToday(), 'dd/MM/yyyy') ? 'today' : #temporals.format(offer.getCreateAt(), 'dd/MM/yyyy')}"></span>,
+            <span>last updated by</span>
+            <span th:each="user : ${listU}" th:if="${user.getId() == offer.getUpdateBy()}" th:text="${user.getFullname()}"></span>
         </div>
-        <hr>
-        <div class="row">
-            <div class="col-md-6">
-                <p><strong>Candidate:</strong> <span th:each="user : ${listU}"
-                                                     th:if="${user.getId() == offer.getCandidateId()}"
-                                                     th:text="${user.getFullname()}"></span></p>
 
-                <p><strong>Position:</strong> <span th:each="position : ${listP}"
-                                                    th:if="${position.getId() == offer.getPosition()}"
-                                                    th:text="${position.getName()}"></span></p>
+        <!-- Offer Detail Title -->
+        <h3 style="color: #1abc9c; font-weight: bold; margin-bottom: 10px;">Offer Detail</h3>
+        <hr style="border: 0; height: 1px; background: #ddd; margin: 20px 0;">
 
-                <p><strong>Approver:</strong> <span th:each="user : ${listU}"
-                                                    th:if="${user.getId() == offer.getEmployeeId()}"
-                                                    th:text="${user.getFullname()}"></span></p>
-
-                <div class="d-flex mb-3">
-                    <div class="info-title me-1">Interview Info:</div>
+        <!-- Main Content -->
+        <div style="display: flex; flex-wrap: wrap;">
+            <!-- Left Column -->
+            <div style="flex: 1; padding: 10px;">
+                <p style="margin: 10px 0;"><strong style="color: #2c3e50;">Candidate:</strong> <span th:each="user : ${listU}" th:if="${user.getId() == offer.getCandidateId()}" th:text="${user.getFullname()}"></span></p>
+                <p style="margin: 10px 0;"><strong style="color: #2c3e50;">Position:</strong> <span th:each="position : ${listP}" th:if="${position.getId() == offer.getPosition()}" th:text="${position.getName()}"></span></p>
+                <p style="margin: 10px 0;"><strong style="color: #2c3e50;">Approver:</strong> <span th:each="user : ${listU}" th:if="${user.getId() == offer.getEmployeeId()}" th:text="${user.getFullname()}"></span></p>
+                <div style="display: flex; margin-bottom: 10px;">
+                    <div style="font-weight: bold; margin-right: 5px;">Interview Info:</div>
                     <div>
                         <div th:text="${offer.getInterviewTitle()}"></div>
-                        <div class="d-flex">
-                            <div class="info-title me-1">Interviewer:</div>
+                        <div style="display: flex;">
+                            <div style="font-weight: bold; margin-right: 5px;">Interviewer:</div>
                             <div>
-                                <span th:each="interview : ${listI}" th:remove="tag">
-                                    <span th:each="employee : ${listE}" th:if="${employee.getInterviewID() == interview.getId()}" th:remove="tag">
-                                        <span th:if="${offer.getInterviewId() == interview.getId()}" th:remove="tag">
-            <!-- Sử dụng th:with để tạo biến tạm thời -->
-                                            <span th:each="user, iterStat : ${listU}" th:if="${user.getId() == employee.getUser()}" th:remove="tag">
-                                                <span th:with="nameParts=${#strings.arraySplit(user.fullname, ' ')}"
-                                                      th:text="${nameParts[#lists.size(nameParts) - 1] +
-                                                    #strings.substring(nameParts[0], 0, 1) +
-                                                    (#lists.size(nameParts) > 2 ? #strings.substring(nameParts[1], 0, 1) : '')}"></span>
-                                                <!-- Thêm dấu phẩy và khoảng trắng nếu không phải phần tử cuối cùng -->
-                                                <span th:if="${!iterStat.last}">, </span>
+                                    <span th:each="interview : ${listI}" th:remove="tag">
+                                        <span th:each="employee : ${listE}" th:if="${employee.getInterviewID() == interview.getId()}" th:remove="tag">
+                                            <span th:if="${offer.getInterviewId() == interview.getId()}" th:remove="tag">
+                                                <span th:each="user, iterStat : ${listU}" th:if="${user.getId() == employee.getUser()}" th:remove="tag">
+                                                    <span th:with="nameParts=${#strings.arraySplit(user.fullname, ' ')}"
+                                                          th:text="${nameParts[#lists.size(nameParts) - 1] + #strings.substring(nameParts[0], 0, 1) + (#lists.size(nameParts) > 2 ? #strings.substring(nameParts[1], 0, 1) : '')}"></span>
+                                                    <span th:if="${!iterStat.last}">, </span>
+                                                </span>
                                             </span>
                                         </span>
                                     </span>
-                                </span>
                             </div>
                         </div>
                     </div>
                 </div>
-
-                <p><strong>Contract Period:</strong> From <span
-                        th:text="${#temporals.format(offer.getContractPeriodFrom(), 'dd/MM/yyyy')}"></span> to <span
-                        th:text="${#temporals.format(offer.getContractPeriodTo(), 'dd/MM/yyyy')}"></span></p>
-
-                <p><strong>Interview Notes:</strong> <span th:text="${offer.interviewNotes}" class="text-muted"></span>
+                <p style="margin: 10px 0;"><strong style="color: #2c3e50;">Contract Period:</strong> From <span th:text="${#temporals.format(offer.getContractPeriodFrom(), 'dd/MM/yyyy')}"></span> to <span th:text="${#temporals.format(offer.getContractPeriodTo(), 'dd/MM/yyyy')}"></span></p>
+                <p style="margin: 10px 0;"><strong style="color: #2c3e50;">Interview Notes:</strong>
+                    <span th:each="interview : ${listI}" th:if="${interview.getId() == offer.getInterviewId()}" th:text="${interview.getNote()}" style="color: #6c757d;"></span>
                 </p>
-                <div>
-                    <strong>Status:</strong>
+                <div style="margin: 10px 0;">
+                    <strong style="color: #2c3e50;">Status:</strong>
                     <span>
-                        <span th:if="${offer.getStatusOfferId()} == 1"
-                              class="rounded-pill px-2 py-2 fw-bold" style="background-color: #FFD700; color: #000000"
-                              th:text="${offer.getStatusOfferName()}"></span>
-                        <span th:if="${offer.getStatusOfferId()} == 2"
-                              class="rounded-pill px-2 py-2 fw-bold" style="background-color: #90EE90; color: #006400"
-                              th:text="${offer.getStatusOfferName()}"></span>
-                        <span th:if="${offer.getStatusOfferId()} == 3"
-                              class="rounded-pill px-2 py-2 fw-bold" style="background-color: #FF6347; color: #8B0000"
-                              th:text="${offer.getStatusOfferName()}"></span>
-                        <span th:if="${offer.getStatusOfferId()} == 4"
-                              class="rounded-pill px-2 py-2 fw-bold" style="background-color: #87CEEB; color: #00008B"
-                              th:text="${offer.getStatusOfferName()}"></span>
-                        <span th:if="${offer.getStatusOfferId()} == 5"
-                              class="rounded-pill px-2 py-2 fw-bold" style="background-color: #32CD32; color: #FFFFFF"
-                              th:text="${offer.getStatusOfferName()}"></span>
-                        <span th:if="${offer.getStatusOfferId()} == 6"
-                              class="rounded-pill px-2 py-2 fw-bold" style="background-color: #FF4500; color: #FFFFFF"
-                              th:text="${offer.getStatusOfferName()}"></span>
-                        <span th:if="${offer.getStatusOfferId()} == 7"
-                              class="rounded-pill px-2 py-2 fw-bold" style="background-color: #808080; color: #FFFFFF"
-                              th:text="${offer.getStatusOfferName()}"></span>
-                    </span>
+                            <span th:if="${offer.getStatusOfferId()} == 1" style="background-color: #FFD700; color: #000000; padding: 5px 10px; border-radius: 20px; font-weight: bold;" th:text="${offer.getStatusOfferName()}"></span>
+                            <span th:if="${offer.getStatusOfferId()} == 2" style="background-color: #90EE90; color: #006400; padding: 5px 10px; border-radius: 20px; font-weight: bold;" th:text="${offer.getStatusOfferName()}"></span>
+                            <span th:if="${offer.getStatusOfferId()} == 3" style="background-color: #FF6347; color: #8B0000; padding: 5px 10px; border-radius: 20px; font-weight: bold;" th:text="${offer.getStatusOfferName()}"></span>
+                            <span th:if="${offer.getStatusOfferId()} == 4" style="background-color: #87CEEB; color: #00008B; padding: 5px 10px; border-radius: 20px; font-weight: bold;" th:text="${offer.getStatusOfferName()}"></span>
+                            <span th:if="${offer.getStatusOfferId()} == 5" style="background-color: #32CD32; color: #FFFFFF; padding: 5px 10px; border-radius: 20px; font-weight: bold;" th:text="${offer.getStatusOfferName()}"></span>
+                            <span th:if="${offer.getStatusOfferId()} == 6" style="background-color: #FF4500; color: #FFFFFF; padding: 5px 10px; border-radius: 20px; font-weight: bold;" th:text="${offer.getStatusOfferName()}"></span>
+                            <span th:if="${offer.getStatusOfferId()} == 7" style="background-color: #808080; color: #FFFFFF; padding: 5px 10px; border-radius: 20px; font-weight: bold;" th:text="${offer.getStatusOfferName()}"></span>
+                        </span>
                 </div>
             </div>
 
-            <div class="col-md-6">
-                <p><strong>Contract Type:</strong> <span th:text="${offer.getContractTypeName()}"></span></p>
-                <p><strong>Level:</strong> <span th:text="${offer.getLevelName()}"></span></p>
-                <p><strong>Department:</strong> <span th:text="${offer.getDepartmentName()}"></span></p>
-                <p><strong>Recruiter Owner:</strong> <span th:each="user : ${listU}"
-                                                           th:if="${user.id == offer.getRecruiterOwner()}"
-                                                           th:text="${user.fullname}"></span></p>
-
-                <p><strong>Due Date:</strong> <span
-                        th:text="${#temporals.format(offer.getDueDate(), 'dd/MM/yyyy')}"></span></p>
-                <p><strong>Basic Salary:</strong> <span class="text-success fw-bold"
-                                                        th:text="${offer.getBasicSalary()}"></span></p>
-                <p><strong>Note:</strong> <span th:text="${offer.getNote()}" class="text-muted"></span></p>
+            <!-- Right Column -->
+            <div style="flex: 1; padding: 10px;">
+                <p style="margin: 10px 0;"><strong style="color: #2c3e50;">Contract Type:</strong> <span th:text="${offer.getContractTypeName()}"></span></p>
+                <p style="margin: 10px 0;"><strong style="color: #2c3e50;">Level:</strong> <span th:text="${offer.getLevelName()}"></span></p>
+                <p style="margin: 10px 0;"><strong style="color: #2c3e50;">Department:</strong> <span th:text="${offer.getDepartmentName()}"></span></p>
+                <p style="margin: 10px 0;"><strong style="color: #2c3e50;">Recruiter Owner:</strong> <span th:each="user : ${listU}" th:if="${user.id == offer.getRecruiterOwner()}" th:text="${user.fullname}"></span></p>
+                <p style="margin: 10px 0;"><strong style="color: #2c3e50;">Due Date:</strong> <span th:text="${#temporals.format(offer.getDueDate(), 'dd/MM/yyyy')}"></span></p>
+                <p style="margin: 10px 0;"><strong style="color: #2c3e50;">Basic Salary:</strong> <span style="color: #28a745; font-weight: bold;" th:text="${offer.getBasicSalary()}"></span></p>
+                <p style="margin: 10px 0;"><strong style="color: #2c3e50;">Note:</strong> <span th:text="${offer.getNote()}" style="color: #6c757d;"></span></p>
             </div>
-
-
         </div>
-        <hr>
-        <div class="d-flex justify-content-end">
-            <a th:href="@{/offer/{rid}(rid=${rid})}" class="btn btn-outline-secondary me-2">Cancel</a>
-            <form th:action="@{/editoffer/{id}(id=${offer.getId()})}" method="get">
-                <input type="hidden" name="rid" th:value="${offer.getRecruiterOwner()}">
-                <th:block th:if="${offer.getStatusOfferId() == 1}">
-                    <button type="submit" class="btn btn-primary">Edit</button>
-                </th:block>
-            </form>
-
-        </div>
+        <hr style="border: 0; height: 1px; background: #ddd; margin: 20px 0;">
+        <h4 style="color: red; text-align: end; font-style: italic">Please reply to this email with "Accept" or "Decline" before due date to confirm.</h4>
     </div>
 </div>
-
 </body>
 </html>

@@ -7,21 +7,109 @@
     <title>Dashboard</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
     <link rel="stylesheet" th:href="@{/plugins/datatables/dataTables.bootstrap.css}">
     <link rel="stylesheet" th:href="@{/css/table.css}">
+    <style>
+        /* Tổng thể */
+        body {
+            background-color: #f8f9fa;
+            font-family: 'Arial', sans-serif;
+        }
+
+        .logo {
+            font-weight: bold;
+            background: #fff;
+            color: #16a085;
+            padding: 2px 8px;
+            border-radius: 4px;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 240px;
+            background: #2c3e50;
+            height: 100vh;
+            position: fixed;
+            padding: 20px;
+            color: white;
+        }
+
+        .sidebar h4 {
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .sidebar a {
+            display: flex;
+            align-items: center;
+            padding: 12px;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: background 0.3s;
+        }
+
+        .sidebar a.fw-bold {
+            background: #34495e;
+        }
+
+        .sidebar a:hover {
+            background: #1abc9c;
+        }
+
+        .sidebar i {
+            margin-right: 10px;
+        }
+
+
+        /* Main Content */
+        .content {
+            margin-left: 260px;
+            padding: 40px;
+            transition: all 0.3s;
+        }
+
+        .content h3 {
+            color: #2c3e50;
+            font-weight: bold;
+        }
+
+        .content a {
+            text-decoration: none;
+            font-weight: bold;
+            color: #007bff;
+        }
+
+        .content a:hover {
+            text-decoration: underline;
+        }
+    </style>
 </head>
 
 <body>
 <div class="bg-light d-flex">
     <!-- Left sidebar -->
     <div th:replace="~{component/left-sidebar::leftSidebar}"></div>
+    <div class="content flex-grow-1">
+        <div class="d-flex justify-content-between align-items-center mb-0">
+            <div class="container py-2 flex-grow-1" style="flex-basis: 68%;">
+                <h3 class="page-title fw-bold text-dark">
+                    <i class="fa fa-user"></i> User Management
+                </h3>
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb bg-white shadow-sm p-2 rounded">
+                        <li class="breadcrumb-item">
+                            <a th:href="@{/offer/offer/{rid}(rid=${rid})}" class="text-decoration-none text-primary fw-bold">Home Page</a>
+                        </li>
+                    </ol>
+                </nav>
+            </div>
+            <div th:replace="~{component/top-sidebar::topSidebar}"></div>
+        </div>
 
-    <!-- Main content -->
-    <div class="flex-grow-1 p-4">
-
-        <!-- Top sidebar -->
-        <div th:replace="~{component/top-sidebar::topSidebar(${item})}"></div>
 
         <!-- Content -->
         <h3>
@@ -30,7 +118,24 @@
             <u>User List</u>
         </h3>
         <div class="container mt-3">
-            <h3>Create New User</h3>
+            <form th:action="@{/user/list}" method="get" class="d-flex mb-3 ps-2">
+                <input type="text" class="form-control me-2" name="title" placeholder="Search by title"
+                       th:value="${title}">
+                <select name="role">
+                    <option value="">Role</option>
+                    <option th:each="r : ${role}" th:value="${r.id}" th:text="${r.name}"
+                            th:selected="${selectedRole != null and selectedRole == r.id}">
+                    </option>
+                </select>
+                <button type="submit" class="btn btn-primary">Search</button>
+            </form>
+
+            <!-- Button Add New and Import -->
+            <div class="d-flex justify-content-end mb-3">
+                <a th:href="@{/user/create}" class="btn btn-success btn-sm me-2">
+                    <i class="bi bi-plus-lg"></i> Add New
+                </a>
+            </div>
 
             <!-- Search and filter by role -->
             <div class="box">
@@ -59,6 +164,9 @@
                                 </a>&nbsp;
                                 <a th:href="@{/user/details(id=${items.getUser()})}">
                                     <i class="bi bi-pencil-square"></i>
+                                </a>
+                                <a th:href="@{/user/details(id=${items.getUser()})}">
+                                    <i class="bi bi-trash"></i>
                                 </a>
                             </td>
                         </tr>

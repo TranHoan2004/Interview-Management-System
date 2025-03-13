@@ -1,0 +1,196 @@
+<!-- file: templates/interview/detail.html -->
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8"/>
+  <title>Interview Details</title>
+  <link rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"/>
+  <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"/>
+  <style>
+    /* Tổng thể */
+    body {
+      background-color: #f8f9fa;
+      font-family: 'Arial', sans-serif;
+    }
+
+    .logo {
+      font-weight: bold;
+      background: #fff;
+      color: #16a085;
+      padding: 2px 8px;
+      border-radius: 4px;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      width: 240px;
+      background: #2c3e50;
+      height: 100vh;
+      position: fixed;
+      padding: 20px;
+      color: white;
+    }
+
+    .sidebar h4 {
+      font-weight: bold;
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .sidebar a {
+      display: flex;
+      align-items: center;
+      padding: 12px;
+      color: white;
+      text-decoration: none;
+      border-radius: 5px;
+      transition: background 0.3s;
+    }
+
+    .sidebar a.fw-bold {
+      background: #34495e;
+    }
+
+    .sidebar a:hover {
+      background: #1abc9c;
+    }
+
+    .sidebar i {
+      margin-right: 10px;
+    }
+
+    .sidebar a.active {
+      background-color: #007bff;
+      color: white;
+    }
+
+    /* Main Content */
+    .content {
+      margin-left: 260px;
+      padding: 40px;
+      transition: all 0.3s;
+    }
+
+    .content h3 {
+      color: #2c3e50;
+      font-weight: bold;
+    }
+
+    .content a {
+      text-decoration: none;
+      font-weight: bold;
+      color: #007bff;
+    }
+
+    .content a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+<div class="d-flex">
+
+  <!-- Left Sidebar -->
+  <div class="sidebar" th:replace="~{component/left-sidebar :: leftSidebar}"></div>
+
+  <!-- Main Content -->
+  <div class="content flex-grow-1 p-4">
+    <!-- Top Sidebar / Header -->
+    <div th:replace="~{component/top-sidebar :: topSidebar}"></div>
+
+    <div class="container mt-4">
+      <h2 class="fw-bold">Interview Schedule Detail</h2>
+
+      <div class="card">
+        <div class="card-body">
+          <p><strong>Interview ID:</strong> <span th:text="${interview.id}"></span></p>
+          <p><strong>Title:</strong> <span th:text="${interview.title}"></span></p>
+          <p><strong>Candidate ID:</strong> <span th:text="${interview.candidateId}"></span></p>
+          <p><strong>Job ID:</strong> <span th:text="${interview.jobId}"></span></p>
+          <p><strong>Schedule Time:</strong>
+            <span th:text="${#temporals.format(interview.scheduleTime, 'dd/MM/yyyy HH:mm')}"></span>
+          </p>
+          <p><strong>Location:</strong> <span th:text="${interview.locations}"></span></p>
+          <p><strong>Recruiter Owner:</strong> <span th:text="${interview.recruiterOwner}"></span></p>
+          <p><strong>Meeting ID:</strong> <span th:text="${interview.meetId}"></span></p>
+          <p><strong>Note:</strong> <span th:text="${interview.note}"></span></p>
+          <p><strong>Result:</strong> <span th:text="${interview.result ?: 'N/A'}"></span></p>
+          <p><strong>Status:</strong> <span th:text="${interview.status}"></span></p>
+        </div>
+      </div>
+
+      <div class="mt-3">
+        <!-- Button to send reminder (UC22) - if user is Interviewer, or you might show it to Admin too -->
+        <button class="btn btn-sm btn-info me-2"
+                th:if="${session.account.getRole().name() == 'ROLE_INTERVIEWER'}"
+                onclick="sendReminder()">
+          <i class="fa fa-envelope"></i> Send Reminder
+        </button>
+
+        <!-- Button to edit (UC20) -->
+        <a class="btn btn-sm btn-warning me-2"
+           th:if="${session.account.getRole().name() != 'ROLE_INTERVIEWER'}"
+           th:href="@{/interview/editInterviewView(id=${interview.id})}">
+          <i class="fa fa-edit"></i> Edit
+        </a>
+
+        <!-- Button to Cancel (UC21) -->
+        <button class="btn btn-sm btn-danger me-2"
+                th:if="${session.account.getRole().name() != 'ROLE_INTERVIEWER'}"
+                onclick="cancelInterview()">
+          <i class="fa fa-times"></i> Cancel
+        </button>
+
+        <!-- Button to Submit Result (UC19) -->
+        <a class="btn btn-sm btn-success"
+           th:if="${session.account.getRole().name() == 'ROLE_INTERVIEWER'}"
+           th:href="@{/interview/submitResultView(id=${interview.id})}">
+          <i class="fa fa-check"></i> Submit Result
+        </a>
+
+        <a class="btn btn-secondary" th:href="@{/interview/list}">
+          <i class="fa fa-arrow-left"></i> Back
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  function sendReminder() {
+    const interviewId = /*[[${interview.id}]]*/ 0;
+    if(!confirm("Send a reminder for this interview?")) return;
+    fetch(`/interview/reminder?interviewId=${interviewId}`, {
+      method: 'POST'
+    })
+            .then(resp => {
+              if(resp.ok) {
+                alert("Reminder sent successfully!");
+                location.reload();
+              } else {
+                alert("Failed to send reminder!");
+              }
+            });
+  }
+
+  function cancelInterview() {
+    const interviewId = /*[[${interview.id}]]*/ 0;
+    if(!confirm("Are you sure you want to cancel this interview?")) return;
+    fetch(`/interview/cancelInterview?id=${interviewId}`, {
+      method: 'PUT'
+    })
+            .then(resp => {
+              if(resp.ok) {
+                alert("Interview cancelled successfully!");
+                location.reload();
+              } else {
+                alert("Failed to cancel!");
+              }
+            });
+  }
+</script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

@@ -25,7 +25,7 @@ public class Department {
     private String name;
 
     @OneToMany(mappedBy = "department", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<Offer> offers;
+    private Set<Offer> offers;
 
     @OneToMany(mappedBy = "department", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Employee> employees;

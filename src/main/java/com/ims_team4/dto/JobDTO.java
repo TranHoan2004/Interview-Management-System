@@ -13,7 +13,7 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 public class JobDTO {
-    private long id;
+    private Long id;
     private String title;
     private LocalDate startDate;
     private long salaryFrom;
@@ -22,4 +22,8 @@ public class JobDTO {
     private String location;
     private boolean status;
     private String description;
+
+    private List<String> levelNames;
+    private List<String> skillNames;
+    private List<String> benefitNames;
 }

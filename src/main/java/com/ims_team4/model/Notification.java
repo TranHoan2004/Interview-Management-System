@@ -22,7 +22,7 @@ public class Notification {
 
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @MapsId
-    private User user;
+    private Users user;
 
     @Column(nullable = false)
     private String title;

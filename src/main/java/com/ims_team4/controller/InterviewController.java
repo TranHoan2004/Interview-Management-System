@@ -1,110 +1,145 @@
 package com.ims_team4.controller;
 
 import com.ims_team4.dto.InterviewDTO;
+import com.ims_team4.model.utils.InterviewStatus;
 import com.ims_team4.service.InterviewService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 /**
- * VuTD
+ * InterviewController handles requests related to Interview functionality:
+ *   - UC16 list schedules
+ *   - UC18 view details
+ *   - UC17 create schedule
+ *   - UC20 edit schedule
+ *   - UC21 cancel schedule
+ *   - UC19 submit result
+ *   - UC22 send reminder
  */
 @Controller
 @RequestMapping("/interview")
 public class InterviewController {
-    private final InterviewService interviewService;
 
-    public InterviewController(InterviewService interviewService) {
-        this.interviewService = interviewService;
-    }
+    @Autowired
+    private InterviewService interviewService;
 
     /**
-     * Get all interviews
+     * UC16: View (search) interview schedules.
+     * GET /interview/list
      */
     @GetMapping("/list")
-    public String listInterviews(Model model) {
-        List<InterviewDTO> interviews = interviewService.getAllInterviews();
-        model.addAttribute("interviews", interviews);
-        return "interview-list";
+    public String getInterviewList(
+            @RequestParam(required = false) String search,
+            @RequestParam(required = false) InterviewStatus status,
+            @RequestParam(required = false) Long employeeId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            Model model
+    ) {
+        Page<InterviewDTO> interviewPage =
+                interviewService.searchInterviews(search, status, employeeId, page, size);
+        model.addAttribute("interviewPage", interviewPage);
+        model.addAttribute("search", search);
+        model.addAttribute("status", status);
+        model.addAttribute("employeeId", employeeId);
+        model.addAttribute("page", page);
+        model.addAttribute("size", size);
+
+        return "interview/list";
     }
 
     /**
-     * Create a new interview
+     * UC18: View interview schedule details .
+     * GET /interview/interviewDetail?id=xxx
      */
-    @GetMapping("/createInterview")
-    public String createInterview(Model model) {
-        model.addAttribute("interview", new InterviewDTO());
-        return "interview-create";
+    @GetMapping("/interviewDetail")
+    public String getInterviewDetail(@RequestParam Long id, Model model) {
+        InterviewDTO interview = interviewService.getInterviewById(id);
+        model.addAttribute("interview", interview);
+        return "Interview/detail";
     }
 
+    /**
+     * UC17: Create new interview schedule .
+     * GET /interview/createInterviewView -> Show the form.
+     * POST /interview/createInterview -> Actually create.
+     */
+
+    @GetMapping("/createInterviewView")
+    public String showCreateInterviewForm(Model model) {
+        model.addAttribute("interviewForm", new InterviewDTO());
+        return "Interview/create";
+    }
+
+    // 2) Handle form submit
     @PostMapping("/createInterview")
-    public String createInterview(@ModelAttribute("interview") InterviewDTO interviewDTO) {
+    public String createInterview(@ModelAttribute("interviewForm") InterviewDTO interviewDTO) {
         interviewService.createInterview(interviewDTO);
-        return "redirect:/interviews";
+        // Redirect back to list page (or show a success page)
+        return "redirect:/interview/list";
     }
 
     /**
-     * Update an interview
+     * UC20: Edit interview details.
+     * GET /interview/editInterviewView?id=xxx -> Show the form
+     * PUT/POST /interview/editInterview -> Actually update
      */
-    @GetMapping("/editInterview/{id}")
-    public String editInterview(@PathVariable("id") Long id, Model model) {
+
+    // Show the edit form
+    @GetMapping("/editInterviewView")
+    public String showEditInterviewForm(@RequestParam Long id, Model model) {
         InterviewDTO interview = interviewService.getInterviewById(id);
         model.addAttribute("interview", interview);
-        return "interview-edit";
+        return "interview/edit";
     }
 
-//    @PostMapping("/editInterview/{id}")
-//    public String updateInterview(@PathVariable("id") Long id, @ModelAttribute("interview") InterviewDTO interviewDTO) {
-//        interviewService.updateInterview(id, interviewDTO);
-//        return "redirect:/interviews";
-//    }
-
-    /**
-     * Get a single interview by ID
-     */
-    @GetMapping("/interviewDetail/{id}")
-    public String detailInterview(@PathVariable("id") Long id, Model model) {
-        InterviewDTO interview = interviewService.getInterviewById(id);
-        model.addAttribute("interview", interview);
-        return "interview-detail";
+    @PostMapping("/editInterview")
+    public String editInterview(@ModelAttribute("interview") InterviewDTO interviewDTO) {
+        interviewService.updateInterview(interviewDTO);
+        return "redirect:/interview/list";
     }
 
-
     /**
-     * Cancel an interview
+     * UC21: Cancel interview schedule (HTML approach).
+     * GET /interview/cancelInterview?id=xxx
      */
-    @GetMapping("/cancelInterview/{id}")
-    public String cancelInterview(@PathVariable("id") Long id) {
+    @GetMapping("/cancelInterview")
+    public String cancelInterview(@RequestParam Long id) {
         interviewService.cancelInterview(id);
-        return "redirect:/interviews";
+        return "redirect:/interview/list";
     }
 
     /**
-     * Submit result and feedback for an interview
+     * UC19: Submit interview result (HTML approach).
+     * GET /interview/submitResultView?id=xxx -> Show a form
+     * POST /interview/submitResult -> Actually submit
      */
-    @GetMapping("/submit/{id}")
-    public String submitInterview(@PathVariable("id") Long id, Model model) {
+
+    @GetMapping("/submitResultView")
+    public String showSubmitResultForm(@RequestParam Long id, Model model) {
         InterviewDTO interview = interviewService.getInterviewById(id);
         model.addAttribute("interview", interview);
-        return "interview-submit";
+        return "interview/submit-result";
     }
 
-//    @PostMapping("/submit/{id}")
-//    public String submitInterviewResult(@PathVariable("id") Long id, @RequestParam("result") String result, @RequestParam("feedback") String feedback) {
-//        interviewService.submitInterviewResult(id, result, feedback);
-//        return "redirect:/interviews";
-//    }
+    @PostMapping("/submitResult")
+    public String submitInterviewResult(@RequestParam Long interviewId,
+                                        @RequestParam String result) {
+        interviewService.submitInterviewResult(interviewId, result);
+        return "redirect:/interview/list";
+    }
 
     /**
-     * Send reminder
+     * UC22: Send reminder for upcoming schedule (HTML approach).
+     * For a quick approach, we might just do a GET or POST link.
      */
-//    @GetMapping("/sendReminders")
-//    public String sendReminder(){
-//        interviewService.sendReminders();
-//        return "redirect:/interviews?reminders=sent";
-//    }
-
+    @GetMapping("/reminder")
+    public String sendReminder(@RequestParam Long interviewId) {
+        interviewService.sendReminder(interviewId);
+        return "redirect:/interview/list";
+    }
 
 }

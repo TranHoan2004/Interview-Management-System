@@ -18,6 +18,8 @@ public interface EmployeeService {
     // 🔹 Cập nhật thông tin nhân viên
     EmployeeDTO updateEmployee(Long id, EmployeeDTO employee);
 
+    void updateEmployeesPassword(EmployeeDTO employee);
+
     // 🔹 Xóa nhân viên theo ID
     void deleteById(Long id);
 

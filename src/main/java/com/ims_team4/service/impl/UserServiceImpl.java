@@ -1,20 +1,26 @@
 package com.ims_team4.service.impl;
 
 import com.ims_team4.dto.UserDTO;
-import com.ims_team4.model.User;
+import com.ims_team4.model.Users;
 import com.ims_team4.repository.UserRepository;
 import com.ims_team4.service.UserService;
 import org.jetbrains.annotations.NotNull;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 @Service
 // Dang Momo
 public class UserServiceImpl implements UserService {
-
     private final UserRepository userRepository;
 
     public UserServiceImpl(UserRepository userRepository) {
@@ -29,10 +35,9 @@ public class UserServiceImpl implements UserService {
                 .collect(Collectors.toList());
     }
 
-
     @Override
     public List<UserDTO> getUserByEmail(String email) throws Exception {
-        Optional<User> list = userRepository.findByEmail(email);
+        Optional<Users> list = userRepository.findByEmail(email);
         if (list.isEmpty()) {
             throw new Exception("Email not found");
         }
@@ -42,18 +47,39 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserDTO saveUser(UserDTO userDTO) {
         // Chuyển đổi từ UserDTO sang User (Model) để làm việc với Repository
-        User user = convertToEntity(userDTO);
+        Users user = convertToEntity(userDTO);
 
         // Lưu user vào database và nhận lại User (Model)
-        User savedUser = userRepository.save(user);
+        Users savedUser = userRepository.save(user);
 
         // Chuyển đổi từ User (Model) sang UserDTO để trả về cho controller
         return convertToDTO(savedUser);
     }
 
+    @Override
+    public List<String> getAllEmail() throws Exception {
+        List<String> list = userRepository.getEmails();
+        if (list.isEmpty()) {
+            throw new Exception("Email not found");
+        }
+        return list;
+    }
+
+    @Override
+    public UserDTO getUserById(int id) {
+        return convertToDTO(userRepository.getUserById(id));
+    }
+
+    @Override
+    public Optional<UserDTO> getManagerById(Long id) {
+        Users user = userRepository.getUserById(id);
+        return user != null ? Optional.of(convertToDTO(user)) : Optional.empty();
+    }
+
+
     @NotNull
-    private User convertToEntity(@NotNull UserDTO userDTO) {
-        User user = new User();
+    private Users convertToEntity(@NotNull UserDTO userDTO) {
+        Users user = new Users();
         user.setId(userDTO.getId());
         user.setDob(userDTO.getDob());
         user.setGender(userDTO.getGender());
@@ -73,7 +99,7 @@ public class UserServiceImpl implements UserService {
     }
 
 
-    private UserDTO convertToDTO(@NotNull User user) {
+    private UserDTO convertToDTO(@NotNull Users user) {
         return UserDTO.builder()
                 .id(user.getId())
                 .dob(user.getDob())

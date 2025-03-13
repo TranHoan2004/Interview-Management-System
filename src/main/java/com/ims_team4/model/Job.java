@@ -2,18 +2,17 @@ package com.ims_team4.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import lombok.experimental.SuperBuilder;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDate;
 import java.util.Set;
 
 @Entity
 @Table(name = "job")
-@Data
+@Getter
+@Setter
 @SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -27,6 +26,7 @@ public class Job {
     private String title;
 
     @Column(name = "start_date", nullable = false)
+    @DateTimeFormat(pattern = "dd/MM/yyyy")
     private LocalDate startDate;
 
     @Column(name = "salary_from", nullable = false)
@@ -36,10 +36,11 @@ public class Job {
     private Long salaryTo;
 
     @ManyToMany(mappedBy = "jobs")
-    @JsonIgnore // ✅ Tránh vòng lặp khi serialize JSON
+    @JsonIgnore
     private Set<Skill> skills;
 
     @Column(name = "end_date", nullable = false)
+    @DateTimeFormat(pattern = "dd/MM/yyyy")
     private LocalDate endDate;
 
     @Column(columnDefinition = "TEXT")
@@ -75,4 +76,8 @@ public class Job {
     @OneToMany(mappedBy = "job", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JsonIgnore
     private Set<Interview> interviews;
+
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinColumn(name = "user_id")
+    private Users user;
 }

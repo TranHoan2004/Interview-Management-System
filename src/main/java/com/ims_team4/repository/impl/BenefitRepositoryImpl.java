@@ -9,8 +9,10 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @Repository
 @Transactional(propagation = Propagation.REQUIRED)
@@ -28,6 +30,27 @@ public class BenefitRepositoryImpl implements BenefitRepository {
         List<Benefit> benefits = session.createQuery("select b from Benefit b", Benefit.class).getResultList();
         session.close();
         return benefits;
+    }
+
+    @Override
+    public List<Benefit> findByNameIn(Set<String> names) {
+        if (names.isEmpty()) {
+            return Collections.emptyList();
+        }
+        return em.createQuery("SELECT b FROM Benefit b WHERE b.name IN :names", Benefit.class)
+                .setParameter("names", names)
+                .getResultList();
+
+    }
+
+    @Override
+    public Set<Benefit> findByIdIn(Set<Long> ids) {
+        Session session = em.unwrap(Session.class);
+        List<Benefit> benefits = session.createQuery(
+                        "SELECT b FROM Benefit b WHERE b.id IN (:ids)", Benefit.class)
+                .setParameter("ids", ids)
+                .getResultList();
+        return Set.copyOf(benefits);
     }
 
     @NotNull

@@ -1,28 +1,33 @@
 package com.ims_team4.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.ims_team4.config.Constants;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Past;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.PositiveOrZero;
 import jakarta.validation.constraints.Size;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import lombok.experimental.SuperBuilder;
 
 import java.time.LocalDate;
+import java.util.Set;
 
-@Data
+@Getter
+@Setter
 @SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
 @Table(name = "users")
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
+@ToString(exclude = "candidate") // ✅ Tránh vòng lặp khi log
+
 // HoanTX
-public class User implements Constants.Regex {
+public class Users implements Constants.Regex {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @EqualsAndHashCode.Include
     private Long id;
 
     @Past
@@ -56,6 +61,7 @@ public class User implements Constants.Regex {
     private String note;
 
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "user")
+    @JsonIgnore // ✅ Tránh vòng lặp Hibernate
     private Candidate candidate;
 
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.MERGE, mappedBy = "user")
@@ -63,4 +69,7 @@ public class User implements Constants.Regex {
 
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "user")
     private Notification notification;
+
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private Set<Job> jobs;
 }

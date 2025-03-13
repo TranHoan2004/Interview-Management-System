@@ -204,47 +204,27 @@
     <div class="spinner"></div>
 </div>
 <!-- Sidebar -->
-<div class="sidebar">
-    <h4><span class="logo">DEV</span> IMS</h4>
-    <a href="#"><i class="fa-solid fa-house"></i> Home</a>
-    <a href="#"><i class="fa-solid fa-user"></i> Candidate</a>
-    <a href="#"><i class="fa-solid fa-briefcase"></i> Job</a>
-    <a href="#"><i class="fa-solid fa-comments"></i> Interview</a>
-    <a href="#" class="fw-bold"><i class="fa-solid fa-file-alt"></i> Offer</a>
-    <a href="#"><i class="fa-solid fa-users"></i> User</a>
-</div>
+<div class="sidebar" th:replace="~{component/left-sidebar::leftSidebar}"></div>
 
 <div class="content">
     <div class="d-flex justify-content-between align-items-center mb-0">
-        <div class="container py-1 flex-grow-1" style="flex-basis: 97%;">
+        <div class="container py-1 flex-grow-1" style="flex-basis: 68%;">
             <h3 class="page-title fw-bold text-dark">
                 <i class="fa-solid fa-clipboard-list text-primary"></i> Edit Offer
             </h3>
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb bg-white shadow-sm p-2 rounded">
                     <li class="breadcrumb-item">
-                        <a th:href="@{/offer/{rid}(rid=${rid})}" class="text-decoration-none text-primary fw-bold">Offer List</a>
+                        <a th:href="@{/offer/offer/{rid}(rid=${rid})}" class="text-decoration-none text-primary fw-bold">Offer List</a>
                     </li>
                     <li class="breadcrumb-item active text-secondary" aria-current="page">Create Offer</li>
                 </ol>
             </nav>
         </div>
-        <div class="mb-2 p-3 bg-white rounded shadow-sm flex-grow-1 d-flex align-items-center" style="flex-basis: 35%;">
-            <div class="d-flex align-items-center">
-                <img src="https://anhanime.me/wp-content/uploads/2024/03/anh-conan_5.jpg" alt="Avatar"
-                     class="rounded-circle border border-2" width="45" height="45">
-                <div class="ms-2">
-                    <span class="fw-bold text-dark d-block">longpd</span>
-                    <small class="text-muted">HR Department</small>
-                </div>
-            </div>
-            <a href="#" class="ms-auto btn btn-outline-danger btn-sm d-flex align-items-center px-3">
-                <i class="fa-solid fa-sign-out-alt me-2"></i> Logout
-            </a>
-        </div>
+        <div th:replace="~{component/top-sidebar::topSidebar}"></div>
     </div>
 
-    <form th:action="@{/create}" method="get" class="info-card mt-2">
+    <form th:action="@{/offer/create}" method="get" class="info-card mt-2">
         <div class="d-flex justify-content-between align-items-center">
             <h4 class="text-dark">Create Offer</h4>
         </div>
@@ -282,10 +262,12 @@
 
                 <div class="form-group">
                     <label class="info-title">Interview Info:</label>
-                    <select class="form-select" name="interviewId" required>
-                        <option th:value="0">Select an interview schedule title</option>
+                    <select class="form-select" name="interviewId" id="interviewSelect" required>
+                        <option value="0" data-note="">Select an interview schedule title</option>
                         <th:block th:each="interview : ${listI}">
-                            <option th:value="${interview.getId()}" th:text="${interview.getTitle()}"></option>
+                            <option th:value="${interview.getId()}" th:text="${interview.getTitle()}"
+                                    th:data-note="${interview.getNote()}">
+                            </option>
                         </th:block>
                     </select>
                     <br/>
@@ -301,7 +283,7 @@
 
                 <div class="form-group">
                     <label class="info-title">Interview Notes:</label>
-                    <input type="text" name="interviewNote" class="form-control" required>
+                    <input type="text" name="interviewNote" id="interviewNote" class="form-control" readonly required>
                 </div>
 
             </div>
@@ -359,7 +341,7 @@
         </div>
         <hr>
         <div class="d-flex justify-content-end">
-            <a href="/offer" class="btn btn-secondary me-2">Cancel</a>
+            <a th:href="@{/offer/offer/{rid}(rid=${rid})}" class="btn btn-secondary me-2">Cancel</a>
             <button type="submit" class="btn btn-primary">Submit</button>
         </div>
     </form>
@@ -410,6 +392,16 @@
         }
 
         document.querySelector("form").addEventListener("submit", validateDates);
+    });
+
+    function logout() {
+        window.location.href = "/logout";
+    }
+
+    document.getElementById("interviewSelect").addEventListener("change", function() {
+        var selectedOption = this.options[this.selectedIndex];
+        var note = selectedOption.getAttribute("data-note");
+        document.getElementById("interviewNote").value = note;
     });
 </script>
 </html>

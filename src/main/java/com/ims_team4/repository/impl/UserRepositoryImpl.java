@@ -1,7 +1,6 @@
 package com.ims_team4.repository.impl;
 
-import com.ims_team4.model.Offer;
-import com.ims_team4.model.User;
+import com.ims_team4.model.Users;
 import com.ims_team4.repository.UserRepository;
 import jakarta.persistence.EntityManager;
 import org.hibernate.Session;
@@ -17,7 +16,6 @@ import java.util.Optional;
 @Transactional(propagation = Propagation.REQUIRED)
 // Duc Long
 public class UserRepositoryImpl implements UserRepository {
-
     private final EntityManager em;
 
     public UserRepositoryImpl(EntityManager em) {
@@ -25,47 +23,56 @@ public class UserRepositoryImpl implements UserRepository {
     }
 
     @Override
-    public Optional<User> findByEmail(String email) {
+    public List<String> getEmails() {
+        return em
+                .unwrap(Session.class)
+                .createQuery("select u.email from Users u", String.class)
+                .getResultList();
+    }
+
+    @Override
+    public Optional<Users> findByEmail(String email) {
         Session session = em.unwrap(Session.class);
         return session
-                .createQuery("from User u where u.email=:email", User.class)
+                .createQuery("from Users u where u.email=:email", Users.class)
                 .setParameter("email", email)
                 .uniqueResultOptional();
     }
 
     @Override
-    public List<User> getAllUser() {
+    public List<Users> getAllUser() {
         Session session = em.unwrap(Session.class);
-        List<User> users = session
-                .createQuery("from User", User.class)
+        List<Users> users = session
+                .createQuery("from Users", Users.class)
                 .getResultList();
         session.close();
         return users;
     }
 
     @Override
-    public User getUserById(long id) {
+    public Users getUserById(long id) {
         Session session = em.unwrap(Session.class);
-        User user = session.createQuery("select u from com.ims_team4.model.User u where u.id = :id", User.class).setParameter("id", id).getSingleResult();
+        Users user = session.createQuery("select u from com.ims_team4.model.Users u where u.id = :id", Users.class).setParameter("id", id).getSingleResult();
         session.close();
         return user;
     }
 
     @NotNull
     @Override
-    public <S extends User> S save(@NotNull S entity) {
+    public <S extends Users> S save(@NotNull S entity) {
+        em.persist(entity);
+        return entity;
+    }
+
+    @NotNull
+    @Override
+    public <S extends Users> Iterable<S> saveAll(@NotNull Iterable<S> entities) {
         return null;
     }
 
     @NotNull
     @Override
-    public <S extends User> Iterable<S> saveAll(@NotNull Iterable<S> entities) {
-        return null;
-    }
-
-    @NotNull
-    @Override
-    public Optional<User> findById(@NotNull Long aLong) {
+    public Optional<Users> findById(@NotNull Long aLong) {
         return Optional.empty();
     }
 
@@ -76,13 +83,13 @@ public class UserRepositoryImpl implements UserRepository {
 
     @NotNull
     @Override
-    public Iterable<User> findAll() {
+    public Iterable<Users> findAll() {
         return null;
     }
 
     @NotNull
     @Override
-    public Iterable<User> findAllById(@NotNull Iterable<Long> longs) {
+    public Iterable<Users> findAllById(@NotNull Iterable<Long> longs) {
         return null;
     }
 
@@ -97,7 +104,7 @@ public class UserRepositoryImpl implements UserRepository {
     }
 
     @Override
-    public void delete(@NotNull User entity) {
+    public void delete(@NotNull Users entity) {
 
     }
 
@@ -107,7 +114,7 @@ public class UserRepositoryImpl implements UserRepository {
     }
 
     @Override
-    public void deleteAll(@NotNull Iterable<? extends User> entities) {
+    public void deleteAll(@NotNull Iterable<? extends Users> entities) {
 
     }
 

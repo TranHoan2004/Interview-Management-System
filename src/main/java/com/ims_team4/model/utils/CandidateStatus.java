@@ -5,5 +5,6 @@ public enum CandidateStatus {
     OPEN,
     INTERVIEWED,
     OFFERED,
+    BANNED,
     FAILED
 }

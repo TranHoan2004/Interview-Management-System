@@ -109,6 +109,7 @@
             font-size: 35px;
             font-weight: bold;
             color: #2c3e50;
+            margin-top: 0px;
         }
 
         /* Nút bấm */
@@ -131,11 +132,11 @@
         }
 
         .search {
-            width: 24% !important;
+            width: 20% !important;
         }
 
         .status {
-            margin-right: 6rem;
+            margin-right: 2em;
         }
 
         .title {
@@ -211,6 +212,33 @@
             font-size: 16px;
         }
 
+        .table-container{
+            padding: 10px !important;
+        }
+
+        .chat-button {
+            background: linear-gradient(45deg, #0084FF, #00C6FF);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            border-radius: 25px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .chat-button:hover {
+            background: linear-gradient(45deg, #0078FF, #00B8FF);
+        }
+
+        .chat-button i {
+            font-size: 20px;
+        }
+
+
     </style>
 </head>
 <body>
@@ -224,49 +252,42 @@
     </div>
 </div>
 <!-- Sidebar -->
-<div class="sidebar">
-    <h4><span class="logo">DEV</span> IMS</h4>
-    <a href="#"><i class="fa-solid fa-house"></i> Home</a>
-    <a href="#"><i class="fa-solid fa-user"></i> Candidate</a>
-    <a href="#"><i class="fa-solid fa-briefcase"></i> Job</a>
-    <a href="#"><i class="fa-solid fa-comments"></i> Interview</a>
-    <a href="#" class="fw-bold"><i class="fa-solid fa-file-alt"></i> Offer</a>
-    <a href="#"><i class="fa-solid fa-users"></i> User</a>
-</div>
+<div class="sidebar" th:replace="~{component/left-sidebar::leftSidebar}"></div>
 
 <!-- Nội dung -->
-<div class="content">
+<div class="content" style="padding-top: 12px;">
     <div class="d-flex justify-content-between align-items-center mb-0">
-        <div class="container py-2 flex-grow-1" style="flex-basis: 97%;">
+        <div class="container py-2 flex-grow-1" style="flex-basis: 68%;">
             <h3 class="page-title fw-bold text-dark">
                 <i class="fa-solid fa-clipboard-list text-primary"></i> Offer List
             </h3>
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb bg-white shadow-sm p-2 rounded">
                     <li class="breadcrumb-item">
-                        <a th:href="@{/offer/{rid}(rid=${rid})}" class="text-decoration-none text-primary fw-bold">Offer
+                        <a th:href="@{/offer/offer/{rid}(rid=${rid})}" class="text-decoration-none text-primary fw-bold">Offer
                             List</a>
                     </li>
                 </ol>
             </nav>
         </div>
-        <div class="mb-1 p-3 bg-white rounded shadow-sm flex-grow-1 d-flex align-items-center" style="flex-basis: 35%;">
-            <div class="d-flex align-items-center">
-                <img src="https://anhanime.me/wp-content/uploads/2024/03/anh-conan_5.jpg" alt="Avatar"
-                     class="rounded-circle border border-2" width="45" height="45">
-                <div class="ms-2">
-                    <span class="fw-bold text-dark d-block">longpd</span>
-                    <small class="text-muted">HR Department</small>
-                </div>
-            </div>
-            <a href="#" class="ms-auto btn btn-outline-danger btn-sm d-flex align-items-center px-3">
-                <i class="fa-solid fa-sign-out-alt me-2"></i> Logout
-            </a>
-        </div>
+        <div th:replace="~{component/top-sidebar::topSidebar}"></div>
+<!--        <div class="mb-1 p-3 bg-white rounded shadow-sm flex-grow-1 d-flex align-items-center" style="flex-basis: 35%;">-->
+<!--            <div class="d-flex align-items-center">-->
+<!--                <img src="https://anhanime.me/wp-content/uploads/2024/03/anh-conan_5.jpg" alt="Avatar"-->
+<!--                     class="rounded-circle border border-2" width="45" height="45">-->
+<!--                <div class="ms-2">-->
+<!--                    <span class="fw-bold text-dark d-block">longpd</span>-->
+<!--                    <small class="text-muted">HR Department</small>-->
+<!--                </div>-->
+<!--            </div>-->
+<!--            <a href="#" class="ms-auto btn btn-outline-danger btn-sm d-flex align-items-center px-3">-->
+<!--                <i class="fa-solid fa-sign-out-alt me-2"></i> Logout-->
+<!--            </a>-->
+<!--        </div>-->
     </div>
 
     <!-- Thanh tìm kiếm và bộ lọc -->
-    <form th:action="@{/search}" method="get">
+    <form th:action="@{/offer/search}" method="get">
         <div class="filter-bar mb-3">
             <input type="hidden" name="rid" th:value="${rid}"/>
             <div class="search input-group">
@@ -283,8 +304,11 @@
                 <option th:each="statusOffer : ${listS}" th:value="${statusOffer.getId()}"
                         th:text="${statusOffer.getStatusName()}"></option>
             </select>
+            <a href="#" class="chat-button fw-bold text-decoration-none">
+                <i class="fa-brands fa-facebook-messenger"></i>Chat
+            </a>
             <button type="submit" class="btn btn-secondary">Search</button>
-            <a th:href="@{/createoffer/{rid}(rid=${rid})}" class="btn btn-primary">Add new</a>
+            <a th:href="@{/offer/createoffer/{rid}(rid=${rid})}" class="btn btn-primary">Add new</a>
             <button type="button" class="btn btn-outline-secondary" data-bs-toggle="modal"
                     data-bs-target="#exportModal">
                 Export
@@ -294,7 +318,7 @@
 
     <div class="modal fade" id="exportModal" tabindex="-1" aria-labelledby="exportModalLabel" aria-hidden="true">
         <div class="modal-dialog">
-            <form th:action="@{/export}" class="modal-content rounded-3 shadow-lg p-3">
+            <form th:action="@{/offer/export}" class="modal-content rounded-3 shadow-lg p-3">
                 <div class="modal-header bg-primary-subtle text-dark position-relative">
                     <h5 class="modal-title" id="exportModalLabel">Export Offer</h5>
                     <button type="button" class="btn btn-danger btn-close position-absolute top-0 end-0 m-2 p-2" data-bs-dismiss="modal" aria-label="Close"></button>                </div>
@@ -348,11 +372,16 @@
                                 <span th:text="${offer.getStatusOfferName()}"></span>
                             </td>
                             <td>
-                                <a th:href="@{/offerdetail/{id}(id=${offer.getId()}, rid=${offer.getRecruiterOwner()})}"
+                                <a th:href="@{/offer/offerdetail/{id}(id=${offer.getId()}, rid=${offer.getRecruiterOwner()})}"
                                    class="me-2"><i
                                         class="fa-solid fa-eye"></i></a>
-                                <a th:href="@{/editoffer/{id}(id=${offer.getId()}, rid=${offer.getRecruiterOwner()})}"><i
-                                        class="fa-solid fa-edit"></i></a>
+                                <a th:data-status="${offer.getStatusOfferId()}"
+                                   th:data-id="${offer.getId()}"
+                                   th:data-eid="${offer.getRecruiterOwner()}"
+                                   onclick="checkStatusToEdit(this.getAttribute('data-id'), this.getAttribute('data-status'), this.getAttribute('data-eid'))"
+                                   href="#">
+                                    <i class="fa-solid fa-edit"></i>
+                                </a>
                             </td>
                         </th:block>
                     </th:block>
@@ -363,17 +392,17 @@
         <nav aria-label="Page navigation">
             <ul class="pagination justify-content-center">
                 <li class="page-item" th:classappend="${currentPage == 1} ? 'disabled'">
-                    <a class="page-link" th:href="@{/offer/{id}(id=${id}, page=${currentPage - 1})}"
+                    <a class="page-link" th:href="@{/offer/offer/{id}(id=${id}, page=${currentPage - 1})}"
                        aria-label="Previous">
                         <span aria-hidden="true">&laquo;</span>
                     </a>
                 </li>
                 <li class="page-item" th:each="page : ${#numbers.sequence(1, totalPages)}"
                     th:classappend="${page == currentPage} ? 'active'">
-                    <a class="page-link" th:href="@{/offer/{id}(id=${id}, page=${page})}" th:text="${page}"></a>
+                    <a class="page-link" th:href="@{/offer/offer/{id}(id=${id}, page=${page})}" th:text="${page}"></a>
                 </li>
                 <li class="page-item" th:classappend="${currentPage == totalPages} ? 'disabled'">
-                    <a class="page-link" th:href="@{/offer/{id}(id=${id}, page=${currentPage + 1})}" aria-label="Next">
+                    <a class="page-link" th:href="@{/offer/offer/{id}(id=${id}, page=${currentPage + 1})}" aria-label="Next">
                         <span aria-hidden="true">&raquo;</span>
                     </a>
                 </li>
@@ -386,7 +415,7 @@
 
 <script>
     document.addEventListener("DOMContentLoaded", function () {
-        var msg = `[[${msg}]]`;  // Thymeleaf lấy msg từ session
+        var msg = `[[${msg}]]`;
         if (msg && msg !== "null") {
             showNotification(msg);
         }
@@ -408,6 +437,19 @@
         var notification = document.getElementById("notification");
         notification.style.display = "none";
     }
+
+    function checkStatusToEdit(offerId, status, eid) {
+        if (status == "1") {
+            window.location.href = `/offer/editoffer/${offerId}?rid=${eid}`;
+        } else {
+            alert("Editing is not allowed because the status is invalid.");
+        }
+    }
+
+    function logout() {
+        window.location.href = "/logout";
+    }
+
 </script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </html>

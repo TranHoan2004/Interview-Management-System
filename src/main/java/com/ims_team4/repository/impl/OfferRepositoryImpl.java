@@ -37,27 +37,84 @@ public class OfferRepositoryImpl implements OfferRepository {
     }
 
     @Override
-    public List<Offer> getAllOfferByNameMailDepStatus(String text, int dep, int status, int eid) {
+    public List<Offer> getAllOfferByNameMailDepStatus(String text, int dep, int status, int eid, Pageable pageable) {
         Session session = em.unwrap(Session.class);
-        String hql = "SELECT o FROM Offer o "
-                + "JOIN o.candidate u "
-                + "JOIN o.department d "
-                + "JOIN o.statusOffer s "
-                + "WHERE (:text IS NULL OR u.user.fullname LIKE :text OR u.user.fullname LIKE :text) "
-                + "AND (:dep = 0 OR d.id = :dep) "
-                + "AND (:status = 0 OR s.id = :status)"
-                + "AND (o.recruiterOwner = :eid)";
-
+        Employee e = session.get(Employee.class, eid);
+        String hql = "";
+        if (e.getRole() == HrRole.ROLE_RECRUITER) {
+            hql = "SELECT o FROM Offer o "
+                    + "JOIN o.candidate u "
+                    + "JOIN o.department d "
+                    + "JOIN o.statusOffer s "
+                    + "WHERE (:text IS NULL OR u.user.fullname LIKE :text OR u.user.fullname LIKE :text) "
+                    + "AND (:dep = 0 OR d.id = :dep) "
+                    + "AND (:status = 0 OR s.id = :status)"
+                    + "AND (o.recruiterOwner = :eid)";
+        }
+        if (e.getRole() == HrRole.ROLE_MANAGER || e.getRole() == HrRole.ROLE_ADMINISTRATOR) {
+            hql = "SELECT o FROM Offer o "
+                    + "JOIN o.candidate u "
+                    + "JOIN o.department d "
+                    + "JOIN o.statusOffer s "
+                    + "WHERE (:text IS NULL OR u.user.fullname LIKE :text OR u.user.fullname LIKE :text) "
+                    + "AND (:dep = 0 OR d.id = :dep) "
+                    + "AND (:status = 0 OR s.id = :status)"
+                    + "AND (o.employee.id = :eid)";
+        }
         Query query = session.createQuery(hql, Offer.class);
 
         query.setParameter("text", (text != null && !text.isEmpty()) ? "%" + text + "%" : null);
         query.setParameter("dep", dep);
         query.setParameter("status", status);
         query.setParameter("eid", eid);
+        query.setFirstResult((int) pageable.getOffset());
+        query.setMaxResults(pageable.getPageSize());
 
         List<Offer> offers = query.getResultList();
         session.close();
         return offers;
+    }
+
+    @Override
+    public long countAllOfferByNameMailDepStatus(String text, int dep, int status, int eid) {
+        Session session = em.unwrap(Session.class);
+        Employee e = session.get(Employee.class, eid);
+
+        if (e.getRole() == HrRole.ROLE_RECRUITER) {
+            return em.createQuery(
+                            "SELECT COUNT(o) FROM Offer o " +
+                                    "JOIN o.candidate u " +
+                                    "JOIN o.department d " +
+                                    "JOIN o.statusOffer s " +
+                                    "WHERE (:text IS NULL OR u.user.fullname LIKE :text OR u.user.email LIKE :text) " +
+                                    "AND (:dep = 0 OR d.id = :dep) " +
+                                    "AND (:status = 0 OR s.id = :status) " +
+                                    "AND (o.recruiterOwner = :eid)", Long.class)
+                    .setParameter("text", text == null ? null : "%" + text + "%")
+                    .setParameter("dep", dep)
+                    .setParameter("status", status)
+                    .setParameter("eid", eid)
+                    .getSingleResult();
+        }
+
+        if (e.getRole() == HrRole.ROLE_ADMINISTRATOR || e.getRole() == HrRole.ROLE_MANAGER) {
+            return em.createQuery(
+                            "SELECT COUNT(o) FROM Offer o " +
+                                    "JOIN o.candidate u " +
+                                    "JOIN o.department d " +
+                                    "JOIN o.statusOffer s " +
+                                    "WHERE (:text IS NULL OR u.user.fullname LIKE :text OR u.user.email LIKE :text) " +
+                                    "AND (:dep = 0 OR d.id = :dep) " +
+                                    "AND (:status = 0 OR s.id = :status) " +
+                                    "AND (o.employee.id = :eid)", Long.class)
+                    .setParameter("text", text == null ? null : "%" + text + "%")
+                    .setParameter("dep", dep)
+                    .setParameter("status", status)
+                    .setParameter("eid", eid)
+                    .getSingleResult();
+        }
+
+        return -1;
     }
 
     @Override
@@ -75,21 +132,41 @@ public class OfferRepositoryImpl implements OfferRepository {
     }
 
     @Override
-    public List<Offer> getAllOfferByRecruiter(int id) {
+    public List<Offer> getAllOfferByEmployee(int id, Pageable pageable) {
         Session session = em.unwrap(Session.class);
-        List<Offer> offers = session.createQuery("select o from Offer o where o.recruiterOwner = :id", Offer.class).setParameter("id", id).getResultList();
+
+        Employee e = session.get(Employee.class, id);
+
+        List<Offer> offers = new ArrayList<>();
+
+        if (e.getRole() == HrRole.ROLE_RECRUITER) {
+            offers = session.createQuery("select o from Offer o where o.recruiterOwner = :id", Offer.class)
+                    .setParameter("id", id)
+                    .setFirstResult((int) pageable.getOffset())
+                    .setMaxResults(pageable.getPageSize())
+                    .getResultList();
+        }
+
+        if (e.getRole() == HrRole.ROLE_MANAGER || e.getRole() == HrRole.ROLE_ADMINISTRATOR) {
+            offers = session.createQuery("select o from Offer o where o.employee.id = :id", Offer.class)
+                    .setParameter("id", id)
+                    .setFirstResult((int) pageable.getOffset())
+                    .setMaxResults(pageable.getPageSize())
+                    .getResultList();
+        }
+
         session.close();
         return offers;
     }
 
     @Transactional
     @Override
-    public boolean editOffer(int offerid, int salary, LocalDate from, LocalDate to, LocalDate duedate, String interviewNote, int interviewId, String note, int recruiterOwner, int cid, int coid, int did, int eid, int lid, int pid) {
+    public boolean editOffer(int offerid, int salary, LocalDate from, LocalDate to, LocalDate duedate, String interviewNote, int interviewId, String note, int recruiterOwner, int cid, int coid, int did, int eid, int lid, int pid, int updateBy) {
         Session session = em.unwrap(Session.class);
         Transaction transaction = null;
 
         try {
-          //  transaction = session.beginTransaction();
+            //  transaction = session.beginTransaction();
 
             Offer offer = session.get(Offer.class, offerid);
             if (offer == null) {
@@ -103,6 +180,7 @@ public class OfferRepositoryImpl implements OfferRepository {
             offer.setInterviewNotes(interviewNote);
             offer.setNote(note);
             offer.setRecruiterOwner(recruiterOwner);
+            offer.setUpdatedBy(Long.valueOf(updateBy));
 
             Interview interview = session.get(Interview.class, interviewId);
             if (interview != null) {
@@ -154,12 +232,12 @@ public class OfferRepositoryImpl implements OfferRepository {
             }
 
             session.merge(offer);
-          //  transaction.commit();
+            //  transaction.commit();
             return true;
 
         } catch (Exception e) {
 //            if (transaction != null) {
-                System.out.println(e.getMessage());
+            System.out.println(e.getMessage());
 //                transaction.rollback();
 //            }
             return false;
@@ -169,7 +247,6 @@ public class OfferRepositoryImpl implements OfferRepository {
             }
         }
     }
-
 
 
     @Override
@@ -201,41 +278,83 @@ public class OfferRepositoryImpl implements OfferRepository {
         }
     }
 
-    @Override
-    public List<Offer> findAllOffers(Pageable pageable) {
-        System.out.println("findAllOffers");
-        return em.createQuery("SELECT o FROM Offer o", Offer.class)
-                .setFirstResult((int) pageable.getOffset())
-                .setMaxResults(pageable.getPageSize())
-                .getResultList();
-    }
+//    @Override
+//    public List<Offer> findAllOffers(Pageable pageable, int id) {
+//        System.out.println("findAllOffers");
+//        return em.createQuery("select o from Offer o where o.recruiterOwner = :id", Offer.class)
+//                .setParameter("id", id)
+//                .setFirstResult((int) pageable.getOffset())
+//                .setMaxResults(pageable.getPageSize())
+//                .getResultList();
+//    }
 
     @Override
-    public Offer getOfferOfCandidate(int cid) {
+    public long countAllOffers(int id) {
         Session session = em.unwrap(Session.class);
-        Offer offers = session.createQuery("select o from com.ims_team4.model.Offer o where o.candidate.id = :id", Offer.class).setParameter("id", cid).getSingleResult();
-        session.close();
-        return offers;
+        Employee e = session.get(Employee.class, id);
+
+        if (e.getRole() == HrRole.ROLE_RECRUITER) {
+
+            return em.createQuery("SELECT COUNT(o) FROM Offer o where o.recruiterOwner = :id", Long.class)
+                    .setParameter("id", id)
+                    .getSingleResult();
+        }
+
+        if (e.getRole() == HrRole.ROLE_ADMINISTRATOR || e.getRole() == HrRole.ROLE_MANAGER) {
+
+            return em.createQuery("SELECT COUNT(o) FROM Offer o where o.employee.id = :id", Long.class)
+                    .setParameter("id", id)
+                    .getSingleResult();
+        }
+
+        return -1;
     }
 
-    @Override
-    public List<Offer> getAllOfferOfManager(int mid) {
-        Session session = em.unwrap(Session.class);
-        List<Offer> offers = session.createQuery("select o from com.ims_team4.model.Offer o, com.ims_team4.model.Employee e where o.employee.id = e.id and o.employee.id = :id and e.role = :role", Offer.class).setParameter("id", mid).setParameter("role", HrRole.ROLE_MANAGER).getResultList();
-        session.close();
-        return offers;
-    }
 
     @Override
-    public List<Offer> getAllOfferOfAdmin(int aid) {
-        Session session = em.unwrap(Session.class);
-        List<Offer> offers = session.createQuery("select o from com.ims_team4.model.Offer o, com.ims_team4.model.Employee e where o.employee.id = e.id and o.employee.id = :id and e.role = :role", Offer.class).setParameter("id", aid).setParameter("role", HrRole.ROLE_ADMINISTRATOR).getResultList();
-        session.close();
-        return offers;
+    public Offer getMaxOfferOfCandidate(int cid) {
+        try {
+            Session session = em.unwrap(Session.class);
+            return session.createQuery(
+                            "select o from Offer o where o.candidate.id = :id order by o.id desc", Offer.class)
+                    .setParameter("id", cid)
+                    .setMaxResults(1)
+                    .uniqueResult();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null; // Trả về null khi có lỗi thay vì để ứng dụng bị crash
+        }
     }
 
+
+//    @Override
+//    public List<Offer> getAllOfferOfManager(int mid, Pageable pageable) {
+//        Session session = em.unwrap(Session.class);
+//        List<Offer> offers = session.createQuery("select o from com.ims_team4.model.Offer o, com.ims_team4.model.Employee e where o.employee.id = e.id and o.employee.id = :id and e.role = :role", Offer.class)
+//                .setParameter("id", mid)
+//                .setParameter("role", HrRole.ROLE_MANAGER)
+//                .setFirstResult((int) pageable.getOffset())
+//                .setMaxResults(pageable.getPageSize())
+//                .getResultList();
+//        session.close();
+//        return offers;
+//    }
+
+//    @Override
+//    public List<Offer> getAllOfferOfAdmin(int aid, Pageable pageable) {
+//        Session session = em.unwrap(Session.class);
+//        List<Offer> offers = session.createQuery("select o from com.ims_team4.model.Offer o, com.ims_team4.model.Employee e where o.employee.id = e.id and o.employee.id = :id and e.role = :role", Offer.class)
+//                .setParameter("id", aid)
+//                .setParameter("role", HrRole.ROLE_ADMINISTRATOR)
+//                .setFirstResult((int) pageable.getOffset())
+//                .setMaxResults(pageable.getPageSize())
+//                .getResultList();
+//        session.close();
+//        return offers;
+//    }
+
     @Override
-    public boolean createOffer(int salary, LocalDate from, LocalDate to, LocalDate duedate, String interviewNote, int interviewId, String note, int recruiterOwner, int cid, int coid, int did, int eid, int lid, int pid) {
+    public boolean createOffer(int salary, LocalDate from, LocalDate to, LocalDate duedate, String interviewNote, int interviewId, String note, int recruiterOwner, int cid, int coid, int did, int eid, int lid, int pid, int updateBy) {
         Session session = em.unwrap(Session.class);
         Transaction transaction = null;
 
@@ -250,6 +369,7 @@ public class OfferRepositoryImpl implements OfferRepository {
             offer.setInterviewNotes(interviewNote);
             offer.setNote(note);
             offer.setRecruiterOwner(recruiterOwner);
+            offer.setUpdatedBy(Long.valueOf(updateBy));
 
             // Lấy và thiết lập đối tượng Interview
             Interview interview = session.get(Interview.class, interviewId);

@@ -8,7 +8,10 @@ import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -20,9 +23,20 @@ public class LevelServiceImpl implements LevelService {
 
     @Override
     public List<LevelDTO> getAllLevels() {
-        return levelRepository.findAll().stream()
+        return levelRepository.getAllLevel().stream()
                 .map(level -> new LevelDTO(level.getId(), level.getName()))
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public Set<Level> getLevelsByName(List<String> levelNames) {
+        if (levelNames == null || levelNames.isEmpty()) {
+            return Collections.emptySet();
+        }
+        Set<String> levelNamesSet = new HashSet<>(levelNames);
+        List<Level> levels = levelRepository.findByNameIn(levelNamesSet);
+        return new HashSet<>(levels != null ? levels : Collections.emptyList());
+
     }
 
     private LevelDTO convertToDTO(@NotNull Level Level) {

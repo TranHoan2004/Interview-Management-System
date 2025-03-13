@@ -4,7 +4,7 @@ import com.ims_team4.dto.EmployeeDTO;
 import com.ims_team4.model.Department;
 import com.ims_team4.model.Employee;
 import com.ims_team4.model.Position;
-import com.ims_team4.model.User;
+import com.ims_team4.model.Users;
 import com.ims_team4.model.utils.HrRole;
 import com.ims_team4.repository.DepartmentRepository;
 import com.ims_team4.repository.EmployeeRepository;
@@ -21,7 +21,10 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import static com.ims_team4.utils.RandomCode.generateSixRandomCodes;
+
 @Service
+// TrangNT
 public class EmployeeServiceImpl implements EmployeeService {
     private final EmployeeRepository employeeRepository;
     private final DepartmentRepository departmentRepository;
@@ -56,16 +59,19 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Override
     public void saveEmployee(@NotNull EmployeeDTO employeeDTO) {
         // Lấy thông tin Department & Position từ database
-        Department dept = departmentRepository.findByName(employeeDTO.getDepartmentName())
-                .orElseThrow(() -> new RuntimeException("Department not found"));
-
-        Position position = positionRepository.findByName(employeeDTO.getDepartmentName())
-                .orElseThrow(() -> new RuntimeException("Position not found"));
-        String password = employeeDTO.getPassword();
-        employeeDTO.setPassword(encoder.encode(password));
+        Users user = userRepository.getUserById(employeeDTO.getUser());
+        Department dept = departmentRepository.getDepartmentById(employeeDTO.getDepartmentId());
+        Position position = positionRepository.getPosById(employeeDTO.getPositionId());
 
         // Gọi hàm mapper (truyền thêm department & position)
-        Employee employee = convert(employeeDTO, dept, position);
+        Employee employee = Employee.builder()
+                .user(user)
+                .department(dept)
+                .position(position)
+                .password(encoder.encode("123"))
+                .workingName(generateSixRandomCodes())
+                .role(employeeDTO.getRole())
+                .build();
 
         // Lưu vào database
         employeeRepository.save(employee);
@@ -78,7 +84,7 @@ public class EmployeeServiceImpl implements EmployeeService {
                 .orElseThrow(() -> new EntityNotFoundException("Employee not found with ID: " + id));
 
         // Cập nhật thông tin User
-        User user = existingEmployee.getUser();
+        Users user = existingEmployee.getUser();
         // user.setDob(employeeDTO.getUser().getDob());
         // user.setGender(employeeDTO.getUser().getGender());
         // user.setEmail(employeeDTO.getUser().getEmail());
@@ -107,6 +113,14 @@ public class EmployeeServiceImpl implements EmployeeService {
         Employee savedEmployee = employeeRepository.save(existingEmployee);
         return convertToDTO(savedEmployee);
 
+    }
+
+    @Override
+    public void updateEmployeesPassword(@NotNull EmployeeDTO employee) {
+        String password = employee.getPassword();
+        Employee emp = employeeRepository.findById(employee.getUser()).get();
+        emp.setPassword(encoder.encode(password));
+        employeeRepository.save(emp);
     }
 
     @Override
@@ -152,12 +166,12 @@ public class EmployeeServiceImpl implements EmployeeService {
                 .positionId(Math.toIntExact(employee.getPosition().getId()))
                 .positionName(employee.getPosition().getName())
                 .departmentName(employee.getDepartment().getName())
-                .interviewID(employee.getInterview().getId())
                 .role(employee.getRole())
                 .status(employee.getUser().isStatus())
+                .workingName(employee.getWorkingName())
+                .interviewID(employee.getInterviewID())
                 .build();
     }
-
 
     private Employee convert(@NotNull EmployeeDTO dto, Department department, Position position) {
         // if (dto == null)

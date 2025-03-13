@@ -1,7 +1,7 @@
 package com.ims_team4.repository;
 
 import com.ims_team4.model.Employee;
-import com.ims_team4.model.User;
+import com.ims_team4.model.Users;
 import com.ims_team4.model.utils.HrRole;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -20,7 +20,7 @@ public interface EmployeeRepository extends JpaRepository<Employee, Long> {
     Optional<Employee> findById(@NotNull Long id);
 
     // 🔹 Tìm Employee theo User
-    Optional<Employee> findByUser(User user);
+    Optional<Employee> findByUser(Users user);
 
     // 🔹 Lấy danh sách Employee theo chức vụ (Position)
     @Query("SELECT e FROM Employee e WHERE e.position.name = :positionName")

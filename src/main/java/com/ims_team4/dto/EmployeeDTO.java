@@ -19,11 +19,12 @@ public class EmployeeDTO {
     private String fullname;
     private String phone;
     private boolean status;
-    private int positionId;
+    private long positionId;
     private String positionName;
     private long departmentId;
     private String departmentName;
     private Long interviewID;
     private HrRole role;
+    private String workingName;
 }
 

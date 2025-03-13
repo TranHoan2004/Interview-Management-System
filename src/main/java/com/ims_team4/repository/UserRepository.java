@@ -1,20 +1,24 @@
 package com.ims_team4.repository;
 
-import com.ims_team4.model.User;
+import com.ims_team4.model.Users;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface UserRepository extends CrudRepository<User, Long> {
+public interface UserRepository extends CrudRepository<Users, Long> {
+    List<String> getEmails();
 
-    Optional<User> findByEmail(String email);
+    Optional<Users> findByEmail(String email);
 
-    // <editor-fold desc="Code bởi @Duc Long- getALlUser">
-    List<User> getAllUser();
+    List<Users> getAllUser();
 
-    User getUserById(long id);
-    // </editor-fold>
+    Users getUserById(long id);
+
+    @Query("SELECT u FROM Users u WHERE u.id = :id")
+    Optional<Users> findById(@Param("id") Long id);
 }

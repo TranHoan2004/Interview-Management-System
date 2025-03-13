@@ -4,6 +4,7 @@ import com.ims_team4.model.Candidate;
 import org.springframework.data.repository.CrudRepository;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface CandidateRepository extends CrudRepository<Candidate, Long> {
     // <editor-fold desc="Code bởi @Duc Long- getCandidateById">
@@ -12,5 +13,13 @@ public interface CandidateRepository extends CrudRepository<Candidate, Long> {
 
     // <editor-fold desc="Code bởi @Duc Long- getAllCadidate">
     List<Candidate> getAllCandidate();
+
+    List<Candidate> getAllCandidateNotBan();
     // </editor-fold>
-}
+
+    List<Candidate> getAllCandidate2();
+
+    Optional<Candidate> getCandidateById2(Long id);
+
+    // Tìm ứng viên theo userId
+    Optional<Candidate> findByUserId(Long userId);}

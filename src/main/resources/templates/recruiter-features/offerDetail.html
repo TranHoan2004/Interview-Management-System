@@ -149,89 +149,82 @@
 <body>
 
 <!-- Sidebar -->
-<div class="sidebar">
-    <h4><span class="logo">DEV</span> IMS</h4>
-    <a href="#"><i class="fa-solid fa-house"></i> Home</a>
-    <a href="#"><i class="fa-solid fa-user"></i> Candidate</a>
-    <a href="#"><i class="fa-solid fa-briefcase"></i> Job</a>
-    <a href="#"><i class="fa-solid fa-comments"></i> Interview</a>
-    <a href="#" class="fw-bold"><i class="fa-solid fa-file-alt"></i> Offer</a>
-    <a href="#"><i class="fa-solid fa-users"></i> User</a>
-</div>
+<div class="sidebar" th:replace="~{component/left-sidebar::leftSidebar}"></div>
 
 <div class="content">
     <div class="d-flex justify-content-between align-items-center mb-0">
-        <div class="container py-1 flex-grow-1" style="flex-basis: 97%;">
+        <div class="container py-1 flex-grow-1" style="flex-basis: 68%;">
             <h3 class="page-title fw-bold text-dark">
                 <i class="fa-solid fa-clipboard-list text-primary"></i> Offer List
             </h3>
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb bg-white shadow-sm p-2 rounded">
                     <li class="breadcrumb-item">
-                        <a th:href="@{/offer/{rid}(rid=${rid})}" class="text-decoration-none text-primary fw-bold">Offer
-                            List</a>
+                        <th:block th:if="${session.account.getRole().name().equals('ROLE_RECRUITER')}">
+                            <a th:href="@{/offer/offer/{rid}(rid=${rid})}" class="text-decoration-none text-primary fw-bold">Offer
+                                List</a>
+                        </th:block>
+                        <th:block th:if="${session.account.getRole().name().equals('ROLE_MANAGER')}">
+                            <a th:href="@{/offer/managerOffer/{rid}(rid=${rid})}" class="text-decoration-none text-primary fw-bold">Offer
+                                List</a>
+                        </th:block>
+                        <th:block th:if="${session.account.getRole().name().equals('ROLE_ADMINISTRATOR')}">
+                            <a th:href="@{/offer/adminOffer/{rid}(rid=${rid})}" class="text-decoration-none text-primary fw-bold">Offer
+                                List</a>
+                        </th:block>
                     </li>
                     <li class="breadcrumb-item active text-secondary" aria-current="page">Offer Detail</li>
                 </ol>
             </nav>
         </div>
-        <div class="mb-2 p-3 bg-white rounded shadow-sm flex-grow-1 d-flex align-items-center" style="flex-basis: 35%;">
-            <div class="d-flex align-items-center">
-                <img src="https://anhanime.me/wp-content/uploads/2024/03/anh-conan_5.jpg" alt="Avatar"
-                     class="rounded-circle border border-2" width="45" height="45">
-                <div class="ms-2">
-                    <span class="fw-bold text-dark d-block">longpd</span>
-                    <small class="text-muted">HR Department</small>
-                </div>
-            </div>
-            <a href="#" class="ms-auto btn btn-outline-danger btn-sm d-flex align-items-center px-3">
-                <i class="fa-solid fa-sign-out-alt me-2"></i> Logout
-            </a>
-        </div>
+        <div th:replace="~{component/top-sidebar::topSidebar}"></div>
     </div>
 
     <!-- Candidate Offer -->
     <div class="info-card mt-0 p-4 shadow-lg rounded bg-white">
         <div class="offer-info">
-            <span>Created on&nbsp;</span><span th:text="${#temporals.format(offer.getCreateAt(), 'dd/MM/yyyy')}"></span>,
-            <span>&nbsp;last updated by&nbsp;</span><span th:text="${offer.getUpdateBy()}"></span>
+            <span>Created on&nbsp;</span><span th:text="${#temporals.format(offer.getCreateAt(), 'dd/MM/yyyy') == #temporals.format(#temporals.createToday(), 'dd/MM/yyyy') ? 'today' : #temporals.format(offer.getCreateAt(), 'dd/MM/yyyy')}"></span>,
+            <span>&nbsp;last updated by&nbsp;</span>
+            <span name="updateBy" th:each="user : ${listU}" th:if="${user.getId() == offer.getUpdateBy()}" th:text="${user.getFullname()}">
+
+            </span>
         </div>
         <div class="d-flex justify-content-between align-items-center">
             <h4 class="text-primary fw-bold">Offer Detail</h4>
             <div>
                 <th:block th:if="${offer.getStatusOfferId()} == 1">
                     <th:block th:if="${roleR == 'ROLE_MANAGER'}">
-                        <a th:href="@{/approveoffer/{id}(id=${offer.getId()}, rid=${offer.getEmployeeId()})}"
+                        <a th:href="@{/offer/approveoffer/{id}(id=${offer.getId()}, rid=${session.account.getUser()})}"
                            class="btn btn-success px-3">
                             Approve
                         </a>
-                        <a th:href="@{/rejectoffer/{id}(id=${offer.getId()}, rid=${offer.getRecruiterOwner()})}"
+                        <a th:href="@{/offer/rejectoffer/{id}(id=${offer.getId()}, rid=${session.account.getUser()})}"
                            class="btn btn-danger px-3">
                             Reject
                         </a>
-                        <a th:href="@{/canceloffer/{id}(id=${offer.getId()}, rid=${offer.getRecruiterOwner()})}"
+                        <a th:href="@{/offer/canceloffer/{id}(id=${offer.getId()}, rid=${session.account.getUser()})}"
                            class="btn btn-danger px-3"
                            onclick="return confirm('Are you sure you want to cancel this offer?');">
                             Cancel
                         </a>
                     </th:block>
                     <th:block th:if="${roleR == 'ROLE_ADMINISTRATOR'}">
-                        <a th:href="@{/approveoffer/{id}(id=${offer.getId()}, rid=${offer.getRecruiterOwner()})}"
+                        <a th:href="@{/offer/approveoffer/{id}(id=${offer.getId()}, rid=${session.account.getUser()})}"
                            class="btn btn-success px-3">
                             Approve
                         </a>
-                        <a th:href="@{/rejectoffer/{id}(id=${offer.getId()}, rid=${offer.getRecruiterOwner()})}"
+                        <a th:href="@{/offer/rejectoffer/{id}(id=${offer.getId()}, rid=${session.account.getUser()})}"
                            class="btn btn-danger px-3">
                             Reject
                         </a>
-                        <a th:href="@{/canceloffer/{id}(id=${offer.getId()}, rid=${offer.getRecruiterOwner()})}"
+                        <a th:href="@{/offer/canceloffer/{id}(id=${offer.getId()}, rid=${session.account.getUser()})}"
                            class="btn btn-danger px-3"
                            onclick="return confirm('Are you sure you want to cancel this offer?');">
                             Cancel
                         </a>
                     </th:block>
                     <th:block th:if="${roleR == 'ROLE_RECRUITER'}">
-                        <a th:href="@{/canceloffer/{id}(id=${offer.getId()}, rid=${offer.getRecruiterOwner()})}"
+                        <a th:href="@{/offer/canceloffer/{id}(id=${offer.getId()}, rid=${session.account.getUser()})}"
                            class="btn btn-danger px-3"
                            onclick="return confirm('Are you sure you want to cancel this offer?');">
                             Cancel
@@ -240,11 +233,11 @@
                 </th:block>
 
                 <th:block th:if="${offer.getStatusOfferId()} == 2">
-                    <a th:href="@{/mark/{id}(id=${offer.getId()}, rid=${offer.getRecruiterOwner()})}"
+                    <a th:href="@{/offer/mark/{id}(id=${offer.getId()}, rid=${session.account.getUser()}, cid=${offer.getCandidateId()})}"
                        class="btn btn-primary px-3" style="width: 300px !important; border-radius: 9px !important;">
                         Mark as Sent to Candidate
                     </a>
-                    <a th:href="@{/canceloffer/{id}(id=${offer.getId()}, rid=${offer.getRecruiterOwner()})}"
+                    <a th:href="@{/offer/canceloffer/{id}(id=${offer.getId()}, rid=${session.account.getUser()})}"
                        class="btn btn-danger px-3"
                        onclick="return confirm('Are you sure you want to cancel this offer?');">
                         Cancel
@@ -253,17 +246,17 @@
                 </th:block>
 
                 <th:block th:if="${offer.getStatusOfferId()} == 4">
-                    <a th:href="@{/acceptoffer/{id}(id=${offer.getId()}, rid=${offer.getRecruiterOwner()})}"
+                    <a th:href="@{/offer/acceptoffer/{id}(id=${offer.getId()}, rid=${session.account.getUser()})}"
                        class="btn btn-success px-3">
                         Accept
                     </a>
-                    <a th:href="@{/declineoffer/{id}(id=${offer.getId()}, rid=${offer.getRecruiterOwner()})}"
+                    <a th:href="@{/offer/declineoffer/{id}(id=${offer.getId()}, rid=${session.account.getUser()})}"
                        class="btn btn-danger px-3"
                        onclick="return confirm('Are you sure you want to cancel this offer?');">
                         Decline
                     </a>
 
-                    <a th:href="@{/canceloffer/{id}(id=${offer.getId()}, rid=${offer.getRecruiterOwner()})}"
+                    <a th:href="@{/offer/canceloffer/{id}(id=${offer.getId()}, rid=${session.account.getUser()})}"
                        class="btn btn-danger px-3"
                        onclick="return confirm('Are you sure you want to cancel this offer?');">
                         Cancel
@@ -271,7 +264,7 @@
                 </th:block>
 
                 <th:block th:if="${offer.getStatusOfferId()} == 5">
-                    <a th:href="@{/canceloffer/{id}(id=${offer.getId()}, rid=${offer.getRecruiterOwner()})}"
+                    <a th:href="@{/offer/canceloffer/{id}(id=${offer.getId()}, rid=${session.account.getUser()})}"
                        class="btn btn-danger px-3"
                        onclick="return confirm('Are you sure you want to cancel this offer?');">
                         Cancel
@@ -309,20 +302,13 @@
                         <div class="d-flex">
                             <div class="info-title me-1">Interviewer:</div>
                             <div>
-                                <span th:each="interview : ${listI}" th:remove="tag">
-                                    <span th:each="employee : ${listE}" th:if="${employee.getInterviewID() == interview.getId()}" th:remove="tag">
-                                        <span th:if="${offer.getInterviewId() == interview.getId()}" th:remove="tag">
-            <!-- Sử dụng th:with để tạo biến tạm thời -->
-                                            <span th:each="user, iterStat : ${listU}" th:if="${user.getId() == employee.getUser()}" th:remove="tag">
-                                                <span th:with="nameParts=${#strings.arraySplit(user.fullname, ' ')}"
-                                                    th:text="${nameParts[#lists.size(nameParts) - 1] +
-                                                    #strings.substring(nameParts[0], 0, 1) +
-                                                    (#lists.size(nameParts) > 2 ? #strings.substring(nameParts[1], 0, 1) : '')}"></span>
-                <!-- Thêm dấu phẩy và khoảng trắng nếu không phải phần tử cuối cùng -->
-                                                <span th:if="${!iterStat.last}">, </span>
-                                            </span>
-                                        </span>
+                                <span th:each="interview : ${listI}">
+                                    <span th:each="employee : ${listE}" th:if="${employee.getInterviewID() == interview.getId()}">
+                                        <span th:if="${offer.getInterviewId() == interview.getId()}">
+                                        <span th:text="${employee.getWorkingName()} + ', '" th:unless="${employeeStat.last}"></span>
+                                    <span th:text="${employee.getWorkingName()}" th:if="${employeeStat.last}"></span>
                                     </span>
+                                </span>
                                 </span>
                             </div>
                             <!--                            <div class="d-flex" th:with="totalInterviewers=${#lists.size(listE)}">-->
@@ -353,7 +339,10 @@
                         th:text="${#temporals.format(offer.getContractPeriodFrom(), 'dd/MM/yyyy')}"></span> to <span
                         th:text="${#temporals.format(offer.getContractPeriodTo(), 'dd/MM/yyyy')}"></span></p>
 
-                <p><strong>Interview Notes:</strong> <span th:text="${offer.interviewNotes}" class="text-muted"></span>
+                <p><strong>Interview Notes:</strong>
+                    <th:block th:each="interview : ${listI}">
+                        <span th:if="${interview.getId() == offer.getInterviewId()}" th:text="${interview.getNote()}" class="text-muted"></span>
+                    </th:block>
                 </p>
                 <div>
                     <strong>Status:</strong>
@@ -402,8 +391,8 @@
         </div>
         <hr>
         <div class="d-flex justify-content-end">
-            <a th:href="@{/offer/{rid}(rid=${rid})}" class="btn btn-outline-secondary me-2">Cancel</a>
-            <form th:action="@{/editoffer/{id}(id=${offer.getId()})}" method="get">
+            <a th:href="@{/offer/offer/{rid}(rid=${rid})}" class="btn btn-outline-secondary me-2">Cancel</a>
+            <form th:action="@{/offer/editoffer/{id}(id=${offer.getId()})}" method="get">
                 <input type="hidden" name="rid" th:value="${offer.getRecruiterOwner()}">
                 <!--                <div style="display: none;">-->
                 <!--                    <div th:each="employee : ${listE}">-->
@@ -426,4 +415,10 @@
 </div>
 
 </body>
+
+<script>
+    function logout() {
+        window.location.href = "/logout";
+    }
+</script>
 </html>
