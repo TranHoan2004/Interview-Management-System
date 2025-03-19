@@ -19,6 +19,8 @@ import jakarta.servlet.http.HttpSession;
 import org.apache.http.client.fluent.Form;
 import org.apache.http.client.fluent.Request;
 import org.jetbrains.annotations.NotNull;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.MessageSource;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -29,6 +31,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Locale;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -39,12 +42,14 @@ public class LoginController implements Constants.GoogleAndFacebookAuthenticatio
     private final UserService userService;
     private final EmployeeService empSrv;
     private final SessionController details;
+    private final MessageSource source;
     private static final Logger logger = Logger.getLogger(LoginController.class.getName());
 
-    public LoginController(UserServiceImpl impl, UserService uSrv, EmployeeService empSrv, EmployeeServiceImpl empSrvImpl) {
+    public LoginController(UserServiceImpl impl, UserService uSrv, EmployeeService empSrv, EmployeeServiceImpl empSrvImpl, @Qualifier("messageSource") MessageSource source) {
         this.userService = impl;
         this.empSrv = empSrvImpl;
         this.details = new SessionController(empSrv, uSrv);
+        this.source = source;
     }
 
     /**
@@ -71,7 +76,9 @@ public class LoginController implements Constants.GoogleAndFacebookAuthenticatio
     public String login(@RequestParam(name = "code", required = false) String code,
                         @RequestParam(value = "error", required = false) boolean error,
                         @RequestParam(name = "state", required = false) String type,
-                        Model model, HttpSession session) {
+                        Model model, HttpSession session, Locale locale) {
+        logger.info("Start login in URL /login, method GET");
+        setupTitle(model, locale);
         String email = "";
         String accessToken;
         try {
@@ -90,6 +97,7 @@ public class LoginController implements Constants.GoogleAndFacebookAuthenticatio
                     }
                 }
             } else {
+
                 return "login-logout-features/login";
             }
             List<UserDTO> user = userService.getUserByEmail(email);
@@ -108,6 +116,42 @@ public class LoginController implements Constants.GoogleAndFacebookAuthenticatio
         }
         return "redirect:/dashboard";
     }
+
+    // <editor-fold> desc="Google Login utils"
+    @NotNull
+    private static String getGoogleToken(String code) throws Exception {
+        String response = Request.Post(GOOGLE_LINK_GET_TOKEN).bodyForm(Form.form().add("client_id", GOOGLE_CLIENT_ID).add("client_secret", GOOGLE_CLIENT_SECRET).add("redirect_uri", GOOGLE_REDIRECT_URI).add("code", code).add("grant_type", GOOGLE_GRANT_TYPE).build()).execute().returnContent().asString();
+        JsonObject obj = new Gson().fromJson(response, JsonObject.class);
+        if (!obj.has("access_token")) {
+            throw new IOException("Failed to retrieve access token from Google");
+        }
+        return obj.get("access_token").toString().replaceAll("\"", "");
+    }
+
+    private static GoogleAccount getGoogleUserInfo(final String accessToken) throws Exception {
+        String link = GOOGLE_LINK_GET_USER_INFO + accessToken;
+        String response = Request.Get(link).execute().returnContent().asString();
+        return new Gson().fromJson(response, GoogleAccount.class);
+    }
+    // </editor-fold>
+
+    // <editor-fold> desc="Facebook Login utils"
+    @NotNull
+    private static String getFacebookToken(String code) throws Exception {
+        String response = Request.Post(FACEBOOK_LINK_GET_TOKEN).bodyForm(Form.form().add("client_id", FACEBOOK_CLIENT_ID).add("client_secret", FACEBOOK_CLIENT_SECRET).add("redirect_uri", FACEBOOK_REDIRECT_URI).add("code", code).build()).execute().returnContent().asString();
+        JsonObject obj = new Gson().fromJson(response, JsonObject.class);
+        if (!obj.has("access_token")) {
+            throw new IOException("Failed to retrieve access token from Facebook");
+        }
+        return obj.get("access_token").toString().replaceAll("\"", "");
+    }
+
+    private static FacebookAccount getFacebookUserInfo(final String accessToken) throws Exception {
+        String link = FACEBOOK_LINK_GET_USER_INFO + accessToken;
+        String response = Request.Get(link).execute().returnContent().asString();
+        return new Gson().fromJson(response, FacebookAccount.class);
+    }
+    // </editor-fold>
 
     // <editor-fold> desc="forgot password"
     @GetMapping("/forgotPassword")
@@ -171,42 +215,6 @@ public class LoginController implements Constants.GoogleAndFacebookAuthenticatio
     }
     // </editor-fold>
 
-    // <editor-fold> desc="Google Login utils"
-    @NotNull
-    private static String getGoogleToken(String code) throws Exception {
-        String response = Request.Post(GOOGLE_LINK_GET_TOKEN).bodyForm(Form.form().add("client_id", GOOGLE_CLIENT_ID).add("client_secret", GOOGLE_CLIENT_SECRET).add("redirect_uri", GOOGLE_REDIRECT_URI).add("code", code).add("grant_type", GOOGLE_GRANT_TYPE).build()).execute().returnContent().asString();
-        JsonObject obj = new Gson().fromJson(response, JsonObject.class);
-        if (!obj.has("access_token")) {
-            throw new IOException("Failed to retrieve access token from Google");
-        }
-        return obj.get("access_token").toString().replaceAll("\"", "");
-    }
-
-    private static GoogleAccount getGoogleUserInfo(final String accessToken) throws Exception {
-        String link = GOOGLE_LINK_GET_USER_INFO + accessToken;
-        String response = Request.Get(link).execute().returnContent().asString();
-        return new Gson().fromJson(response, GoogleAccount.class);
-    }
-    // </editor-fold>
-
-    // <editor-fold> desc="Facebook Login utils"
-    @NotNull
-    private static String getFacebookToken(String code) throws Exception {
-        String response = Request.Post(FACEBOOK_LINK_GET_TOKEN).bodyForm(Form.form().add("client_id", FACEBOOK_CLIENT_ID).add("client_secret", FACEBOOK_CLIENT_SECRET).add("redirect_uri", FACEBOOK_REDIRECT_URI).add("code", code).build()).execute().returnContent().asString();
-        JsonObject obj = new Gson().fromJson(response, JsonObject.class);
-        if (!obj.has("access_token")) {
-            throw new IOException("Failed to retrieve access token from Facebook");
-        }
-        return obj.get("access_token").toString().replaceAll("\"", "");
-    }
-
-    private static FacebookAccount getFacebookUserInfo(final String accessToken) throws Exception {
-        String link = FACEBOOK_LINK_GET_USER_INFO + accessToken;
-        String response = Request.Get(link).execute().returnContent().asString();
-        return new Gson().fromJson(response, FacebookAccount.class);
-    }
-    // </editor-fold>
-
     private boolean isEmailExisting(@NotNull String email, @NotNull List<String> list) {
         logger.info("verify email: " + email);
         return list.stream().anyMatch(email::equals);
@@ -265,6 +273,32 @@ public class LoginController implements Constants.GoogleAndFacebookAuthenticatio
                                 </body>
                                 </html>
                         """;
-        service.sendEmail(email, "[Interview Management System] Verify Code", subject);
+        service.sendNormalEmail(email, "[Interview Management System] Verify Code", subject);
+    }
+
+    private void setupTitle(@NotNull Model model, Locale locale) {
+        String loginTitle = source.getMessage("login_title", null, locale);
+        String loginButton = source.getMessage("login_button", null, locale);
+        String otherLoginMethod = source.getMessage("other_way_to_login", null, locale);
+        String rememberMe = source.getMessage("remember_me", null, locale);
+        String usernameField = source.getMessage("email_input_field", null, locale);
+        String passwordField = source.getMessage("password_input_field", null, locale);
+        String resetPassword = source.getMessage("reset_password", null, locale);
+
+        logger.info("login title: " + loginTitle);
+        logger.info("login button: " + loginButton);
+        logger.info("otherLoginMethod: " + otherLoginMethod);
+        logger.info("rememberMe: " + rememberMe);
+        logger.info("usernameField: " + usernameField);
+        logger.info("passwordField: " + passwordField);
+        logger.info("resetPassword: " + resetPassword);
+
+        model.addAttribute("loginTitle", loginTitle);
+        model.addAttribute("loginButton", loginButton);
+        model.addAttribute("otherLoginMethod", otherLoginMethod);
+        model.addAttribute("rememberMe", rememberMe);
+        model.addAttribute("username", usernameField);
+        model.addAttribute("password", passwordField);
+        model.addAttribute("forgotPassword", resetPassword);
     }
 }

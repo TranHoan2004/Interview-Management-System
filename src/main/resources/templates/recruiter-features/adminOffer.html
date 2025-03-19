@@ -313,8 +313,8 @@
       <tbody>
       <th:block th:each="offer : ${listO}">
         <tr>
-          <th:block th:each="candidate : ${listC}" th:if="${candidate.getId() == offer.getCandidateId()}">
-            <th:block th:each="user : ${listU}" th:if="${user.getId() == candidate.getId()}">
+          <th:block th:each="candidate : ${listC}" th:if="${candidate.getUserId() == offer.getCandidateId()}">
+            <th:block th:each="user : ${listU}" th:if="${user.getId() == candidate.getUserId()}">
               <td th:text="${user.getFullname()}"></td>
               <td th:text="${user.getEmail()}"></td>
               <td th:each="emp : ${listU}" th:if="${emp.getId() == offer.getEmployeeId()}"

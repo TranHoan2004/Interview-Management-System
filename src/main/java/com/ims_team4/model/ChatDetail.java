@@ -27,7 +27,7 @@ public class ChatDetail {
     @Column(name = "Message", nullable = false)
     private String message;
 
-    @Column(name = "Timestamp", nullable = false)
+    @Column(name = "Timestamp", nullable = false, updatable = false, insertable = false)
     @Temporal(TemporalType.TIMESTAMP)
     private Date timestamp;
 

@@ -8,12 +8,16 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
+import java.time.LocalDate;
+import java.util.Base64;
+import java.util.Date;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @SuperBuilder
 public class EmployeeDTO {
-    private long user;
+    private long userID;
     private String email;
     private String password;
     private String fullname;
@@ -26,5 +30,8 @@ public class EmployeeDTO {
     private Long interviewID;
     private HrRole role;
     private String workingName;
+    private LocalDate dob;
+    private int avatar;
+
 }
 

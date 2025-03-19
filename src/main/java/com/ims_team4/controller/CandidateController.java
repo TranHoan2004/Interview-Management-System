@@ -7,29 +7,33 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.server.ResponseStatusException;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
 @RequestMapping("/candidate")
 public class CandidateController {
+    private final CandidateService candidateService;
 
-    @Autowired
-    private CandidateService candidateService;
+    public CandidateController(CandidateService candidateService) {
+        this.candidateService = candidateService;
+    }
 
+    /**
+     * UC05: View Candidates List. GET /candidate/list
+     */
     @GetMapping("/list")
-    @PreAuthorize("hasAnyRole('ROLE_RECRUITER', 'ROLE_MANAGER', 'ROLE_ADMINISTRATOR', 'ROLE_INTERVIEWER')")
     public String viewCandidateList(Model model) {
         List<CandidateDTO> candidates = candidateService.getAllCandidate2();
         model.addAttribute("candidates", candidates);
@@ -47,46 +51,12 @@ public class CandidateController {
         return "Candidate/candidatelist";
     }
 
-//    @GetMapping("/details/interviewer/{id}")
-//    public String getCandidateDetailsForInterviewer(@PathVariable Long id, Model model) {
-//        List<CandidateDTO> candidateDTOs = candidateService.getCandidateById(id);
-//        if (!candidateDTOs.isEmpty()) {
-//            model.addAttribute("candidate", candidateDTOs.get(0));
-//        }
-//        return "Candidate/candidate-details-interviewer";
-//    }
-//
-//    @GetMapping("/details/hr/{id}")
-//    public String getCandidateDetailsForHR(@PathVariable Long id, Model model) {
-//        List<CandidateDTO> candidateDTOs = candidateService.getCandidateById(id);
-//        if (!candidateDTOs.isEmpty()) {
-//            model.addAttribute("candidate", candidateDTOs.get(0));
-//        }
-//        return "Candidate/candidate-details";
-//    }
-//
-//    @GetMapping("/details/recruiter/{id}")
-//    public String getCandidateDetailsForRecruiter(@PathVariable Long id, Model model) {
-//        List<CandidateDTO> candidateDTOs = candidateService.getCandidateById(id);
-//        if (!candidateDTOs.isEmpty()) {
-//            model.addAttribute("candidate", candidateDTOs.get(0));
-//        }
-//        return "Candidate/candidate-details";
-//    }
-//
-//    @GetMapping("/details/manager/{id}")
-//    public String getCandidateDetailsForManager(@PathVariable Long id, Model model) {
-//        List<CandidateDTO> candidateDTOs = candidateService.getCandidateById(id);
-//        if (!candidateDTOs.isEmpty()) {
-//            model.addAttribute("candidate", candidateDTOs.get(0));
-//        }
-//        return "Candidate/candidate-details-manager";
-//    }
 
-
+    /**
+     * UC07: View candidate details. GET /candidate/details
+     */
     // Hiển thị chi tiết ứng viên
     @GetMapping("/details/{id}")
-    @PreAuthorize("hasAnyRole('ROLE_RECRUITER', 'ROLE_MANAGER', 'ROLE_ADMINISTRATOR', 'ROLE_INTERVIEWER')")
     public String getCandidateDetails(@PathVariable Long id, Model model) {
         System.out.println("🟢 Request for Candidate Details with ID: " + id);
         CandidateDTO candidate = candidateService.getCandidateById2(id);
@@ -101,18 +71,48 @@ public class CandidateController {
         return "Candidate/candidate-details";
     }
 
+    @GetMapping("/add")
+    public String showCreateCandidateForm(Model model) {
+        return "Candidate/create-candidate";
+    }
 
 
+    @GetMapping("/delete/{userId}")
+    public String deleteCandidate(@PathVariable("userId") Long userId, RedirectAttributes redirectAttributes) {
+        CandidateDTO candidate = candidateService.getCandidateDetails(userId);
 
+        if (candidate == null) {
+            redirectAttributes.addFlashAttribute("error", "Candidate not found.");
+            return "redirect:/candidate/list";
+        }
 
+        if (!"OPEN".equalsIgnoreCase(candidate.getStatus())) {
+            redirectAttributes.addFlashAttribute("error", "Candidate cannot be deleted unless status is 'OPEN'.");
+            return "redirect:/candidate/list";
+        }
 
+        boolean isDeleted = candidateService.deleteCandidateByUserId(userId);
+        if (isDeleted) {
+            redirectAttributes.addFlashAttribute("success", "Candidate deleted successfully.");
+        } else {
+            redirectAttributes.addFlashAttribute("error", "Error deleting candidate.");
+        }
 
+        return "redirect:/candidate/list";
+    }
 
+    @PostMapping("/ban/{userId}")
+    public String banCandidate(@PathVariable("userId") Long userId, RedirectAttributes redirectAttributes) {
+        boolean isBanned = candidateService.banCandidateByUserId(userId);
 
+        if (isBanned) {
+            redirectAttributes.addFlashAttribute("banSuccess", "Candidate banned successfully.");
+        } else {
+            redirectAttributes.addFlashAttribute("error", "Error banning candidate or candidate is already banned.");
+        }
 
-
-
-
+        return "redirect:/candidate/list";
+    }
 
 
 }

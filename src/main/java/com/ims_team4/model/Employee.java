@@ -23,7 +23,7 @@ public class Employee {
 
     @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.MERGE)
     @MapsId
-    @JoinColumn(name = "id")
+    @JoinColumn(name = "id", nullable = false)
     private Users user;
 
     @Enumerated(EnumType.STRING)
@@ -37,9 +37,6 @@ public class Employee {
     @JoinColumn(name = "department_id", nullable = false)
     private Department department;
 
-    @Column(name = "interview_id")
-    private long interviewID;
-
     @OneToMany(mappedBy = "employee", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Offer> offers;
 
@@ -47,17 +44,17 @@ public class Employee {
     private String password;
 
     @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    @JoinColumn(name = "position_id")
+    @JoinColumn(name = "position_id", nullable = false)
     private Position position;
 
     @OneToMany(mappedBy = "employee", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Candidate> candidates;
 
     @OneToMany(mappedBy = "manager", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<Chat> managedChats; // Danh sách các Chat mà Employee là manager
+    private Set<Chat> managedChats; // Employee là manager của Chat
 
     @OneToMany(mappedBy = "recruiter", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<Chat> recruitedChats; // Danh sách các Chat mà Employee là recruiter
+    private Set<Chat> recruitedChats; // Employee là recruiter của Chat
 
 //    @OneToMany(mappedBy = "employee", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 //    private Set<Job> jobs;

@@ -12,7 +12,6 @@ import java.util.stream.Collectors;
 
 @Service
 public class HighestLevelServiceImpl implements HighestLevelService {
-
     private final HighestLevelRepository highestLevelRepository;
 
     public HighestLevelServiceImpl(HighestLevelRepository highestLevelRepository) {

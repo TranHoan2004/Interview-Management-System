@@ -27,6 +27,8 @@ public interface EmployeeService {
 
     List<EmployeeDTO> getAllEmployeeByRole(HrRole role);
 
-    EmployeeDTO getEmployeeById(int id);
+    EmployeeDTO getEmployeeById(long id);
+
+    List<EmployeeDTO> search(String title, Long positionId);
 
 }

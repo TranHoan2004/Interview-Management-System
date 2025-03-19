@@ -102,14 +102,14 @@
                 <nav aria-label="breadcrumb">
                     <ol class="breadcrumb bg-white shadow-sm p-2 rounded">
                         <li class="breadcrumb-item">
-                            <a th:href="@{/offer/offer/{rid}(rid=${rid})}" class="text-decoration-none text-primary fw-bold">Home Page</a>
+                            <a th:href="@{/offer/offer/{rid}(rid=${rid})}"
+                               class="text-decoration-none text-primary fw-bold">Home Page</a>
                         </li>
                     </ol>
                 </nav>
             </div>
             <div th:replace="~{component/top-sidebar::topSidebar}"></div>
         </div>
-
 
         <!-- Content -->
         <h3>
@@ -121,9 +121,9 @@
             <form th:action="@{/user/list}" method="get" class="d-flex mb-3 ps-2">
                 <input type="text" class="form-control me-2" name="title" placeholder="Search by title"
                        th:value="${title}">
-                <select name="role">
+                <select name="positionId">
                     <option value="">Role</option>
-                    <option th:each="r : ${role}" th:value="${r.id}" th:text="${r.name}"
+                    <option th:each="r : ${position}" th:value="${r.id}" th:text="${r.name}"
                             th:selected="${selectedRole != null and selectedRole == r.id}">
                     </option>
                 </select>
@@ -157,15 +157,15 @@
                             <td th:text="${items.getEmail()}"></td>
                             <td th:text="${items.getPhone()}"></td>
                             <td th:text="${items.getPositionName()}"></td>
-                            <td th:text="${items.isStatus()}"></td>
+                            <td th:text="${items.isStatus()} ? 'Activate' : 'Deactivated'"></td>
                             <td>
-                                <a th:href="@{/user/edit(id=${items.getUser()})}">
+                                <a th:href="@{/user/details/{id}(id=${items.getUserID()})}">
                                     <i class="bi bi-0-circle"></i>
-                                </a>&nbsp;
-                                <a th:href="@{/user/details(id=${items.getUser()})}">
+                                </a>
+                                <a th:href="@{/user/edit/{id}(id=${items.getUserID()})}">
                                     <i class="bi bi-pencil-square"></i>
                                 </a>
-                                <a th:href="@{/user/details(id=${items.getUser()})}">
+                                <a th:href="@{/user/details(id=${items.getUserID()})}">
                                     <i class="bi bi-trash"></i>
                                 </a>
                             </td>

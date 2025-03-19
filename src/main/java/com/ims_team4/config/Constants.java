@@ -46,4 +46,9 @@ public interface Constants {
         String ROLE_RECRUITER = "RECRUITER";
     }
 
+    interface Link {
+        String NOTIFICATION_LINK = "http://localhost:8080/notification";
+        String INTERVIEW_LINK = "http://localhost:8080/interview";
+    }
+
 }

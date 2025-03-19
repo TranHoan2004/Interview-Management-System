@@ -70,7 +70,8 @@
                         <label class="form-label">Benefits</label>
                         <select id="benefits" class="form-control" multiple th:field="*{benefitNames}">
                             <option th:each="benefit : ${benefits}" th:value="${benefit.id}"
-                                    th:text="${benefit.name}"></option>
+                                    th:text="${benefit.name}">
+                            </option>
                         </select>
                     </div>
 
@@ -94,7 +95,7 @@
 
                 <div class="d-flex justify-content-end gap-3 mt-5">
                     <button class="btn btn-secondary" type="submit">Submit</button>
-                    <a th:href="@{/jobs/manager/list/{id}(id=${session.account.getUser()})}"
+                    <a th:href="@{/jobs/manager/list/{id}(id=${session.account.getUserID()})}"
                        class="btn btn-secondary"
                        type="button">Cancel</a>
                 </div>

@@ -1,3 +1,14 @@
+.lang-container {
+    position: absolute;
+    top: 10px;
+    right: 20px;
+}
+
+#langSelect {
+    padding: 5px;
+    font-size: 14px;
+}
+
 .modal {
     display: none; /* Ẩn modal mặc định */
     position: fixed;
@@ -212,12 +223,14 @@ p {
 
 body, html {
     height: 100%;
-    font-family: Poppins-Regular, sans-serif;
+    font-family: "Noto Sans", "Noto Sans JP", Arial, "Hiragino Kaku Gothic Pro", "Meiryo", sans-serif;
+    max-width: 100%;
 }
 
 /*---------------------------------------------*/
 a {
-    font-family: Poppins-Regular, serif;
+    font-family: "Noto Sans", "Noto Sans JP", Arial, "Hiragino Kaku Gothic Pro", "Meiryo", serif;
+    max-width: 100%;
     font-size: 14px;
     line-height: 1.7;
     color: #666666;
@@ -243,7 +256,8 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 p {
-    font-family: Poppins-Regular, serif;
+    font-family: "Noto Sans", "Noto Sans JP", Arial, "Hiragino Kaku Gothic Pro", "Meiryo", serif;
+    max-width: 100%;
     font-size: 14px;
     line-height: 1.7;
     color: #666666;
@@ -354,17 +368,19 @@ iframe {
 /*//////////////////////////////////////////////////////////////////
 [ Utility ]*/
 .txt1 {
-    font-family: Poppins-Regular, serif;
+    font-family: "Noto Sans", "Noto Sans JP", Arial, "Hiragino Kaku Gothic Pro", "Meiryo", serif;
     font-size: 13px;
     line-height: 1.5;
     color: #999999;
+    max-width: 100%;
 }
 
 .txt2 {
-    font-family: Poppins-Regular, serif;
+    font-family: "Noto Sans", "Noto Sans JP", Arial, "Hiragino Kaku Gothic Pro", "Meiryo", serif;
     font-size: 13px;
     line-height: 1.5;
     color: #666666;
+    max-width: 100%;
 }
 
 
@@ -429,12 +445,12 @@ iframe {
 }
 
 .login100-form-title {
-    font-family: Poppins-Bold, serif;
+    font-family: "Noto Sans", "Noto Sans JP", Arial, "Hiragino Kaku Gothic Pro", "Meiryo", serif;
     font-size: 24px;
     color: #333333;
     line-height: 1.2;
     text-align: center;
-
+    max-width: 100%;
     width: 100%;
     display: block;
     padding-bottom: 54px;
@@ -450,11 +466,11 @@ iframe {
 }
 
 .input100 {
-    font-family: Poppins-Medium, serif;
+    font-family: "Noto Sans", "Noto Sans JP", Arial, "Hiragino Kaku Gothic Pro", "Meiryo", serif;
     font-size: 15px;
     line-height: 1.5;
     color: #666666;
-
+    max-width: 100%;
     display: block;
     width: 100%;
     background: #e6e6e6;

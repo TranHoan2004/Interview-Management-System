@@ -1,6 +1,7 @@
 package com.ims_team4.controller;
 
 import com.ims_team4.controller.utils.SessionController;
+import com.ims_team4.controller.utils.SetupSidebar;
 import com.ims_team4.service.UserService;
 import com.ims_team4.service.impl.EmployeeServiceImpl;
 import jakarta.servlet.http.HttpSession;
@@ -9,6 +10,10 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.RequestParam;
+
+import java.util.Locale;
 
 @Controller
 public class HomeController {
@@ -20,7 +25,6 @@ public class HomeController {
 
     @GetMapping("/")
     public String index() {
-//        return "login-logout-features/login";
         return "redirect:/dashboard";
     }
 
@@ -31,7 +35,7 @@ public class HomeController {
      * @author HoanTX
      */
     @GetMapping("/dashboard")
-    public String dashboard(@NotNull Model model, HttpSession session) {
+    public String dashboard(@NotNull Model model, HttpSession session, Locale locale) {
         details.throwDataToTopSidebar(session, model);
         return "component/dashboard";
     }

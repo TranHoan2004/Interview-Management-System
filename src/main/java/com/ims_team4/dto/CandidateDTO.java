@@ -16,7 +16,6 @@ import java.util.Set;
 @AllArgsConstructor
 @SuperBuilder
 public class CandidateDTO {
-    private Long id;
     private long highestEducation;
     private int experience;
     private int positionId;
@@ -25,22 +24,22 @@ public class CandidateDTO {
     private Long offerId;
     //Hai Dang
     private Long userId;
-    private String fullName; // ✅ Thêm tên ứng viên
-    private String email; // ✅ Thêm email
-    private String phone; // ✅ Thêm số điện thoại
-    private String ownerHR; // ✅ Thêm người phụ trách HR
-    private String status; // ✅ Thêm trạng thái ứng viên
-    private Set<String> skills; // ✅ Thêm danh sách kỹ năng (nếu cần)
+    private String fullName;
+    private String email;
+    private String phone;
+    private String ownerHR;
+    private String status;
     private LocalDate dob;
     private String address;
     private Integer gender;
     private String recruiter;
     private String note;
+    private Set<String> skills;
 
 
     // Getter cho cvLink (trả về link giả định nếu có)
     public String getCvLink() {
-        return (cv != null) ? "/cvs/" + id : null;
+        return (cv != null) ? "/cvs/" + userId : null;
     }
 
 }

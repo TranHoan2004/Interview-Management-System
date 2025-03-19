@@ -71,16 +71,29 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public UserDTO getUserWithId(long id) {
+        return convertToDTO(userRepository.getUserById(id));
+    }
+
+    @Override
     public Optional<UserDTO> getManagerById(Long id) {
         Users user = userRepository.getUserById(id);
         return user != null ? Optional.of(convertToDTO(user)) : Optional.empty();
     }
 
-
     @NotNull
     private Users convertToEntity(@NotNull UserDTO userDTO) {
-        Users user = new Users();
-        user.setId(userDTO.getId());
+        Users user;
+
+        if (userDTO.getId() != null) {
+            // Lấy entity từ database nếu có ID
+            user = userRepository.findById(userDTO.getId())
+                    .orElseThrow(() -> new RuntimeException("User not found"));
+        } else {
+            // Tạo mới nếu không có ID
+            user = new Users();
+        }
+
         user.setDob(userDTO.getDob());
         user.setGender(userDTO.getGender());
         user.setEmail(userDTO.getEmail());
@@ -90,14 +103,9 @@ public class UserServiceImpl implements UserService {
         user.setPhone(userDTO.getPhone());
         user.setStatus(userDTO.isStatus());
         user.setNote(userDTO.getNote());
-        //user.setRole(userDTO.getRole());
-
-        // Nếu có thông tin notification, xử lý thêm ở đây
-        // Ví dụ: user.setNotification(someNotification);
 
         return user;
     }
-
 
     private UserDTO convertToDTO(@NotNull Users user) {
         return UserDTO.builder()
@@ -111,8 +119,6 @@ public class UserServiceImpl implements UserService {
                 .phone(user.getPhone())
                 .status(user.isStatus())
                 .note(user.getNote())
-                //.role(user.getRole())
-                .notificationID(user.getNotification() != null ? user.getNotification().getId() : 0)
                 .build();
     }
 }

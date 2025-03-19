@@ -18,6 +18,7 @@ public interface EmployeeRepository extends JpaRepository<Employee, Long> {
     @NotNull
     @Query("FROM Employee e WHERE e.id=:id")
     Optional<Employee> findById(@NotNull Long id);
+    List<Employee> findByUserIn(List<Users> users);
 
     // 🔹 Tìm Employee theo User
     Optional<Employee> findByUser(Users user);
@@ -36,5 +37,18 @@ public interface EmployeeRepository extends JpaRepository<Employee, Long> {
     // 🔹 Lấy danh sách Employee theo vai trò (Role)
     @Query("SELECT e FROM Employee e WHERE e.role = :role")
     List<Employee> findAllEmployeesByRole(@Param("role") HrRole role);
+
+    @Query("SELECT e FROM Employee e WHERE e.position.id = :positionId")
+    List<Employee> findByPositionId(@Param("positionId") long positionId);
+    @Query(value = """
+    SELECT e.* 
+    FROM employee e
+    JOIN users u ON e.id = u.id  -- Employee.id chính là Users.id
+    WHERE (:title IS NULL OR u.fullname LIKE CONCAT('%', :title, '%')) 
+    AND (:positionId IS NULL OR e.position_id = :positionId)
+    """, nativeQuery = true)
+    List<Employee> findByUserInAndPositionId(@Param("title") String title, @Param("positionId") Long positionId);
+    @Query("SELECT e FROM Employee e JOIN e.user u WHERE u.fullname LIKE %:fullname%")
+    List<Employee> findByName(@Param("fullname") String fullname);
 }
 

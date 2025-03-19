@@ -14,54 +14,69 @@
     </style>
 </head>
 <body>
-
 <!-- Sidebar -->
 <div class="sidebar col-md-2 col-sm-3" th:fragment="leftSidebar">
     <h4><span class="logo">DEV</span> IMS</h4>
 
-    <a th:href="@{/dashboard}"><i class="fa-solid fa-house"></i> Home</a>
-    <a th:href="@{/candidate/list}"><i class="fa-solid fa-user"></i> Candidate</a>
+    <a th:href="@{/dashboard}">
+        <i class="fa-solid fa-house"></i>
+        <div th:text="${homeLeftSidebar}"></div>
+    </a>
+
+    <a th:href="@{/candidate/list}">
+        <i class="fa-solid fa-user"></i>
+        <div th:text="${candidateLeftSidebar}"></div>
+    </a>
 
     <!--Job-->
     <div th:if="${session.account.getRole().name().equals('ROLE_MANAGER')}">
-        <a th:href="@{/jobs/manager/list/{id}(id=${session.account.getUser()})}"><i class="fa-solid fa-briefcase"></i>
-            Job</a>
-    </div>
-    <div th:if="${session.account.getRole().name().equals('ROLE_ADMINISTRATOR')}">
-        <a th:href="@{/jobs/admin/listAllJob}"><i class="fa-solid fa-briefcase"></i>
-            Job</a>
+        <a th:href="@{/jobs/manager/list/{id}(id=${session.account.getUserID()})}">
+            <i class="fa-solid fa-briefcase"></i>
+            <div th:text="${jobLeftSidebar}"></div>
+        </a>
     </div>
 
-    <a th:href="@{/interview/list}"><i class="fa-solid fa-comments"></i> Interview</a>
-    <div th:if="${session.account.getRole().name().equals('ROLE_RECRUITER')}">
-        <a th:href="@{/offer/offer/{id}(id=${session.account.getUser()})}" id="offer-link">
-            <i class="fa-solid fa-file-alt"></i> Offer
-        </a>
-    </div>
-    <div th:if="${session.account.getRole().name().equals('ROLE_MANAGER')}">
-        <a th:href="@{/offer/managerOffer/{id}(id=${session.account.getUser()})}" id="manager-offer-link">
-            <i class="fa-solid fa-file-alt"></i> Offer
-        </a>
-    </div>
     <div th:if="${session.account.getRole().name().equals('ROLE_ADMINISTRATOR')}">
-        <a th:href="@{/offer/adminOffer/{id}(id=${session.account.getUser()})}" id="admin-offer-link">
-            <i class="fa-solid fa-file-alt"></i> Offer
+        <a th:href="@{/jobs/admin/listAllJob}">
+            <i class="fa-solid fa-briefcase"></i>
+            <div th:text="${jobLeftSidebar}"></div>
+        </a>
+    </div>
+
+    <a th:href="@{/interview/list}">
+        <i class="fa-solid fa-comments"></i>
+        <div th:text="${interviewLeftSidebar}"></div>
+    </a>
+
+    <div th:if="${session.account.getRole().name().equals('ROLE_RECRUITER')}">
+        <a th:href="@{/offer/offer/{id}(id=${session.account.getUserID()})}" id="offer-link">
+            <i class="fa-solid fa-file-alt"></i>
+            <div th:text="${offerLeftSidebar}"></div>
+        </a>
+    </div>
+
+    <div th:if="${session.account.getRole().name().equals('ROLE_MANAGER')}">
+        <a th:href="@{/offer/managerOffer/{id}(id=${session.account.getUserID()})}" id="manager-offer-link">
+            <i class="fa-solid fa-file-alt"></i>
+            <div th:text="${offerLeftSidebar}"></div>
+        </a>
+    </div>
+
+    <div th:if="${session.account.getRole().name().equals('ROLE_ADMINISTRATOR')}">
+        <a th:href="@{/offer/adminOffer/{id}(id=${session.account.getUserID()})}" id="admin-offer-link">
+            <i class="fa-solid fa-file-alt"></i>
+            <div th:text="${offerLeftSidebar}"></div>
         </a>
         <a th:href="@{/user/list}" id="user-management-link">
-            <i class="fa-solid fa-users"></i> User Management
+            <i class="fa-solid fa-users"></i>
+            <div th:text="${userManagementLeftSidebar}"></div>
         </a>
     </div>
 </div>
-
 </body>
 <script>
-    // Lấy đường dẫn hiện tại
     const currentPath = window.location.pathname;
-
-    // Lấy tất cả các liên kết trong sidebar
     const sidebarLinks = document.querySelectorAll('.sidebar a');
-
-    // Duyệt qua từng liên kết và kiểm tra xem nó có khớp với đường dẫn hiện tại không
     sidebarLinks.forEach(link => {
         const linkPath = link.getAttribute('href');
         if (linkPath === currentPath) {

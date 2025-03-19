@@ -237,7 +237,7 @@
                     <select class="form-select" name="candidate" required>
                         <option th:value="0">Select Candidate Name</option>
                         <th:block th:each="candidate : ${listC}">
-                            <option th:each="user : ${listU}" th:value="${candidate.getId()}" th:if="${user.getId() == candidate.getId()}" th:text="${user.getFullname()}"></option>
+                            <option th:each="user : ${listU}" th:value="${candidate.getUserId()}" th:if="${user.getId() == candidate.getUserId()}" th:text="${user.getFullname()}"></option>
                         </th:block>
                     </select>
                 </div>
@@ -255,7 +255,7 @@
                     <select class="form-select" name="approver" required>
                         <option th:value="0">Select an approver</option>
                         <th:block th:each="employee : ${listE}">
-                            <option th:each="user : ${listU}" th:value="${employee.getUser()}" th:if="${user.getId() == employee.getUser()}" th:text="${user.getFullname()}"></option>
+                            <option th:each="user : ${listU}" th:value="${employee.getUserID()}" th:if="${user.getId() == employee.getUserID()}" th:text="${user.getFullname()}"></option>
                         </th:block>
                     </select>
                 </div>
@@ -317,7 +317,7 @@
                     <select class="form-select" name="recruiterOwner" id="userSelect" required>
                         <option th:value="0">Select a recruiter</option>
                         <th:block th:each="employee : ${listR}">
-                            <option th:each="user : ${listU}" th:value="${employee.getUser()}" th:if="${user.getId() == employee.getUser()}" th:text="${user.getFullname()}" ></option>
+                            <option th:each="user : ${listU}" th:value="${employee.getUserID()}" th:if="${user.getId() == employee.getUserID()}" th:text="${user.getFullname()}" ></option>
                         </th:block>
                     </select>
                     <a id="assignButton" class="text-decoration-none" style="cursor: pointer">Assigned to me</a>

@@ -8,4 +8,6 @@ import java.util.List;
 public interface NotificationRepository extends CrudRepository<Notification, Long> {
     // Duc Long getALlNotificaionByUserId
     List<Notification> getAllNotificationByUserId();
+
+    Notification getByUserId(Long id);
 }

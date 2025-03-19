@@ -14,7 +14,6 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Skill {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -25,12 +24,7 @@ public class Skill {
     @ManyToMany(mappedBy = "skills")
     private Set<Candidate> candidates;
 
-    @ManyToMany
-    @JoinTable(
-            name = "job_skill",
-            joinColumns = @JoinColumn(name = "skill_id"),
-            inverseJoinColumns = @JoinColumn(name = "job_id")
-    )
+    @ManyToMany(mappedBy = "skills")
     @JsonIgnore
     private Set<Job> jobs;
 }

@@ -1,7 +1,10 @@
 package com.ims_team4.repository;
 
 import com.ims_team4.model.Candidate;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 import java.util.Optional;
@@ -19,7 +22,15 @@ public interface CandidateRepository extends CrudRepository<Candidate, Long> {
 
     List<Candidate> getAllCandidate2();
 
-    Optional<Candidate> getCandidateById2(Long id);
+    Optional<Candidate> getCandidateByUserId(Long userId);
 
     // Tìm ứng viên theo userId
-    Optional<Candidate> findByUserId(Long userId);}
+    Optional<Candidate> findByUserId(Long userId);
+
+    void deleteByUserId(Long userId);
+
+    @Modifying
+    @Query("UPDATE Candidate c SET c.status = 'BANNED' WHERE c.user.id = :userId")
+    void banCandidateByUserId(@Param("userId") Long userId);
+
+}

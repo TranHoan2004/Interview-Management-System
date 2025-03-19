@@ -7,7 +7,7 @@ import java.nio.file.*;
 
 public class FileToBinary {
     public static void main(String[] args) {
-        String filePath = "D:\\OJT_PĐL\\PhamDucLong_CV.docx";
+        String filePath = "src/main/resources/static/images/avatar/avatar1.jpg";
 
         try {
             byte[] fileBytes = Files.readAllBytes(Paths.get(filePath));

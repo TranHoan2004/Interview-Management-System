@@ -12,7 +12,6 @@ import java.util.stream.Collectors;
 
 @Service
 public class PositionServiceImpl implements PositionService {
-
     private final PositionRepository positionRepository;
 
     public PositionServiceImpl(PositionRepository positionRepository) {

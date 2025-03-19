@@ -12,7 +12,6 @@ import java.util.stream.Collectors;
 
 @Service
 public class StatusOfferServiceImpl implements StatusOfferService {
-
     private final StatusOfferRepository statusOfferRepository;
 
     public StatusOfferServiceImpl(StatusOfferRepository statusOfferRepository) {

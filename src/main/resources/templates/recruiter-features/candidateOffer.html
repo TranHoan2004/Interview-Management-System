@@ -46,7 +46,7 @@
                                     <span th:each="interview : ${listI}" th:remove="tag">
                                         <span th:each="employee : ${listE}" th:if="${employee.getInterviewID() == interview.getId()}" th:remove="tag">
                                             <span th:if="${offer.getInterviewId() == interview.getId()}" th:remove="tag">
-                                                <span th:each="user, iterStat : ${listU}" th:if="${user.getId() == employee.getUser()}" th:remove="tag">
+                                                <span th:each="user, iterStat : ${listU}" th:if="${user.getId() == employee.getUserID()}" th:remove="tag">
                                                     <span th:with="nameParts=${#strings.arraySplit(user.fullname, ' ')}"
                                                           th:text="${nameParts[#lists.size(nameParts) - 1] + #strings.substring(nameParts[0], 0, 1) + (#lists.size(nameParts) > 2 ? #strings.substring(nameParts[1], 0, 1) : '')}"></span>
                                                     <span th:if="${!iterStat.last}">, </span>

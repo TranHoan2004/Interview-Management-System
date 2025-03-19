@@ -130,3 +130,53 @@ body {
 .badge {
     font-size: 0.9rem;
 }
+.custom-popup {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+    padding: 15px 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transition: all 0.3s ease-in-out;
+    opacity: 0;
+    transform: translateX(100px);
+    z-index: 1000;
+    pointer-events: none;
+}
+
+.popup-content {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.text-success {
+    color: #28a745;
+}
+
+.text-danger {
+    color: #dc3545;
+}
+
+.btn-close-custom {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 18px;
+    color: #666;
+}
+
+.btn-close-custom:hover {
+    color: #333;
+}
+
+/* Hiện popup */
+.show {
+    opacity: 1;
+    transform: translateX(0);
+    pointer-events: all;
+}

@@ -5,6 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
           integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css"
           integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU" crossorigin="anonymous">
     <link rel="icon" type="image/png" th:href="@{/images/icons/favicon.ico}"/>
@@ -15,23 +16,31 @@
     <link rel="stylesheet" type="text/css" th:href="@{/vendor/select2/select2.min.css}">
     <link rel="stylesheet" type="text/css" th:href="@{/css/login.css}"/>
     <title>Log in</title>
+    <style>
+        #langSelect {
+            max-width: 100px;
+            text-overflow: ellipsis;
+        }
+    </style>
 </head>
 
 <body>
 <div class="container-login100">
+    <div class="lang-container">
+        <div th:replace="~{component/switch-language::switchLang}"></div>
+    </div>
     <div class="wrap-login100">
         <div class="login100-pic js-tilt" data-tilt>
             <img th:src="@{/images/img-01.png}" alt="IMG">
         </div>
         <form class="form-signin" th:action="@{/login}" th:method="POST">
-            <span class="login100-form-title">
-                Login in here
-            </span>
+            <span class="login100-form-title" th:text="${loginTitle}"></span>
+
             <!--Input email-->
             <div class="wrap-input100 validate-input" data-validate="Valid email is required: ex@abc.xyz">
                 <label for="inputEmail">
                     <input class="input100 form-control" type="text" id="inputEmail" name="username"
-                           placeholder="Username" required="" autofocus="">
+                           th:placeholder="${username}" required="" autofocus="">
                 </label>
                 <span class="focus-input100"></span>
                 <span class="symbol-input100">
@@ -43,7 +52,7 @@
             <div class="wrap-input100 validate-input" data-validate="Password is required">
                 <label for="inputPassword">
                     <input class="input100 form-control" type="password" name="password" id="inputPassword"
-                           placeholder="Password" required="">
+                           required="" th:placeholder="${password}">
                 </label>
                 <span class="focus-input100"></span>
                 <span class="symbol-input100">
@@ -59,19 +68,18 @@
             <!--Remember me-->
             <div class="form-group form-check">
                 <input name="remember-me" value="1" type="checkbox" class="form-check-input" id="exampleCheck1">
-                <label class="form-check-label" for="exampleCheck1">Remember me</label>
+                <label class="form-check-label" for="exampleCheck1" th:text="${rememberMe}"></label>
             </div>
 
             <p style="color: red" th:if="${error != null}" th:text="${error}"></p>
 
             <div class="container-login100-form-btn">
-                <button class="login100-form-btn" type="submit" style="background: #57b846;">
-                    Login
-                </button>
+                <button class="login100-form-btn" type="submit" style="background: #57b846;" th:text="${loginButton}"></button>
             </div>
             <hr>
 
-            <p>Or sign in with</p>
+            <p th:text="${otherLoginMethod}"></p>
+
             <!--Login by Facebook and Google-->
             <div>
                 <div class="container-login100-form-btn">
@@ -116,7 +124,7 @@
             </div>
 
             <div class="text-center p-t-136">
-                <a class="txt2" th:href="@{/forgotPassword}">Forgot your password?</a><br>
+                <a class="txt2" th:href="@{/forgotPassword}" th:text="${forgotPassword}"></a><br>
             </div>
         </form>
     </div>
@@ -125,6 +133,7 @@
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
         integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
         crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script th:src="@{/js/login.js}"></script>
 <script th:src="@{/js/main.js}"></script>
 <script th:src="@{/vendor/jquery/jquery-3.2.1.min.js}"></script>
@@ -148,6 +157,11 @@
             toggleIcon.classList.remove("fa-eye");
             toggleIcon.classList.add("fa-eye-slash");
         }
+    }
+
+    function changeLanguage() {
+        let lang = document.getElementById('langSelect');
+        window.location.href = '?lang=' + lang.value;
     }
 </script>
 </body>

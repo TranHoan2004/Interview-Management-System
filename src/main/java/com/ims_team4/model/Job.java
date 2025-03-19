@@ -35,7 +35,12 @@ public class Job {
     @Column(name = "salary_to", nullable = false)
     private Long salaryTo;
 
-    @ManyToMany(mappedBy = "jobs")
+    @ManyToMany
+    @JoinTable(
+            name = "job_skill",
+            joinColumns = @JoinColumn(name = "skill_id"),
+            inverseJoinColumns = @JoinColumn(name = "job_id")
+    )
     @JsonIgnore
     private Set<Skill> skills;
 
@@ -78,6 +83,6 @@ public class Job {
     private Set<Interview> interviews;
 
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "user_id", nullable = false)
     private Users user;
 }

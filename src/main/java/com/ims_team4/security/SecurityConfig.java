@@ -11,8 +11,6 @@ import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
-import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
-import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
@@ -22,7 +20,9 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.rememberme.JdbcTokenRepositoryImpl;
 import org.springframework.security.web.authentication.rememberme.PersistentTokenRepository;
-import org.springframework.security.web.authentication.session.SessionFixationProtectionStrategy;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import javax.sql.DataSource;
 import java.util.List;
@@ -113,9 +113,7 @@ public class SecurityConfig implements Constants.Role {
                 .exceptionHandling(ex -> ex
                         .authenticationEntryPoint((request, response, authException) ->
                                 response.sendRedirect("/login"))
-                        .accessDeniedHandler((request, response, accessDeniedException) -> {
-                            log.warning("Error happends when exeptionHandling is working: " + accessDeniedException.getMessage());
-                        })
+                        .accessDeniedHandler((request, response, accessDeniedException) -> log.warning("Error happens when exeptionHandling is working: " + accessDeniedException.getMessage()))
                 )
                 .sessionManagement(session -> session
                         .maximumSessions(1) // 1 user can access with only 1 device, if he/she try to use with 2 or more, the previous session will immediately be canceled.
@@ -226,45 +224,45 @@ public class SecurityConfig implements Constants.Role {
                 .build();
     }
 
-    @Bean
-    public SecurityFilterChain interviewFunctionalFilterChain(HttpSecurity http) throws Exception {
-        return http
-                .securityMatcher("/interview/**")
-                .csrf(AbstractHttpConfigurer::disable)
-                .authorizeHttpRequests(authorize -> authorize
-                        // Full 4 actors can access this URL.
-                        .requestMatchers(
-                                "/interview/list", // UC16 view interview schedule list
-                                "/interview/interviewDetail" // UC18 view interview schedule details
-                        )
-                        .hasAnyRole(ROLE_RECRUITER, ROLE_MANAGER, ROLE_ADMINISTRATOR, ROLE_INTERVIEWER)
-
-                        // 3 actors can access this URL: Recruiter, Manager, Administrator.
-                        .requestMatchers(
-                                "/interview/createInterview", // UC17 create new interview schedule
-                                "/interview/editInterview", // UC20 edit interview details
-                                "/interview/cancelInterview" // UC21 cancel interview schedule
-                        )
-                        .hasAnyRole(ROLE_RECRUITER, ROLE_MANAGER, ROLE_ADMINISTRATOR)
-
-                        // Only Interviewer can access this URL.
-                        .requestMatchers(
-                                "/interview/submit", // UC19 submit interview result
-                                "/interview/reminder" // UC22 reminder
-                        )
-                        .hasAnyRole(ROLE_INTERVIEWER)
-                        .anyRequest().authenticated()
-                )
-                // When users try to access any URLs but haven't logged in yet, the system will redirect to /login.
-                .exceptionHandling(ex -> ex
-                        .authenticationEntryPoint((request, response, authException) ->
-                                response.sendRedirect("/login"))
-                        .accessDeniedHandler((request, response, authException) ->
-                                response.sendRedirect("/error")
-                        )
-                ).httpBasic(Customizer.withDefaults())
-                .build();
-    }
+//    @Bean
+//    public SecurityFilterChain interviewFunctionalFilterChain(HttpSecurity http) throws Exception {
+//        return http
+//                .securityMatcher("/interview/**")
+//                .csrf(AbstractHttpConfigurer::disable)
+//                .authorizeHttpRequests(authorize -> authorize
+//                        // Full 4 actors can access this URL.
+//                        .requestMatchers(
+//                                "/interview/list", // UC16 view interview schedule list
+//                                "/interview/interviewDetail" // UC18 view interview schedule details
+//                        )
+//                        .hasAnyRole(ROLE_RECRUITER, ROLE_MANAGER, ROLE_ADMINISTRATOR, ROLE_INTERVIEWER)
+//
+//                        // 3 actors can access this URL: Recruiter, Manager, Administrator.
+//                        .requestMatchers(
+//                                "/interview/createInterview", // UC17 create new interview schedule
+//                                "/interview/editInterview", "/interview/editInterviewView", // UC20 edit interview details
+//                                "/interview/cancelInterview" // UC21 cancel interview schedule
+//                        )
+//                        .hasAnyRole(ROLE_RECRUITER, ROLE_MANAGER, ROLE_ADMINISTRATOR)
+//
+//                        // Only Interviewer can access this URL.
+//                        .requestMatchers(
+//                                "/interview/submitResultView", "/interview/submitResult", // UC19 submit interview result
+//                                "/interview/reminder" // UC22 reminder
+//                        )
+//                        .hasAnyRole(ROLE_INTERVIEWER)
+//                        .anyRequest().authenticated()
+//                )
+//                // When users try to access any URLs but haven't logged in yet, the system will redirect to /login.
+//                .exceptionHandling(ex -> ex
+//                        .authenticationEntryPoint((request, response, authException) ->
+//                                response.sendRedirect("/login"))
+//                        .accessDeniedHandler((request, response, authException) ->
+//                                response.sendRedirect("/error")
+//                        )
+//                ).httpBasic(Customizer.withDefaults())
+//                .build();
+//    }
 
     @Bean
     public SecurityFilterChain offerFunctionalFilterChain(HttpSecurity http) throws Exception {
@@ -325,6 +323,25 @@ public class SecurityConfig implements Constants.Role {
                 ).httpBasic(Customizer.withDefaults())
                 .build();
     }
+
+//    @Bean
+//    public SecurityFilterChain webSocketFilterChain(HttpSecurity http) throws Exception {
+//        return http
+//                .csrf(AbstractHttpConfigurer::disable)
+//                .authorizeHttpRequests(authorize -> authorize
+//                        .requestMatchers("/websocket/**")
+//                        .hasAnyRole("RECRUITER", "MANAGER", "ADMINISTRATOR")
+//                )
+//                .exceptionHandling(ex -> ex
+//                        .authenticationEntryPoint((request, response, authException) ->
+//                                response.sendRedirect("/login"))
+//                        .accessDeniedHandler((request, response, accessDeniedException) ->
+//                                response.sendRedirect("/error")
+//                        )
+//                )
+//                .httpBasic(Customizer.withDefaults())
+//                .build();
+//    }
 
     @Bean
     public SecurityFilterChain candidateFunctionalFilterChain(HttpSecurity http) throws Exception {

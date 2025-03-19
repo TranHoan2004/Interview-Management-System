@@ -3,12 +3,15 @@ package com.ims_team4.service.impl;
 import com.ims_team4.dto.CandidateDTO;
 import com.ims_team4.model.Candidate;
 import com.ims_team4.model.Skill;
+import com.ims_team4.model.utils.CandidateStatus;
 import com.ims_team4.repository.CandidateRepository;
 import com.ims_team4.service.CandidateService;
+import jakarta.transaction.Transactional;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -17,7 +20,6 @@ import java.util.stream.Collectors;
 @Service
 // Duc Long
 public class CandidateServiceImpl implements CandidateService {
-
     private final CandidateRepository candidateRepository;
 
     public CandidateServiceImpl(CandidateRepository candidateRepository) {
@@ -26,7 +28,7 @@ public class CandidateServiceImpl implements CandidateService {
 
     private CandidateDTO convertToDTO(@NotNull Candidate candidate) {
         return CandidateDTO.builder()
-                .id(candidate.getId())
+                .userId(candidate.getId())
 //                .skill(candidate.getSkills())
 //                .highestEducation(candidate.getHighestLevel().getId())
                 .experience(candidate.getExperience())
@@ -36,9 +38,9 @@ public class CandidateServiceImpl implements CandidateService {
     }
 
     @Override
-    public List<CandidateDTO> getCandidateById(Long id) {
-        List<Candidate> candidates = candidateRepository.getCandidateById(id);
-        return candidates.stream()
+    public List<CandidateDTO> getCandidateByUserId(Long userId) {
+        List<Candidate> candidates = new ArrayList<>();
+        candidateRepository.getCandidateByUserId(userId).ifPresent(candidates::add);        return candidates.stream()
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
     }
@@ -61,7 +63,7 @@ public class CandidateServiceImpl implements CandidateService {
         System.out.println("🔄 Converting Candidate to CandidateDTO...");
 
         CandidateDTO dto = CandidateDTO.builder()
-                .id(candidate.getId())
+//                .id(candidate.getId())
                 .userId(candidate.getUser() != null ? candidate.getUser().getId() : null)
                 .fullName(candidate.getUser() != null ? candidate.getUser().getFullname() : "N/A")
                 .email(candidate.getUser() != null ? candidate.getUser().getEmail() : "N/A")
@@ -108,16 +110,16 @@ public class CandidateServiceImpl implements CandidateService {
     }
 
     @Override
-    public CandidateDTO getCandidateDetails(Long id) {
-        Optional<Candidate> candidate = candidateRepository.findByUserId(id);
+    public CandidateDTO getCandidateDetails(Long userId) {
+        Optional<Candidate> candidate = candidateRepository.findByUserId(userId);
         return candidate.map(this::convertToDTO2).orElse(null);
     }
 
     @Override
-    public CandidateDTO getCandidateById2(Long id) {
-        System.out.println("🟢 Request for Candidate Details with ID: " + id);
+    public CandidateDTO getCandidateById2(Long userId) {
+        System.out.println("🟢 Request for Candidate Details with UserID: " + userId);
 
-        Optional<Candidate> candidateOpt = candidateRepository.findByUserId(id);
+        Optional<Candidate> candidateOpt = candidateRepository.findByUserId(userId);
 
         if (candidateOpt.isEmpty()) {
             System.out.println("❌ Candidate not found!");
@@ -135,6 +137,60 @@ public class CandidateServiceImpl implements CandidateService {
     }
 
 
+    @Override
+    @Transactional
+    public boolean deleteCandidateByUserId(Long userId) {
+        System.out.println("🔍 Checking candidate with userId: " + userId);
+
+        Candidate candidate = candidateRepository.findByUserId(userId)
+                .orElseThrow(() -> {
+                    System.out.println("❌ Candidate not found!");
+                    return new IllegalArgumentException("Candidate with userId " + userId + " not found.");
+                });
+
+        // 🛑 Kiểm tra nếu trạng thái không phải "OPEN"
+        if (!CandidateStatus.OPEN.equals(candidate.getStatus())) {
+            System.out.println("⛔ Cannot delete! Candidate is not in 'OPEN' status. Current status: " + candidate.getStatus());
+            return false;
+        }
+
+        System.out.println("✅ Candidate is 'OPEN', proceeding to delete...");
+        candidateRepository.deleteByUserId(userId);
+        System.out.println("🗑️ Candidate deleted!");
+        return true;
+    }
+
+    @Override
+    @Transactional
+    public boolean banCandidateByUserId(Long userId) {
+        Optional<Candidate> candidateOpt = candidateRepository.findByUserId(userId);
+
+        if (candidateOpt.isEmpty()) {
+            System.out.println("❌ Candidate not found!");
+            return false;
+        }
+
+        Candidate candidate = candidateOpt.get();
+
+        // Kiểm tra nếu ứng viên đã bị ban trước đó
+        if (candidate.getStatus() == CandidateStatus.BANNED) {
+            System.out.println("⚠️ Candidate is already banned!");
+            return false;
+        }
+
+        // Cập nhật trạng thái ứng viên thành BANNED
+        candidate.setStatus(CandidateStatus.BANNED);
+
+        // Lưu lại vào database
+        Candidate savedCandidate = candidateRepository.save(candidate);
+        if (savedCandidate == null) {
+            System.err.println("❌ Failed to save candidate!");
+            return false;
+        }
+
+        System.out.println("🚫 Candidate banned successfully!");
+        return true;
+    }
 
 
 

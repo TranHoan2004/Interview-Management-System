@@ -19,7 +19,6 @@ import java.util.stream.Collectors;
 @Service
 // Duc Long
 public class OfferServiceImpl implements OfferService {
-
     private final OfferRepository offerRepository;
     private final UserRepository userRepository;
 
@@ -60,7 +59,7 @@ public class OfferServiceImpl implements OfferService {
 //    }
 
     @Override
-    public boolean editOffer(int offerid, int salary, LocalDate from, LocalDate to, LocalDate duedate, String interviewNote,int interviewId, String note, int recruiterOwner, int cid, int coid, int did, int eid, int lid, int pid, int updateBy) {
+    public boolean editOffer(int offerid, int salary, LocalDate from, LocalDate to, LocalDate duedate, String interviewNote, int interviewId, String note, int recruiterOwner, int cid, int coid, int did, int eid, int lid, int pid, int updateBy) {
         return offerRepository.editOffer(offerid, salary, from, to, duedate, interviewNote, interviewId, note, recruiterOwner, cid, coid, did, eid, lid, pid, updateBy);
     }
 

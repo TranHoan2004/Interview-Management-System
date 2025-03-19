@@ -70,7 +70,6 @@ public class Offer {
     @JoinColumn(name = "candidate_id", nullable = false)
     private Candidate candidate;
 
-// thieu Employee, doi tuong employee
     // Offer M-1 Employee (Manager)
 
     // mânger

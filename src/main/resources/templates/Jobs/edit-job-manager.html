@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Edit Job</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+  <link rel="stylesheet" href="/css/jobs.css">
+  <!-- Tom Select CSS -->
+  <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/tom-select/2.2.2/css/tom-select.bootstrap5.min.css">
+</head>
+<body>
+<div class="d-flex">
+  <!-- Left sidebar -->
+  <div class="sidebar" th:replace="~{component/left-sidebar::leftSidebar}"></div>
+
+  <!-- Main Content -->
+  <div class="content flex-grow-1">
+    <div class="d-flex justify-content-between align-items-center mb-0">
+      <div class="container py-2 flex-grow-1" style="flex-basis: 68%;">
+        <h3 class="page-title fw-bold text-dark">
+          <i class="fa fa-briefcase text-primary"></i> Job
+        </h3>
+        <nav aria-label="breadcrumb">
+          <ol class="breadcrumb bg-white shadow-sm p-2 rounded">
+            <li class="breadcrumb-item">
+              <a th:href="@{/jobs/manager/list/{id}(id=${session.account.getUserID()})}"
+                 class="text-decoration-none text-primary fw-bold">Job List</a>
+            </li>
+            <li class="breadcrumb-item active text-secondary" aria-current="page">Edit Job</li>
+          </ol>
+        </nav>
+      </div>
+      <div th:replace="~{component/top-sidebar::topSidebar}"></div>
+    </div>
+    <div class="bg-info bg-opacity-10 p-4 rounded">
+      <form th:action="@{/jobs/manager/edit-job/{managerId}/{jobId}(managerId=${session.account.getUserID()}, jobId=${job.id})}"
+            th:object="${job}" method="post">
+        <div class="bg-info bg-opacity-10 p-4 rounded">
+          <div class="row g-4">
+            <div class="col-md-6">
+              <label class="form-label fw-bold">Job Title</label>
+              <input type="text" class="form-control" name="title" th:field="*{title}">
+            </div>
+
+            <div class="col-md-6">
+              <label class="form-label fw-bold">Skills</label>
+              <select id="skills" class="form-control" multiple th:field="*{skillNames}">
+                <option th:each="skill : ${skills}" th:value="${skill.name}"
+                        th:text="${skill.name}"></option>
+              </select>
+            </div>
+
+            <div class="col-md-6">
+              <label class="form-label fw-bold">Start Date</label>
+              <input type="date" class="form-control" name="startDate"
+                     th:value="${#temporals.format(job.startDate, 'dd/MM/yyyy')}" th:field="*{startDate}">
+            </div>
+
+            <div class="col-md-6">
+              <label class="form-label fw-bold">End Date</label>
+              <input type="date" class="form-control" name="endDate"
+                     th:value="${#temporals.format(job.endDate, 'dd/MM/yyyy')}" th:field="*{endDate}">
+            </div>
+
+            <div class="col-md-6">
+              <label class="form-label fw-bold">Salary Range</label>
+              <div class="d-flex gap-3">
+                <input type="number" class="form-control" name="salaryFrom" th:field="*{salaryFrom}"
+                       min="0">
+                <span>To</span>
+                <input type="number" class="form-control" name="salaryTo" th:field="*{salaryTo}"
+                       min="0">
+              </div>
+            </div>
+
+            <div class="col-md-6">
+              <label class="form-label fw-bold">Benefits</label>
+              <select id="benefits" class="form-control" multiple th:field="*{benefitNames}">
+                <option th:each="benefit : ${benefits}" th:value="${benefit.name}"
+                        th:text="${benefit.name}"></option>
+              </select>
+            </div>
+
+            <div class="col-md-6">
+              <label class="form-label fw-bold">Working Address</label>
+              <input type="text" class="form-control" name="location" th:field="*{location}">
+            </div>
+
+            <div class="col-md-6">
+              <label class="form-label fw-bold">Level</label>
+              <select id="levels" class="form-control" multiple th:field="*{levelNames}">
+                <option th:each="level : ${levels}" th:value="${level.name}"
+                        th:text="${level.name}"></option>
+              </select>
+            </div>
+
+            <div class="col-md-6">
+              <label class="form-label fw-bold">Status</label>
+              <select class="form-control" name="status" th:field="*{status}">
+                <option value="true">Open</option>
+                <option value="false">Closed</option>
+              </select>
+            </div>
+
+            <div class="col-12">
+              <label class="form-label fw-bold">Description</label>
+              <textarea class="form-control" name="description" th:field="*{description}"></textarea>
+            </div>
+          </div>
+
+          <div class="d-flex justify-content-end gap-3 mt-5">
+            <button type="submit" class="btn btn-primary">Save</button>
+            <a th:href="@{/jobs/manager/list/{id}(id=${session.account.getUserID()})}"
+               class="btn btn-secondary"
+               type="button">Cancel</a>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+</body>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/tom-select/2.2.2/js/tom-select.complete.min.js"></script>
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    new TomSelect("#skills", {plugins: ['remove_button'], create: false});
+    new TomSelect("#benefits", {plugins: ['remove_button'], create: false});
+    new TomSelect("#levels", {plugins: ['remove_button'], create: false});
+  });
+</script>
+</html>

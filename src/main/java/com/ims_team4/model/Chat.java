@@ -18,11 +18,11 @@ public class Chat {
     private long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "manager_id") // Khóa ngoại tham chiếu đến Employee với vai trò manager
+    @JoinColumn(name = "manager_id", nullable = false)
     private Employee manager;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "recruiter_id") // Khóa ngoại tham chiếu đến Employee với vai trò recruiter
+    @JoinColumn(name = "recruiter_id", nullable = false)
     private Employee recruiter;
 
     @OneToMany(mappedBy = "chat", cascade = CascadeType.ALL, orphanRemoval = true)

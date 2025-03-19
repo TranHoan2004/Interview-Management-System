@@ -4,6 +4,7 @@ import com.ims_team4.model.Candidate;
 import com.ims_team4.model.utils.CandidateStatus;
 import com.ims_team4.repository.CandidateRepository;
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.Query;
 import org.hibernate.Session;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Repository;
@@ -51,10 +52,22 @@ public class CandidateRepositoryImpl implements CandidateRepository {
     }
 
     @Override
-    @NotNull
+    @Transactional
     public <S extends Candidate> S save(@NotNull S entity) {
-        return null;
+        if (entity == null) {
+            throw new IllegalArgumentException("Candidate entity must not be null");
+        }
+
+        try {
+            S savedEntity = em.merge(entity); // Đảm bảo merge() không trả về null
+            em.flush(); // Đẩy dữ liệu vào DB ngay lập tức
+            return savedEntity;
+        } catch (Exception e) {
+            System.err.println("❌ Error saving candidate: " + e.getMessage());
+            throw new RuntimeException("Failed to save candidate", e);
+        }
     }
+
 
     @Override
     @NotNull
@@ -128,21 +141,61 @@ public class CandidateRepositoryImpl implements CandidateRepository {
 
 
     @Override
-    public Optional<Candidate> getCandidateById2(Long id) {
+    public Optional<Candidate> getCandidateByUserId(Long userId) {
         return em.unwrap(Session.class)
-                .createQuery("SELECT c FROM Candidate c LEFT JOIN FETCH c.user u WHERE c.id = :id", Candidate.class)
-                .setParameter("id", id)
+                .createQuery("SELECT c FROM Candidate c LEFT JOIN FETCH c.user u WHERE u.id = :userId", Candidate.class)
+                .setParameter("userId", userId)
                 .uniqueResultOptional();
     }
 
 
-    public Optional<Candidate> findByUserId(Long id) {
-        return em.createQuery(
-                        "SELECT c FROM Candidate c LEFT JOIN FETCH c.user u WHERE u.id = :id", Candidate.class)
-                .setParameter("id", id)
-                .getResultStream()
-                .findFirst();
+
+    @Override
+    public Optional<Candidate> findByUserId(Long userId) {
+        return em.unwrap(Session.class)
+                .createQuery("SELECT c FROM Candidate c LEFT JOIN FETCH c.user u WHERE c.user.id = :userId", Candidate.class)
+                .setParameter("userId", userId)
+                .uniqueResultOptional();
     }
+
+
+
+    @Override
+    @Transactional
+    public void deleteByUserId(@NotNull Long userId) {
+        System.out.println("🔴 Deleting candidate with userId: " + userId);
+
+        int deletedCount = em.createQuery("DELETE FROM Candidate c WHERE c.user.id = :userId")
+                .setParameter("userId", userId)
+                .executeUpdate();
+
+        if (deletedCount > 0) {
+            System.out.println("✅ Candidate deleted from database!");
+        } else {
+            System.out.println("❌ No candidate found with userId: " + userId);
+        }
+    }
+
+    @Override
+    @Transactional
+    public void banCandidateByUserId(Long userId) {
+        int updatedCount = em.unwrap(Session.class)
+                .createQuery("UPDATE Candidate c SET c.status = :status WHERE c.user.id = :userId")
+                .setParameter("status", CandidateStatus.BANNED) // Dùng Enum thay vì String
+                .setParameter("userId", userId)
+                .executeUpdate();
+
+        if (updatedCount > 0) {
+            System.out.println("✅ Candidate banned successfully!");
+        } else {
+            System.out.println("❌ No candidate found with userId: " + userId);
+        }
+    }
+
+
+
+
+
 
 
 

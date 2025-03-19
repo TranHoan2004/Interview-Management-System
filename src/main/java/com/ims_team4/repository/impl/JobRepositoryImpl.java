@@ -29,43 +29,25 @@ public class JobRepositoryImpl implements JobRepository {
     }
 
     @Override
-    public List<Job> findByTitleContaining(String title) {
-        return List.of();
-    }
-
-    @Override
-    public List<Job> findByStatus(Boolean status) {
-        return List.of();
-    }
-
-    @Override
-    public List<Job> findByTitleContainingAndStatus(String title, Boolean status) {
-        return List.of();
-    }
-
-    @Override
-    public Page<Job> findJobsForManager(Long userId, String title, Boolean status, HrRole role, Pageable pageable) {
+    public Page<Job> findJobsByEmployee(Long userId, String title, Boolean status, Pageable pageable) {
         return null;
     }
 
     @Override
     public Optional<Job> findJobDetailForManager(Long managerId, Long jobId) {
         String sql = "SELECT " +
-                     "    j.*, " +
-                     "    e.id AS manager_id, " +
-                     "    GROUP_CONCAT(DISTINCT l.name SEPARATOR ', ') AS level_names, " +
-                     "    GROUP_CONCAT(DISTINCT s.name SEPARATOR ', ') AS skill_names " +
-                     "FROM Job j " +
-                     "JOIN employee e ON e.position_id = j.id " +
-                     "JOIN users u ON e.id = u.id " +
-                     "JOIN job_level jl ON jl.job_id = j.id " +
-                     "JOIN levels l ON jl.level_id = l.id " +
-                     "JOIN job_skill js ON js.job_id = j.id " +
-                     "JOIN skill s ON js.skill_id = s.id " +
-                     "WHERE u.id = :managerId " +
-                     "AND e.role = 'ROLE_MANAGER' " +
-                     "AND j.id = :jobId " +
-                     "GROUP BY j.id, e.id";
+                "    j.*, " +
+                "    j.employee_id AS manager_id, " +
+                "    GROUP_CONCAT(DISTINCT l.name SEPARATOR ', ') AS level_names, " +
+                "    GROUP_CONCAT(DISTINCT s.name SEPARATOR ', ') AS skill_names " +
+                "FROM Job j " +
+                "LEFT JOIN Job_Level jl ON jl.job_id = j.id " +
+                "LEFT JOIN Levels l ON jl.level_id = l.id " +
+                "LEFT JOIN Job_Skill js ON js.job_id = j.id " +
+                "LEFT JOIN Skill s ON js.skill_id = s.id " +
+                "WHERE j.employee_id = :managerId " +
+                "AND j.id = :jobId " +
+                "GROUP BY j.id, j.employee_id";
 
         try {
             Object result = em.createNativeQuery(sql, Job.class)
@@ -78,29 +60,21 @@ public class JobRepositoryImpl implements JobRepository {
         }
     }
 
+
     @Override
     public Page<Job> findJobs(String title, Boolean status, Pageable pageable) {
         return null;
     }
 
-//    @Override
-//    public Job saveJob(Job job) {
-//        if (job.getId() == null) {
-//            em.persist(job);
-//        } else {
-//            job = em.merge(job);
-//        }
-//        em.flush();
-//        return job;
-//    }
 
     @Override
     public Job saveJob(Job job) {
-        if (job.getId() != null) {
-            throw new IllegalArgumentException("Job ID must be null when creating a new job.");
+        if (job.getId() == null) {
+            em.persist(job); // Chỉ INSERT nếu job chưa có ID
+        } else {
+            job = em.merge(job); // Nếu có ID, thực hiện UPDATE
         }
-        em.persist(job); // Chỉ dùng persist để đảm bảo luôn INSERT
-        em.flush(); // Đẩy dữ liệu ngay lập tức vào database
+        em.flush();
         return job;
     }
 
@@ -121,15 +95,20 @@ public class JobRepositoryImpl implements JobRepository {
     }
 
     @Override
+    public void deleteJobById(Long id) {
+
+    }
+
+    @Override
     @NotNull
     public Optional<Job> findById(@NotNull Long id) {
         try (Session session = em.unwrap(Session.class)) {
             Job job = session.createQuery(
                             "SELECT j FROM Job j " +
-                            "LEFT JOIN FETCH j.skills " +
-                            "LEFT JOIN FETCH j.levels " +
-                            "LEFT JOIN FETCH j.benefits " +
-                            "WHERE j.id = :jobId", Job.class)
+                                    "LEFT JOIN FETCH j.skills " +
+                                    "LEFT JOIN FETCH j.levels " +
+                                    "LEFT JOIN FETCH j.benefits " +
+                                    "WHERE j.id = :jobId", Job.class)
                     .setParameter("jobId", id)
                     .uniqueResult();
 

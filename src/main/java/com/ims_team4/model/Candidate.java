@@ -16,7 +16,6 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Candidate {
-
     @Id
     @Column(name = "user_id")
     @EqualsAndHashCode.Include // ✅ Chỉ dùng ID để hash, tránh vòng lặp vô hạn
@@ -37,7 +36,7 @@ public class Candidate {
     private Set<Skill> skills;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "highest_level_id")
+    @JoinColumn(name = "highest_level_id", nullable = false)
     @JsonIgnore // ✅ Hibernate không serialize quan hệ này
     private HighestLevel highestLevel;
 
@@ -45,7 +44,7 @@ public class Candidate {
     private int experience;
 
     @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JoinColumn(name = "position_id")
+    @JoinColumn(name = "position_id", nullable = false)
     @JsonIgnore // ✅ Tránh vòng lặp
     private Position position;
 
@@ -62,12 +61,11 @@ public class Candidate {
     private Set<Offer> offers;
 
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private CandidateStatus status;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "employee_id")
+    @JoinColumn(name = "employee_id", nullable = false)
     @JsonIgnore // ✅ Tránh vòng lặp
     private Employee employee;
-
-
 }

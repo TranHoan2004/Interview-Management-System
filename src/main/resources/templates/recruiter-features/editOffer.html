@@ -248,17 +248,17 @@
         </div>
         <hr>
         <div class="row">
-            <input type="hidden" name="updateBy" th:value="${session.account.getUser()}">
+            <input type="hidden" name="updateBy" th:value="${session.account.getUserID()}">
             <div class="col-md-6">
                 <input type="hidden" name="offerid" th:value="${offer.getId()}">
-                <input type="hidden" name="rid" th:value="${session.account.getUser()}">
+                <input type="hidden" name="rid" th:value="${session.account.getUserID()}">
                 <div class="form-group">
                     <label class="info-title">Candidate:</label>
                     <select class="form-select" name="candidate">
                         <th:block th:each="candidate : ${listC}">
-                            <option th:each="user : ${listU}" th:value="${candidate.getId()}"
-                                    th:if="${user.getId() == candidate.getId()}" th:text="${user.getFullname()}"
-                                    th:selected="${offer.getCandidateId() == candidate.getId()}"></option>
+                            <option th:each="user : ${listU}" th:value="${candidate.getUserId()}"
+                                    th:if="${user.getId() == candidate.getUserId()}" th:text="${user.getFullname()}"
+                                    th:selected="${offer.getCandidateId() == candidate.getUserId()}"></option>
                         </th:block>
                     </select>
                 </div>
@@ -276,9 +276,9 @@
                     <label class="info-title">Approver:</label>
                     <select class="form-select" name="approver">
                         <th:block th:each="employee : ${listE}">
-                            <option th:each="user : ${listU}" th:value="${employee.getUser()}"
-                                    th:if="${user.getId() == employee.getUser()}" th:text="${user.getFullname()}"
-                                    th:selected="${offer.getEmployeeId() == employee.getUser()}"></option>
+                            <option th:each="user : ${listU}" th:value="${employee.getUserID()}"
+                                    th:if="${user.getId() == employee.getUserID()}" th:text="${user.getFullname()}"
+                                    th:selected="${offer.getEmployeeId() == employee.getUserID()}"></option>
                         </th:block>
                     </select>
                 </div>
@@ -349,9 +349,9 @@
                     <label class="info-title">Recruiter Owner:</label>
                     <select id="userSelect" class="form-select" name="recruiterOwner">
                         <th:block th:each="employee : ${listR}">
-                            <option th:each="user : ${listU}" th:value="${employee.getUser()}"
-                                    th:if="${user.getId() == employee.getUser()}" th:text="${user.getFullname()}"
-                                    th:selected="${offer.getRecruiterOwner() == employee.getUser()}"></option>
+                            <option th:each="user : ${listU}" th:value="${employee.getUserID()}"
+                                    th:if="${user.getId() == employee.getUserID()}" th:text="${user.getFullname()}"
+                                    th:selected="${offer.getRecruiterOwner() == employee.getUserID()}"></option>
                         </th:block>
                     </select>
                     <a id="assignButton" class="text-decoration-none" style="cursor: pointer">Assigned to me</a>

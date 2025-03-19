@@ -1,0 +1,22 @@
+package com.ims_team4.config;
+
+import org.springframework.context.MessageSource;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.support.ResourceBundleMessageSource;
+
+import java.util.logging.Logger;
+
+@Configuration
+public class ResourceBundleConfig {
+    private final Logger logger = Logger.getLogger(ResourceBundleConfig.class.getName());
+
+    @Bean
+    public MessageSource messageSource() {
+        ResourceBundleMessageSource messageSource = new ResourceBundleMessageSource();
+        messageSource.setBasename("message");
+        messageSource.setDefaultEncoding("UTF-8");
+        logger.info(messageSource.toString());
+        return messageSource;
+    }
+}

@@ -14,14 +14,6 @@
             font-family: 'Arial', sans-serif;
         }
 
-        .logo {
-            font-weight: bold;
-            background: #fff;
-            color: #16a085;
-            padding: 2px 8px;
-            border-radius: 4px;
-        }
-
         /* Sidebar */
         .sidebar {
             width: 240px;
@@ -104,8 +96,8 @@
                 <nav aria-label="breadcrumb">
                     <ol class="breadcrumb bg-white shadow-sm p-2 rounded">
                         <li class="breadcrumb-item">
-                            <a th:href="@{/offer/offer/{rid}(rid=${rid})}"
-                               class="text-decoration-none text-primary fw-bold">Home Page</a>
+                            <a th:href="@{/dashboard}" class="text-decoration-none text-primary fw-bold"></a>
+                            <div th:text="${home_page}"></div>
                         </li>
                     </ol>
                 </nav>
@@ -114,43 +106,57 @@
         </div>
 
         <div class="text-center mb-4">
-            <h3>Interview Management System</h3>
-            <h5 class="text-muted">Hiring by your ways</h5>
+            <h3 th:text="${system_name}"></h3>
+            <h5 class="text-muted" th:text="${header_title}"></h5>
         </div>
 
-        <div>
-            <h5>Start</h5>
+        <div class="d-flex flex-column gap-2">
+            <h5 th:text="${h5_title}"></h5>
 
-            <p>Wanna see list of candidates? <a th:href="@{/candidate/list}">Click here!</a></p>
-
-            <div th:if="${session.account.getRole().name().equals('ROLE_MANAGER')}">
-                <p>Wanna see list of jobs? <a th:href="@{/jobs/manager/list/{id}(id=${session.account.getUser()})}">Click
-                    here!</a></p>
-            </div>
-            <div th:if="${session.account.getRole().name().equals('ROLE_ADMINISTRATOR')}">
-                <p>Wanna see list of jobs? <a th:href="@{/jobs/admin/listAllJob}">Click
-                    here!</a></p>
+            <div class="d-inline-flex">
+                <p th:text="${list_candidates}"></p>&nbsp;
+                <a th:href="@{/candidate/list}" th:text="${click_link}"></a>
             </div>
 
-            <p>Wanna see list of interviews? <a th:href="@{/interview/list}">Click here!</a></p>
+            <div th:if="${session.account.getRole().name().equals('ROLE_MANAGER')}" class="d-inline-flex">
+                <p th:text="${list_jobs}"></p>&nbsp;
+                <a th:href="@{/jobs/manager/list/{id}(id=${session.account.getUserID()})}"
+                   th:text="${click_link}"></a>
+            </div>
 
-            <div th:if="${session.account.getRole().name().equals('ROLE_RECRUITER')}">
-                <p>Want to see list of offers? <a th:href="@{/offer/offer/{id}(id=${session.account.getUser()})}">Click
-                    here!</a></p>
+            <div th:if="${session.account.getRole().name().equals('ROLE_ADMINISTRATOR')}" class="d-inline-flex">
+                <p th:text="${list_jobs}"></p>&nbsp;
+                <a th:href="@{/jobs/admin/listAllJob}" th:text="${click_link}"></a>
             </div>
-            <div th:if="${session.account.getRole().name().equals('ROLE_MANAGER')}">
-                <p>Want to see list of offers? <a
-                        th:href="@{/offer/managerOffer/{id}(id=${session.account.getUser()})}">Click here!</a></p>
+
+            <div class="d-inline-flex">
+                <p th:text="${list_interviews}"></p>&nbsp;
+                <a th:href="@{/interview/list}" th:text="${click_link}"></a>
             </div>
-            <div th:if="${session.account.getRole().name().equals('ROLE_ADMINISTRATOR')}">
-                <p>Want to see list of offers?
-                    <a th:href="@{/offer/adminOffer/{id}(id=${session.account.getUser()})}">Click here!</a>
-                </p>
-                <p>
-                    Want to see list of users?
-                    <a th:href="@{/user/list}">Click here!</a>
-                </p>
+
+
+            <div th:if="${session.account.getRole().name().equals('ROLE_RECRUITER')}" class="d-inline-flex">
+                <p th:text="${list_offers}"></p>&nbsp;
+                <a th:href="@{/offer/offer/{id}(id=${session.account.getUserID()})}" th:text="${click_link}"></a>
             </div>
+
+            <div th:if="${session.account.getRole().name().equals('ROLE_MANAGER')}" class="d-inline-flex">
+                <p th:text="${list_offers}"></p>&nbsp;
+                <a th:href="@{/offer/managerOffer/{id}(id=${session.account.getUserID()})}"
+                   th:text="${click_link}"></a>
+            </div>
+
+            <div class="d-inline-flex" th:if="${session.account.getRole().name().equals('ROLE_ADMINISTRATOR')}">
+                <p th:text="${list_offers}"></p>&nbsp;
+                <a th:href="@{/offer/adminOffer/{id}(id=${session.account.getUserID()})}"
+                   th:text="${click_link}"></a>
+            </div>
+
+            <div class="d-inline-flex" th:if="${session.account.getRole().name().equals('ROLE_ADMINISTRATOR')}">
+                <p th:text="${list_users}"></p>&nbsp;
+                <a th:href="@{/user/list}" th:text="${click_link}"></a>
+            </div>
+
         </div>
     </div>
 </div>
@@ -159,7 +165,6 @@
     function logout() {
         window.location.href = "/logout";
     }
-</script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 

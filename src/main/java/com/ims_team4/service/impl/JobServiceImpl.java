@@ -4,7 +4,10 @@ import com.ims_team4.dto.JobDTO;
 import com.ims_team4.model.*;
 import com.ims_team4.model.utils.HrRole;
 import com.ims_team4.repository.*;
+import com.ims_team4.service.BenefitService;
 import com.ims_team4.service.JobService;
+import com.ims_team4.service.LevelService;
+import com.ims_team4.service.SkillService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -14,28 +17,27 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.*;
 import java.util.stream.Collectors;
 
-
 @Service
 public class JobServiceImpl implements JobService {
+    private final JobRepository jobRepository;
+    private final LevelRepository levelRepository;
+    private final SkillRepository skillRepository;
+    private final BenefitRepository benefitRepository;
+    private final UserRepository userRepository;
+    private final LevelService levelService;
+    private final SkillService skillService;
+    private final BenefitService benefitService;
 
-    @Autowired
-    private JobRepository jobRepository;
-
-    @Autowired
-    private UserRepository userRepository;
-
-    @Autowired
-    private LevelRepository levelRepository;
-
-    @Autowired
-    private SkillRepository skillRepository;
-
-    @Autowired
-    private BenefitRepository benefitRepository;
-
-    @Autowired
-    private EmployeeRepository employeeRepository;
-
+    public JobServiceImpl(JobRepository jobRepository, LevelRepository levelRepository, SkillRepository skillRepository, BenefitRepository benefitRepository, UserRepository userRepository, LevelService levelService, SkillService skillService, BenefitService benefitService) {
+        this.jobRepository = jobRepository;
+        this.levelRepository = levelRepository;
+        this.skillRepository = skillRepository;
+        this.benefitRepository = benefitRepository;
+        this.userRepository = userRepository;
+        this.levelService = levelService;
+        this.skillService = skillService;
+        this.benefitService = benefitService;
+    }
 
     @Override
     public List<JobDTO> getAllJobs() {
@@ -46,7 +48,7 @@ public class JobServiceImpl implements JobService {
 
     @Override
     public Page<JobDTO> getJobsForManager(Long userId, String title, Boolean status, Pageable pageable) {
-        Page<Job> jobPage = jobRepository.findJobsForManager(userId, title, status, HrRole.ROLE_MANAGER, pageable);
+        Page<Job> jobPage = jobRepository.findJobsByEmployee(userId, title, status, pageable);
 
         return jobPage.map(this::toDTO);
     }
@@ -66,15 +68,11 @@ public class JobServiceImpl implements JobService {
     @Override
     @Transactional
     public Job createJob(Long managerId, JobDTO jobDTO) {
-        Optional<Users> usersOptional = userRepository.findById(managerId);
-        if (usersOptional.isEmpty()) {
-            throw new RuntimeException("Manager not found");
-        }
-
-        Users manager = usersOptional.get();
+        Users user = userRepository.findById(managerId)
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy Employee với ID: " + managerId));
 
         try {
-            System.out.println("⏳ Đang tạo Job: " + jobDTO.getTitle());
+
             Job job = new Job();
             job.setTitle(jobDTO.getTitle());
             job.setStartDate(jobDTO.getStartDate());
@@ -84,29 +82,18 @@ public class JobServiceImpl implements JobService {
             job.setLocation(jobDTO.getLocation());
             job.setStatus(jobDTO.isStatus());
             job.setDescription(jobDTO.getDescription());
+            job.setUser(user);
 
-
-            Employee employee = employeeRepository.findById(manager.getId())
-                    .orElseThrow(() -> new RuntimeException("❌ Manager không có thông tin Employee."));
-
-
-            job.setId(employee.getPosition().getId());
 
             Set<Long> levelIds = jobDTO.getLevelNames().stream().map(Long::valueOf).collect(Collectors.toSet());
             Set<Long> skillIds = jobDTO.getSkillNames().stream().map(Long::valueOf).collect(Collectors.toSet());
             Set<Long> benefitIds = jobDTO.getBenefitNames().stream().map(Long::valueOf).collect(Collectors.toSet());
 
-            System.out.println("🔍 Level IDs: " + levelIds);
-            System.out.println("🔍 Skill IDs: " + skillIds);
-            System.out.println("🔍 Benefit IDs: " + benefitIds);
 
             Set<Level> levels = new HashSet<>(levelRepository.findByIdIn(levelIds));
             Set<Skill> skills = new HashSet<>(skillRepository.findByIdIn(skillIds));
             Set<Benefit> benefits = new HashSet<>(benefitRepository.findByIdIn(benefitIds));
 
-            System.out.println("✅ Levels found: " + levels.size());
-            System.out.println("✅ Skills found: " + skills.size());
-            System.out.println("✅ Benefits found: " + benefits.size());
 
             if (levels.isEmpty() || skills.isEmpty() || benefits.isEmpty()) {
                 throw new RuntimeException("❌ Không tìm thấy Level, Skill hoặc Benefit trong database");
@@ -116,21 +103,62 @@ public class JobServiceImpl implements JobService {
             job.setSkills(skills);
             job.setBenefits(benefits);
 
-            // Lưu job
+
             Job savedJob = jobRepository.saveJob(job);
 
             if (savedJob == null || savedJob.getId() == null) {
                 throw new RuntimeException("❌ Job không được lưu thành công.");
             }
 
-            System.out.println("✅ Job đã lưu thành công: ID = " + savedJob.getId());
             return savedJob;
 
         } catch (Exception e) {
             System.err.println("❌ Lỗi khi tạo job: " + e.getMessage());
             throw e;
         }
+    }
+    @Override
+    public boolean editJob(Long managerId, Long jobId, JobDTO jobDTO) {
+        Optional<Job> jobOptional = jobRepository.findJobDetailForManager(managerId, jobId);
 
+        if (jobOptional.isPresent()) {
+            Job job = jobOptional.get();
+            job.setTitle(jobDTO.getTitle());
+            job.setStartDate(jobDTO.getStartDate());
+            job.setEndDate(jobDTO.getEndDate());
+            job.setSalaryFrom(jobDTO.getSalaryFrom());
+            job.setSalaryTo(jobDTO.getSalaryTo());
+            job.setLocation(jobDTO.getLocation());
+            job.setStatus(jobDTO.isStatus());
+            job.setDescription(jobDTO.getDescription());
+
+            // Cần ánh xạ từ List<String> sang List<Level>, List<Skill>, List<Benefit>
+            job.setLevels(levelService.getLevelsByName(jobDTO.getLevelNames()));
+            job.setSkills(skillService.getSkillsByName(jobDTO.getSkillNames()));
+            job.setBenefits(benefitService.getBenefitsByName(jobDTO.getBenefitNames()));
+
+            jobRepository.saveJob(job);
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public void deleteJobById(Long id) {
+        Job job = jobRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Job not found: " + id));
+
+        job.getLevels().clear();
+        job.getSkills().clear();
+        job.getBenefits().clear();
+        if (!job.getCandidates().isEmpty()) {
+            throw new RuntimeException("Cannot delete job, candidates exist!");
+        }
+        if (!job.getInterviews().isEmpty()) {
+            throw new RuntimeException("Cannot delete job, interviews exist!");
+        }
+
+        jobRepository.deleteJobById(id);
     }
 
     //Admin

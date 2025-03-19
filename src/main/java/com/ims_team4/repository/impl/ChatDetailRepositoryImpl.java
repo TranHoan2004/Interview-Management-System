@@ -5,10 +5,15 @@ import com.ims_team4.model.ChatDetail;
 import com.ims_team4.repository.ChatDetailRepository;
 import jakarta.persistence.EntityManager;
 import org.hibernate.Session;
+import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
+@Repository
 public class ChatDetailRepositoryImpl implements ChatDetailRepository {
 
     private EntityManager em;
@@ -27,32 +32,85 @@ public class ChatDetailRepositoryImpl implements ChatDetailRepository {
 
     @Override
     public List<ChatDetail> getLastestChatDetailOfRecruiterAndManager() {
-        return List.of();
+        Session session = em.unwrap(Session.class);
+
+        List<ChatDetail> chatDetails = session.createQuery(
+                "SELECT cd FROM ChatDetail cd " +
+                        "WHERE cd.id IN (" +
+                        "    SELECT MAX(cd2.id) " +
+                        "    FROM ChatDetail cd2 " +
+                        "    GROUP BY cd2.chat.id" +
+                        ")",
+                ChatDetail.class
+        ).getResultList();
+
+        return chatDetails;
     }
+
+
 
     @Override
     public List<ChatDetail> getFirstChatDetailOfRecruiter(int rid) {
-        return List.of();
+        Session session = em.unwrap(Session.class);
+
+        List<ChatDetail> chatDetails = session.createQuery(
+                        "SELECT cd FROM Chat c " +
+                                "JOIN c.chatDetails cd " +
+                                "WHERE c.recruiter.id = :rid " +
+                                "ORDER BY c.id DESC", ChatDetail.class)
+                .setParameter("rid", rid)
+                .setMaxResults(1)
+                .getResultList();
+
+        return chatDetails;
     }
 
     @Override
     public List<ChatDetail> getFirstChatDetailOfManager(int mid) {
-        return List.of();
+        Session session = em.unwrap(Session.class);
+
+        List<ChatDetail> chatDetails = session.createQuery(
+                        "SELECT cd FROM Chat c " +
+                                "JOIN c.chatDetails cd " +
+                                "WHERE c.manager.id = :mid " +
+                                "ORDER BY c.id DESC", ChatDetail.class)
+                .setParameter("mid", mid)
+                .setMaxResults(1)
+                .getResultList();
+
+        return chatDetails;
     }
 
     @Override
     public List<ChatDetail> getAllChatDetailOfRecruiter(int rid) {
-        return List.of();
+        Session session = em.unwrap(Session.class);
+        List<ChatDetail> chatDetails = session.createQuery("SELECT cd FROM Chat c " +
+                "JOIN c.chatDetails cd " +
+                "WHERE c.recruiter.id = :rid", ChatDetail.class)
+                .setParameter("rid", rid)
+                .getResultList();
+        session.close();
+        return chatDetails;
     }
 
     @Override
     public List<ChatDetail> getAllChatDetailsByChatId(int chatid) {
-        return List.of();
+        Session session = em.unwrap(Session.class);
+        List<ChatDetail> chatDetails = session.createQuery("select c from ChatDetail c where c.chat.id = :chatid", ChatDetail.class)
+                .setParameter("chatid", chatid)
+                .getResultList();
+        session.close();
+        return chatDetails;
     }
 
     @Override
+    @Transactional
     public void saveChatDetail(ChatDetail chatDetail) {
-
+        try {
+            em.persist(chatDetail);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @Override

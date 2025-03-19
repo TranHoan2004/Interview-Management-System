@@ -1,7 +1,6 @@
 package com.ims_team4.service;
 
 import com.ims_team4.dto.UserDTO;
-import org.springframework.security.core.userdetails.UserDetailsService;
 
 import java.util.List;
 import java.util.Optional;
@@ -16,6 +15,7 @@ public interface UserService {
     List<String> getAllEmail() throws Exception;
 
     UserDTO getUserById(int id);
+    UserDTO getUserWithId(long id);
 
     Optional<UserDTO> getManagerById(Long id);
 }

@@ -5,11 +5,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <title>IMS Messenger</title>
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/emoji-picker-element@1.12.0/lib/emoji-picker-element.min.css"/>
+    <script src="https://cdn.jsdelivr.net/npm/emoji-picker-element@1.12.0/lib/emoji-picker-element.min.js"></script>
+    </script>
     <style>
         /* Styles remain unchanged */
         * {
             box-sizing: border-box;
         }
+
         body {
             background-color: #e9eff1;
             font-family: Arial, sans-serif;
@@ -27,57 +33,83 @@
             background-color: #f8f9fa;
             height: 80vh;
         }
+
         .message {
-            padding: 10px 15px;
+            display: flex;
+            align-items: flex-end;
             margin-bottom: 10px;
-            border-radius: 20px;
-            font-size: 14px;
-            max-width: 75%; /* Giới hạn độ rộng tối đa là 75% */
-            width: fit-content; /* Đặt chiều rộng tự động theo nội dung */
-            word-wrap: break-word; /* Để nội dung tự động xuống dòng */
-            overflow-wrap: break-word; /* Hỗ trợ cho các trình duyệt cũ hơn */
             position: relative;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
-            white-space: normal; /* Đảm bảo văn bản có thể xuống dòng */
         }
+
         .message.sender {
+            justify-content: flex-end;
+        }
+
+        .message.receiver {
+            justify-content: flex-start;
+        }
+
+        .message .avatar {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            margin: 0 10px;
+        }
+
+        .message.sender .avatar {
+            order: 2; /* Avatar ở bên phải tin nhắn */
+        }
+
+        .message.receiver .avatar {
+            order: 0; /* Avatar ở bên trái tin nhắn */
+        }
+
+        .message.sender span {
             background-color: #007bff;
             color: #ffffff;
-            margin-right: 5px;
-            margin-left: auto;
             border-radius: 20px;
+            padding: 10px 15px;
+            max-width: 75%;
+            word-wrap: break-word;
         }
-        .message.receiver {
+
+        .message.receiver span {
             background-color: #E4E6EB;
             color: black;
-            margin-left: 5px;
-            margin-right: auto;
             border-radius: 20px;
+            padding: 10px 15px;
+            max-width: 75%;
+            word-wrap: break-word;
         }
+
         .input-group {
             padding: 10px;
             background-color: #ffffff;
             border-top: 1px solid #dee2e6;
         }
+
         .input-group input {
             border-radius: 20px;
             border: 1px solid #ced4da;
         }
+
         .input-group button {
             border-radius: 20px;
             background-color: #007bff;
             color: #ffffff;
         }
+
         .input-group button:hover {
             background-color: #0056b3;
         }
+
         h1 {
             color: #343a40;
             margin-top: 20px;
         }
+
         .inbox_chat {
             border: 1px solid #ced4da;
-            border-radius: 10px;
             background-color: #f8f9fa; /* Light background */
             padding: 10px;
             height: 80vh; /* Full height */
@@ -105,6 +137,7 @@
             width: 100%; /* Make image fill the container */
             height: auto; /* Maintain aspect ratio */
         }
+
         .headmessage {
             position: sticky; /* Makes the header sticky */
             top: 0; /* Positions it at the top of the container */
@@ -114,202 +147,321 @@
             padding: 10px; /* Add some padding for aesthetics */
             margin-top: 0px !important;
         }
+
+        .search-box {
+            width: 100%;
+            margin: 0 auto;
+            background-color: #f1f2f6;
+            border-radius: 20px;
+            padding: 5px 12px;
+            display: flex;
+            align-items: center;
+            height: 45px;
+        }
+
+        .search-box i {
+            color: #6c757d;
+            font-size: 16px;
+        }
+
+        .search-box input {
+            border: none;
+            background: transparent;
+            outline: none;
+            flex: 1;
+            padding-left: 10px;
+            font-size: 14px;
+            color: #333;
+        }
+
+        .search-box input::placeholder {
+            color: #6c757d;
+        }
+
+        #emojiPicker {
+            position: fixed;
+            bottom: 80px;
+            right: 20px;
+            z-index: 1000;
+            display: none; /* Ẩn mặc định */
+        }
+
+        .profile-card {
+            background-color: #ffffff;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            overflow: hidden;
+        }
+
+        .profile-img {
+            width: 35%;
+            border-radius: 50%;
+            border: 3px solid #007bff;
+            padding: 5px;
+        }
+
+        .profile-name {
+            font-weight: bold;
+            color: #007bff;
+            margin-top: 15px;
+        }
+
+        .profile-info {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 20px;
+        }
+
+        .profile-info .d-flex {
+            padding: 10px 0;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .profile-info .d-flex:last-child {
+            border-bottom: none;
+        }
+
+        .profile-info strong {
+            color: #495057;
+        }
+
+        .profile-info span {
+            color: #6c757d;
+        }
+
+        .highlight {
+            background-color: #A7E9AF;
+        }
     </style>
 </head>
 <body>
-<div class="preloader">
-    <div class="preloader-inner">
-        <div class="preloader-icon">
-            <span></span>
-            <span></span>
-        </div>
-    </div>
-</div>
+
 <div class="bg-primary py-3">
     <div class="container d-flex justify-content-between align-items-center">
-        <th:block th:if="${param.role == 'Customer'}">
-            <a th:href="@{/homecustomer}" class="text-white fw-bold" style="font-size: 30px;">Irossecca Messenger</a>
+        <th:block th:if="${session.account.getRole().name().equals('ROLE_RECRUITER')}">
+            <a th:href="@{/offer/offer/{rid}(rid=${session.account.getUserID()})}" class="text-white fw-bold"
+               style="font-size: 30px;">IMS Messenger</a>
         </th:block>
-        <th:block th:if="${param.role == 'Seller'}">
-            <a th:href="@{/home}" class="text-white fw-bold" style="font-size: 30px;">Irossecca Messenger</a>
+        <th:block th:if="${session.account.getRole().name().equals('ROLE_MANAGER')}">
+            <a th:href="@{/offer/managerOffer/{rid}(rid=${session.account.getUserID()})}" class="text-white fw-bold"
+               style="font-size: 30px;">IMS Messenger</a>
         </th:block>
         <a onclick="history.back()" class="text-white fw-bold" style="font-size: 30px; cursor: pointer">Quay lại</a>
     </div>
 </div>
 
-<th:block th:if="${param.role == 'Seller'}">
+<th:block th:if="${session.account.getRole().name().equals('ROLE_RECRUITER')}">
     <div class="container">
         <div class="row">
-            <div class="col-lg-3" style="margin-left: -14px !important; margin-right: -15px; padding-right: 0px !important">
+            <div class="col-lg-3"
+                 style="margin-left: -14px !important; margin-right: -15px; padding-right: 0px !important">
                 <div class="inbox_chat" style="height: 89vh">
-                    <h3 class="fw-bold mb-3">Đoạn chat</h3>
+                    <h3 class="mb-3" style="font-weight: bold; font-size: 2rem">Đoạn chat</h3>
+                    <div class="search-box">
+                        <i class="fa fa-search"></i>
+                        <input type="text" placeholder="Tìm kiếm trên Messenger" oninput="searchChat(this)">
+                    </div>
                     <th:block th:each="liC : ${listC1}">
                         <div class="chat_list active_chat" style="overflow-x: hidden;">
-                            <a th:href="@{/chat(sid=${session.user.userID}, id=${liC.customerID}, role=${session.user.role})}" style="text-decoration: none; color: black">
-                                <div class="chat_people row d-flex justify-content-center align-items-center">
-                                    <div class="chat_img col-lg-3 d-flex justify-content-center align-items-center">
-                                        <img src="https://ptetutorials.com/images/user-profile.png" alt="user">
-                                    </div>
-                                    <div class="chat_ib col-lg-9">
-                                        <div class="row">
-                                            <div class="col-lg-2">
-                                                <th:block th:each="liU : ${listU}">
-                                                    <th:block th:if="${liU.userID == liC.customerID}">
-                                                        <div style="text-align: left !important" th:text="${liU.username}"></div>
+                            <div class="chat-container" th:id="'chat-' + ${liC.getManagerId()}">
+                                <a th:href="@{/chat(rid=${session.account.getUserID()}, mid=${liC.getManagerId()}, role=${session.account.getRole()})}"
+                                   style="text-decoration: none; color: black">
+                                    <div class="chat_people row d-flex justify-content-center align-items-center">
+                                        <div class="chat_img col-lg-3 d-flex justify-content-center align-items-center">
+                                            <img th:src="@{/images/avatar/avatar{avatar}.jpg(avatar=${manager.avatar})}"
+                                                 alt="Employee Avatar">
+                                        </div>
+                                        <div class="chat_ib col-lg-9">
+                                            <div class="row">
+                                                <div class="col-lg-2">
+                                                    <th:block th:each="liE : ${listE}">
+                                                        <th:block th:if="${liE.getUserID() == liC.getManagerId()}">
+                                                            <div style="text-align: left !important; font-weight: bold"
+                                                                 th:text="${liE.getWorkingName()}"></div>
+                                                        </th:block>
                                                     </th:block>
-                                                </th:block>
+                                                </div>
+                                                <div class="col-lg-10">
+                                                    <th:block th:each="liL : ${listL}">
+                                                        <th:block th:if="${liC.getChatId() == liL.chatID}">
+                                                            <div style="text-align: right !important" id="time"
+                                                                 th:text="${#strings.substring(liL.timestamp, 8, 10) + '-' + #strings.substring(liL.timestamp, 5, 7) + '-' + #strings.substring(liL.timestamp, 0, 4) + ' ' + #strings.substring(liL.timestamp, 11, 13) + ':' + #strings.substring(liL.timestamp, 14, 16)}"></div>
+                                                        </th:block>
+                                                    </th:block>
+                                                </div>
                                             </div>
-                                            <div class="col-lg-10">
+                                            <div class="mt-1">
                                                 <th:block th:each="liL : ${listL}">
-                                                    <th:block th:if="${liC.chatID == liL.chatID}">
-                                                        <div style="text-align: right !important" id="time" th:text="${#strings.substring(liL.timestamp, 8, 10) + '-' + #strings.substring(liL.timestamp, 5, 7) + '-' + #strings.substring(liL.timestamp, 0, 4) + ' ' + #strings.substring(liL.timestamp, 11, 13) + ':' + #strings.substring(liL.timestamp, 14, 16)}"></div>
+                                                    <th:block th:if="${liC.getChatId() == liL.chatID}">
+                                                        <span th:text="${liL.message}"></span>
                                                     </th:block>
                                                 </th:block>
                                             </div>
                                         </div>
-                                        <div class="mt-1">
-                                            <th:block th:each="liL : ${listL}">
-                                                <th:block th:if="${liC.chatID == liL.chatID}">
-                                                    <span th:text="${liL.message}"></span>
-                                                </th:block>
-                                            </th:block>
-                                        </div>
                                     </div>
-                                </div>
-                            </a>
+                                </a>
+                            </div>
                         </div>
                     </th:block>
                 </div>
             </div>
             <div class="col-lg-6">
-                <div class="chat-messages" id="chatMessages" style="height: 80vh; border: 1px;border-radius: 8px; margin-right: -30px">
-                    <div class="headmessage d-flex align-items-center my-3" >
+                <div class="chat-messages" id="chatMessages" style="height: 80vh; border: 1px; margin-right: -30px">
+                    <div class="headmessage d-flex align-items-center my-3">
                         <div class="col-lg-6 d-flex align-items-center">
-                            <img class="rounded-circle" style="width: 60px; height: 60px;" src="https://ptetutorials.com/images/user-profile.png" alt="User Profile Picture">
-                            <span class="ml-3 font-weight-bold text-primary h5" th:text="${uCus.username}"></span>
-                        </div>
-                        <div class="col-lg-6 text-right">
-                            <p class="mb-0 text-secondary h6" th:text="${uCus.firstName + ' ' + uCus.lastName}"></p>
+                            <img class="rounded-circle" style="width: 60px; height: 60px;"
+                                 src="https://ptetutorials.com/images/user-profile.png" alt="User Profile Picture">
+                            <span class="ml-3 font-weight-bold text-primary h5"
+                                  th:text="${manager.getWorkingName()}"></span>
                         </div>
                     </div>
                     <div class="bodymessage">
-                        <th:block th:if="${not empty listCd}">
+                        <th:block th:if="${not #lists.isEmpty(listCd)}">
                             <th:block th:each="item : ${listCd}">
-                                <th:block th:if="${item.sender == 'Seller'}">
-                                    <div class="message" style="margin-right: 5px; margin-left: auto; text-align: right; background-color: #007BFF; color: white" th:text="${item.message}"></div>
-                                </th:block>
-                                <th:block th:unless="${item.sender == 'Seller'}">
-                                    <div class="message" style="margin-right: auto; margin-left: 5px; text-align: left; background-color: #E4E6EB; color: black" th:text="${item.message}"></div>
-                                </th:block>
+                                <div th:if="${item.sender eq 'ROLE_RECRUITER'}" class="message sender">
+                                    <img class="avatar" src="https://ptetutorials.com/images/user-profile.png" alt="Sender Avatar">
+                                    <span class="message sender" th:text="${item.message}"></span>
+                                </div>
+                                <div th:if="${item.sender eq 'ROLE_MANAGER'}" class="message receiver">
+                                    <img class="avatar" src="https://ptetutorials.com/images/user-profile.png" alt="Receiver Avatar">
+                                    <span class="message receiver" th:text="${item.message}"></span>
+                                </div>
                             </th:block>
                         </th:block>
-                        <th:block th:unless="${not empty listCd}">
-                            <div class="message seller">No messages yet.</div>
-                        </th:block>
+                        <div th:if="${#lists.isEmpty(listCd)}" class="message seller">No messages yet.</div>
                     </div>
+
                 </div>
                 <div class="input-group" style="width: 105%">
                     <input type="text" class="form-control" placeholder="Type your message" id="messageInput">
                     <div class="input-group-append">
+                        <button class="btn" type="button" onclick="toggleEmojiPicker()">😀</button>
+                        <!-- Thêm nút emoji -->
                         <button class="btn" type="button" onclick="sendMessage()">Send</button>
                     </div>
                 </div>
+
+                <!-- Thêm emoji-picker -->
+                <emoji-picker id="emojiPicker"></emoji-picker>
             </div>
             <div class="col-lg-3">
-                <div class="inbox_chat" style="margin-right: -44px; height: 89vh">
-                    <div class="text-center mb-5">
-                        <img style="width: 35%" src="https://ptetutorials.com/images/user-profile.png" alt="user">
-                        <h3 class="mt-1" th:text="${customer.username}"></h3>
+                <div class="inbox_chat profile-card" style="margin-right: -44px; height: 89vh;">
+                    <div class="text-center">
+                        <img class="profile-img" src="https://ptetutorials.com/images/user-profile.png" alt="user">
+                        <h3 class="mt-3 profile-name" th:text="${manager.getWorkingName()}"></h3>
                     </div>
-                    <div class="d-flex mb-2">
-                        <div class="w-25"><strong class="ms-1">Họ tên: </strong></div>
-                        <span th:text="${customer.firstName + ' ' + customer.lastName}"></span>
-                    </div>
-                    <div class="d-flex mb-2">
-                        <div class="w-25"><strong class="ms-1">Email: </strong></div>
-                        <span th:text="${customer.email}"></span>
-                    </div>
-                    <div class="d-flex mb-2">
-                        <div class="w-25"><strong class="ms-1">Điện thoại: </strong></div>
-                        <span th:text="${customer.phoneNumber}"></span>
-                    </div>
-                    <div class="d-flex">
-                        <div class="w-25"><strong class="ms-1">Địa chỉ: </strong></div>
-                        <span th:text="${customer.address}"></span>
+                    <div class="profile-info">
+                        <div class="d-flex">
+                            <div class="w-25"><strong class="ms-1">Họ tên: </strong></div>
+                            <span th:text="${manager.getFullname()}"></span>
+                        </div>
+                        <div class="d-flex">
+                            <div class="w-25"><strong class="ms-1">Email: </strong></div>
+                            <span th:text="${manager.getEmail()}"></span>
+                        </div>
+                        <div class="d-flex">
+                            <div class="w-25"><strong class="ms-1">Điện thoại: </strong></div>
+                            <span th:text="${manager.getPhone()}"></span>
+                        </div>
+                        <div class="d-flex">
+                            <div class="w-25"><strong class="ms-1">Ngày sinh: </strong></div>
+                            <span th:text="${manager.getDob()}"></span>
+                        </div>
+                        <div class="d-flex">
+                            <div class="w-25"><strong class="ms-1">Vị trí: </strong></div>
+                            <span th:text="${manager.getPositionName()}"></span>
+                        </div>
+                        <div class="d-flex mb-3">
+                            <div class="w-25"><strong class="ms-1">Chức vụ: </strong></div>
+                            <span th:text="${manager.getRole()}"></span>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 </th:block>
-<th:block th:if="${param.role == 'Customer'}">
+<th:block th:if="${session.account.getRole().name().equals('ROLE_MANAGER')}">
     <div class="container">
         <div class="row">
-            <div class="col-lg-3" style="margin-left: -14px !important; margin-right: -15px; padding-right: 0px !important">
-                <div class="inbox_chat" style="height: 88vh">
-                    <h3 class="fw-bold mb-3">Đoạn chat</h3>
+            <div class="col-lg-3"
+                 style="margin-left: -14px !important; margin-right: -15px; padding-right: 0px !important">
+                <div class="inbox_chat" style="height: 89vh">
+                    <h3 class="mb-3" style="font-weight: bold; font-size: 2rem">Đoạn chat</h3>
+                    <div class="search-box">
+                        <i class="fa fa-search"></i>
+                        <input type="text" placeholder="Tìm kiếm trên Messenger" oninput="searchChat(this)">
+                    </div>
                     <th:block th:each="liC : ${listC2}">
                         <div class="chat_list active_chat" style="overflow-x: hidden;">
-                            <a th:href="@{/chat(id=${session.user.userID}, sid=${liC.sellerID}, role=${session.user.role})}" style="text-decoration: none; color: black">
-                                <div class="chat_people row d-flex justify-content-center align-items-center">
-                                    <div class="chat_img col-lg-3 d-flex justify-content-center align-items-center">
-                                        <img src="https://ptetutorials.com/images/user-profile.png" alt="user">
-                                    </div>
-                                    <div class="chat_ib col-lg-9">
-                                        <div class="row">
-                                            <div class="col-lg-2">
-                                                <th:block th:each="liU : ${listU}">
-                                                    <th:block th:if="${liU.userID == liC.sellerID}">
-                                                        <div style="text-align: left !important; font-weight: bold" th:text="${liU.username}"></div>
+                            <div class="chat-container1" th:id="'chat-' + ${liC.getRecuiterId()}">
+                                <a th:href="@{/chat(mid=${session.account.getUserID()}, rid=${liC.getRecuiterId()}, role=${session.account.role})}"
+                                   style="text-decoration: none; color: black">
+                                    <div class="chat_people row d-flex justify-content-center align-items-center">
+                                        <div class="chat_img col-lg-3 d-flex justify-content-center align-items-center">
+                                            <img src="https://ptetutorials.com/images/user-profile.png" alt="user">
+                                        </div>
+                                        <div class="chat_ib col-lg-9">
+                                            <div class="row">
+                                                <div class="col-lg-2">
+                                                    <th:block th:each="liE : ${listE}">
+                                                        <th:block th:if="${liE.getUserID() == liC.getRecuiterId()}">
+                                                            <div style="text-align: left !important; font-weight: bold"
+                                                                 th:text="${liE.getWorkingName()}"></div>
+                                                        </th:block>
                                                     </th:block>
-                                                </th:block>
+                                                </div>
+                                                <div class="col-lg-10">
+                                                    <th:block th:each="liL : ${listL}">
+                                                        <th:block th:if="${liC.getChatId() == liL.getChatID()}">
+                                                            <div style="text-align: right !important" id="time"
+                                                                 th:text="${#strings.substring(liL.getTimestamp(), 8, 10) + '-' + #strings.substring(liL.getTimestamp(), 5, 7) + '-' + #strings.substring(liL.getTimestamp(), 0, 4) + ' ' + #strings.substring(liL.getTimestamp(), 11, 13) + ':' + #strings.substring(liL.getTimestamp(), 14, 16)}"></div>
+                                                        </th:block>
+                                                    </th:block>
+                                                </div>
                                             </div>
-                                            <div class="col-lg-10">
+                                            <div class="mt-1">
                                                 <th:block th:each="liL : ${listL}">
-                                                    <th:block th:if="${liC.chatID == liL.chatID}">
-                                                        <div style="text-align: right !important" id="time" th:text="${#strings.substring(liL.timestamp, 8, 10) + '-' + #strings.substring(liL.timestamp, 5, 7) + '-' + #strings.substring(liL.timestamp, 0, 4) + ' ' + #strings.substring(liL.timestamp, 11, 13) + ':' + #strings.substring(liL.timestamp, 14, 16)}"></div>
+                                                    <th:block th:if="${liC.getChatId() == liL.chatID}">
+                                                        <span th:text="${liL.getMessage()}"></span>
                                                     </th:block>
                                                 </th:block>
                                             </div>
                                         </div>
-                                        <div class="mt-1">
-                                            <th:block th:each="liL : ${listL}">
-                                                <th:block th:if="${liC.chatID == liL.chatID}">
-                                                    <span th:text="${liL.message}"></span>
-                                                </th:block>
-                                            </th:block>
-                                        </div>
                                     </div>
-                                </div>
-                            </a>
+                                </a>
+                            </div>
                         </div>
                     </th:block>
                 </div>
             </div>
             <div class="col-lg-6">
-                <div class="chat-messages" id="chatMessages" style="height: 80vh; border: 1px;border-radius: 8px; margin-right: -30px">
-                    <div class="headmessage d-flex align-items-center my-3" >
+                <div class="chat-messages" id="chatMessages"
+                     style="height: 80vh; border: 1px;border-radius: 8px; margin-right: -30px">
+                    <div class="headmessage d-flex align-items-center my-3">
                         <div class="col-lg-6 d-flex align-items-center">
-                            <img class="rounded-circle" style="width: 60px; height: 60px;" src="https://ptetutorials.com/images/user-profile.png" alt="User Profile Picture">
-                            <span class="ml-3 font-weight-bold text-primary h5" th:text="${uSell.username}"></span>
-                        </div>
-                        <div class="col-lg-6 text-right">
-                            <p class="mb-0 text-secondary h6" th:text="${uSell.firstName + ' ' + uSell.lastName}"></p>
+                            <img class="rounded-circle" style="width: 60px; height: 60px;"
+                                 src="https://ptetutorials.com/images/user-profile.png" alt="User Profile Picture">
+                            <span class="ml-3 font-weight-bold text-primary h5"
+                                  th:text="${recruiter.workingName}"></span>
                         </div>
                     </div>
-                    <th:block th:if="${not empty listCd}">
-                        <th:block th:each="item : ${listCd}">
-                            <th:block th:if="${item.sender == 'Customer'}">
-                                <div class="message" style="margin-right: 5px; margin-left: auto; text-align: right; background-color: #007BFF; color: white" th:text="${item.message}"></div>
-                            </th:block>
-                            <th:block th:unless="${item.sender == 'Customer'}">
-                                <div class="message" style="margin-right: auto; margin-left: 5px; text-align: left; background-color: #E4E6EB; color: black" th:text="${item.message}"></div>
+                    <div class="bodymessage">
+                        <th:block th:if="${not #lists.isEmpty(listCd)}">
+                            <th:block th:each="item : ${listCd}">
+                                <div th:if="${item.sender eq 'ROLE_MANAGER'}" class="message sender">
+                                    <img class="avatar" src="https://ptetutorials.com/images/user-profile.png" alt="Sender Avatar">
+                                    <span class="message sender" th:text="${item.message}"></span>
+                                </div>
+                                <div th:if="${item.sender eq 'ROLE_RECRUITER'}" class="message receiver">
+                                    <img class="avatar" src="https://ptetutorials.com/images/user-profile.png" alt="Receiver Avatar">
+                                    <span class="message receiver" th:text="${item.message}"></span>
+                                </div>
                             </th:block>
                         </th:block>
-                    </th:block>
-                    <th:block th:unless="${not empty listCd}">
-                        <div class="message seller">No messages yet.</div>
-                    </th:block>
+                        <div th:if="${#lists.isEmpty(listCd)}" class="message seller">No messages yet.</div>
+                    </div>
                 </div>
                 <div class="input-group" style="width: 105%">
                     <input type="text" class="form-control" placeholder="Type your message" id="messageInput">
@@ -319,37 +471,125 @@
                 </div>
             </div>
             <div class="col-lg-3">
-                <div class="inbox_chat" style="margin-right: -44px; height: 89vh">
-                    <div class="text-center mb-5">
-                        <img style="width: 35%" src="https://ptetutorials.com/images/user-profile.png" alt="user">
-                        <h3 class="mt-1" th:text="${seller.username}"></h3>
+                <div class="inbox_chat profile-card" style="margin-right: -44px; height: 89vh;">
+                    <div class="text-center">
+                        <img class="profile-img" src="https://ptetutorials.com/images/user-profile.png" alt="user">
+                        <h3 class="mt-3 profile-name" th:text="${recruiter.getWorkingName()}"></h3>
                     </div>
-                    <div class="d-flex mb-2">
-                        <div class="w-25"><strong class="ms-1">Họ tên: </strong></div>
-                        <span th:text="${seller.firstName + ' ' + seller.lastName}"></span>
-                    </div>
-                    <div class="d-flex mb-2">
-                        <div class="w-25"><strong class="ms-1">Email: </strong></div>
-                        <span th:text="${seller.email}"></span>
-                    </div>
-                    <div class="d-flex mb-2">
-                        <div class="w-25"><strong class="ms-1">Điện thoại: </strong></div>
-                        <span th:text="${seller.phoneNumber}"></span>
-                    </div>
-                    <div class="d-flex">
-                        <div class="w-25"><strong class="ms-1">Địa chỉ: </strong></div>
-                        <span th:text="${seller.address}"></span>
+                    <div class="profile-info">
+                        <div class="d-flex">
+                            <div class="w-25"><strong class="ms-1">Họ tên: </strong></div>
+                            <span th:text="${recruiter.getFullname()}"></span>
+                        </div>
+                        <div class="d-flex">
+                            <div class="w-25"><strong class="ms-1">Email: </strong></div>
+                            <span th:text="${recruiter.getEmail()}"></span>
+                        </div>
+                        <div class="d-flex">
+                            <div class="w-25"><strong class="ms-1">Điện thoại: </strong></div>
+                            <span th:text="${recruiter.getPhone()}"></span>
+                        </div>
+                        <div class="d-flex">
+                            <div class="w-25"><strong class="ms-1">Ngày sinh: </strong></div>
+                            <span th:text="${recruiter.getDob()}"></span>
+                        </div>
+                        <div class="d-flex">
+                            <div class="w-25"><strong class="ms-1">Vị trí: </strong></div>
+                            <span th:text="${recruiter.getPositionName()}"></span>
+                        </div>
+                        <div class="d-flex mb-3">
+                            <div class="w-25"><strong class="ms-1">Chức vụ: </strong></div>
+                            <span th:text="${recruiter.getRole()}"></span>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 </th:block>
+<script>
+    function searchChat(input) {
+        const searchValue = input.value.toLowerCase();
+        const chatLists = document.querySelectorAll(".chat_list");
 
-<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+        chatLists.forEach(chat => {
+            const workingNameElement = chat.querySelector(".col-lg-2 div");
+            if (workingNameElement) {
+                const workingName = workingNameElement.textContent.trim().toLowerCase();
+                chat.style.display = workingName.includes(searchValue) ? "" : "none";
+            }
+        });
+    }
 
+    document.addEventListener("DOMContentLoaded", function () {
+        // Lấy giá trị ID từ URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const currentID = urlParams.get("mid"); // Lấy giá trị mid từ URL
+        console.log("cur: " + currentID);
+
+        // Lặp qua tất cả các phần tử có class "chat-container"
+        document.querySelectorAll(".chat-container").forEach(divElement => {
+            const anchor = divElement.querySelector("a");
+            const divHref = anchor.getAttribute("href");
+            const divParams = new URLSearchParams(divHref.split("?")[1]);
+            const divID = divParams.get("mid"); // Lấy giá trị mid từ href trong thẻ a
+            console.log("div: " + divID);
+            // So sánh ID và thêm class nếu trùng khớp
+            if (Number(currentID) === Number(divID)) {
+                divElement.classList.add("highlight"); // Thêm class mới
+            }
+        });
+    });
+
+    document.addEventListener("DOMContentLoaded", function () {
+        // Lấy giá trị ID từ URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const currentID = urlParams.get("rid"); // Lấy giá trị mid từ URL
+        console.log("cur: " + currentID);
+
+        // Lặp qua tất cả các phần tử có class "chat-container"
+        document.querySelectorAll(".chat-container1").forEach(divElement => {
+            const anchor = divElement.querySelector("a");
+            const divHref = anchor.getAttribute("href");
+            const divParams = new URLSearchParams(divHref.split("?")[1]);
+            const divID = divParams.get("rid"); // Lấy giá trị mid từ href trong thẻ a
+            console.log("div: " + divID);
+            // So sánh ID và thêm class nếu trùng khớp
+            if (Number(currentID) === Number(divID)) {
+                divElement.classList.add("highlight"); // Thêm class mới
+            }
+        });
+    });
+
+    function toggleEmojiPicker() {
+        const picker = document.getElementById('emojiPicker');
+        picker.style.display = picker.style.display === 'none' ? 'block' : 'none';
+    }
+
+    // Đóng emoji picker khi click ra ngoài
+    document.addEventListener('click', function (event) {
+        const picker = document.getElementById('emojiPicker');
+        const emojiButton = document.querySelector('button[onclick="toggleEmojiPicker()"]');
+        if (!picker.contains(event.target) && event.target !== emojiButton) {
+            picker.style.display = 'none';
+        }
+    });
+
+    // Xử lý chọn emoji
+    const picker = document.getElementById('emojiPicker');
+    const input = document.getElementById('messageInput');
+    picker.addEventListener('emoji-click', event => {
+        input.value += event.detail.unicode;
+    });
+</script>
+<script th:inline="javascript">
+    /*<![CDATA[*/
+    var conversationId = [[${conversationId != null ? conversationId : 'null'
+    }]]
+    ;
+    var role = [[${session.account != null && session.account.role != null ? session.account.role : 'null'}]];
+    /*]]>*/
+</script>
 <script>
     var ws; // Global WebSocket variable
 
@@ -358,6 +598,7 @@
         var message = messageInput.value.trim();
         if (message !== "") {
             // Display the sent message
+            console.log("Gửi tin nhắn:", message);
             displayMessage(message, 'sender');
             ws.send(message);
             messageInput.value = ""; // Clear input
@@ -368,17 +609,38 @@
         var chatMessages = document.getElementById("chatMessages");
         var messageDiv = document.createElement("div");
         messageDiv.classList.add("message", senderType);
-        messageDiv.textContent = message;
+
+        var avatarImg = document.createElement("img");
+        avatarImg.classList.add("avatar");
+        avatarImg.src = "https://ptetutorials.com/images/user-profile.png";
+        avatarImg.alt = senderType === 'sender' ? "Sender Avatar" : "Receiver Avatar";
+
+        var messageSpan = document.createElement("span");
+        messageSpan.textContent = message;
+
+        // Thêm lớp CSS cho tin nhắn
+        if (senderType === 'sender') {
+            messageSpan.classList.add("sender-message");
+        } else {
+            messageSpan.classList.add("receiver-message");
+        }
+
+        // Thêm avatar và tin nhắn vào container
+        messageDiv.appendChild(avatarImg);
+        messageDiv.appendChild(messageSpan);
+
+        // Thêm tin nhắn vào khung chat
         chatMessages.appendChild(messageDiv);
-        chatMessages.scrollTop = chatMessages.scrollHeight; // Auto scroll to the bottom
+
+        // Tự động cuộn xuống dưới cùng
+        chatMessages.scrollTop = chatMessages.scrollHeight;
     }
 
     document.addEventListener("DOMContentLoaded", function () {
-        var wsUrl = "ws://" + window.location.host + "${pageContext.request.contextPath}/websocket/${conversationId}/${param.role}";
-        ws = new WebSocket(wsUrl);
-
+        ws = new WebSocket(`ws://localhost:8080/websocket/${conversationId}/${role}`);
+        console.log(ws);
         ws.onopen = function () {
-            console.log("WebSocket connected");
+            console.log("WebSocket connected successfully");
             document.getElementById("messageInput").addEventListener("keypress", function (event) {
                 if (event.key === "Enter") {
                     sendMessage();
@@ -387,6 +649,7 @@
         };
 
         ws.onmessage = function (event) {
+            console.log("Check" + event);
             displayMessage(event.data, 'receiver');
         };
 
@@ -398,13 +661,6 @@
             console.error("WebSocket error observed:", event);
         };
     });
-</script>
-<script th:src="@{/assets/js/bootstrap.min.js}"></script>
-<script th:src="@{/assets/js/tiny-slider.js}"></script>
-<script th:src="@{/assets/js/glightbox.min.js}"></script>
-<script th:src="@{/assets/js/main.js}"></script>
-<script type="text/javascript">
-
 </script>
 </body>
 </html>

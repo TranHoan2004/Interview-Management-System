@@ -17,11 +17,13 @@ import org.jetbrains.annotations.NotNull;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.nio.ByteBuffer;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static com.ims_team4.utils.RandomCode.generateSixRandomCodes;
+import static com.ims_team4.utils.webSocket.InsertImageToMySQL.avatarValues;
 
 @Service
 // TrangNT
@@ -57,25 +59,61 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
-    public void saveEmployee(@NotNull EmployeeDTO employeeDTO) {
-        // Lấy thông tin Department & Position từ database
-        Users user = userRepository.getUserById(employeeDTO.getUser());
-        Department dept = departmentRepository.getDepartmentById(employeeDTO.getDepartmentId());
-        Position position = positionRepository.getPosById(employeeDTO.getPositionId());
-
-        // Gọi hàm mapper (truyền thêm department & position)
-        Employee employee = Employee.builder()
-                .user(user)
-                .department(dept)
-                .position(position)
-                .password(encoder.encode("123"))
-                .workingName(generateSixRandomCodes())
-                .role(employeeDTO.getRole())
-                .build();
-
-        // Lưu vào database
-        employeeRepository.save(employee);
+    public List<EmployeeDTO> search(String title, Long positionId) {
+        // Trường hợp 1: Có cả title và positionId -> Tìm theo cả hai
+        if ((title != null && !title.isEmpty()) && positionId != null) {
+            List<Employee> employees = employeeRepository.findByUserInAndPositionId(title, positionId);
+            return employees.stream()
+                    .map(this::convertToDTO)
+                    .collect(Collectors.toList());
+        }
+        // Trường hợp 2: Có title -> Tìm theo title
+        else if (title != null && !title.isEmpty()) {
+            List<Employee> employees = employeeRepository.findByName(title);
+            return employees.stream()
+                    .map(this::convertToDTO)
+                    .collect(Collectors.toList());
+        }
+        // Trường hợp 3: Có positionId -> Tìm theo positionId
+        else if (positionId != null) {
+            List<Employee> employees = employeeRepository.findByPositionId(positionId);
+            return employees.stream()
+                    .map(this::convertToDTO)
+                    .collect(Collectors.toList());
+        }
+        // Trường hợp 4: Không có điều kiện nào -> Trả về tất cả nhân viên
+        return employeeRepository.findAll().stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
     }
+
+
+    @Override
+    public void saveEmployee(@NotNull EmployeeDTO employeeDTO) {
+        // Kiểm tra xem Employee đã tồn tại chưa
+        Employee existingEmployee = employeeRepository.findById(employeeDTO.getUserID()).orElse(null);
+
+        if (existingEmployee == null) {
+            // Employee chưa tồn tại => INSERT
+            existingEmployee = Employee.builder()
+                    .user(userRepository.getUserById(employeeDTO.getUserID()))
+                    .department(departmentRepository.getDepartmentById(employeeDTO.getDepartmentId()))
+                    .position(positionRepository.getPosById(employeeDTO.getPositionId()))
+                    .password(encoder.encode("123"))
+                    .workingName(generateSixRandomCodes())
+                    .role(employeeDTO.getRole())
+                    .build();
+        } else {
+            // Employee đã tồn tại => UPDATE
+            existingEmployee.setDepartment(departmentRepository.getDepartmentById(employeeDTO.getDepartmentId()));
+            existingEmployee.setPosition(positionRepository.getPosById(employeeDTO.getPositionId()));
+            existingEmployee.setRole(employeeDTO.getRole());
+        }
+
+        // Lưu vào database (có thể là INSERT hoặc UPDATE)
+        employeeRepository.save(existingEmployee);
+    }
+
 
     @Override
     public EmployeeDTO updateEmployee(Long id, @NotNull EmployeeDTO employeeDTO) {
@@ -84,7 +122,7 @@ public class EmployeeServiceImpl implements EmployeeService {
                 .orElseThrow(() -> new EntityNotFoundException("Employee not found with ID: " + id));
 
         // Cập nhật thông tin User
-        Users user = existingEmployee.getUser();
+//        Users user = existingEmployee.getUser();
         // user.setDob(employeeDTO.getUser().getDob());
         // user.setGender(employeeDTO.getUser().getGender());
         // user.setEmail(employeeDTO.getUser().getEmail());
@@ -93,22 +131,21 @@ public class EmployeeServiceImpl implements EmployeeService {
         // user.setPhone(employeeDTO.getUser().getPhone());
         // user.setRole(employeeDTO.getUser().getRole());
 
-        // Lưu User vào database
-        userRepository.save(user); // 🔥 Fix lỗi thiếu lưu User
 
-        // Kiểm tra & lấy Department & Position từ DB
-        // Department dept =
-        // departmentRepository.findByName(employeeDTO.getDepartment().getName())
-        // .orElseThrow(() -> new RuntimeException("Department not found"));
+//         Kiểm tra & lấy Department & Position từ DB
+        Department dept =
+                departmentRepository.findById(employeeDTO.getDepartmentId())
+                        .orElseThrow(() -> new RuntimeException("Department not found"));
 
-        // Position position =
-        // positionRepository.findByName(employeeDTO.getPosition().getName())
-        // .orElseThrow(() -> new RuntimeException("Position not found"));
+        Position position =
+                positionRepository.findById(employeeDTO.getPositionId())
+                        .orElseThrow(() -> new RuntimeException("Position not found"));
 
         // Cập nhật thông tin Employee
         existingEmployee.setPassword(employeeDTO.getPassword());
-        // existingEmployee.setPosition(position);
-        // existingEmployee.setDepartment(dept);
+        existingEmployee.setPosition(position);
+        existingEmployee.setRole(employeeDTO.getRole());
+        existingEmployee.setDepartment(dept);
 
         Employee savedEmployee = employeeRepository.save(existingEmployee);
         return convertToDTO(savedEmployee);
@@ -118,7 +155,7 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Override
     public void updateEmployeesPassword(@NotNull EmployeeDTO employee) {
         String password = employee.getPassword();
-        Employee emp = employeeRepository.findById(employee.getUser()).get();
+        Employee emp = employeeRepository.findById(employee.getUserID()).get();
         emp.setPassword(encoder.encode(password));
         employeeRepository.save(emp);
     }
@@ -148,8 +185,8 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
-    public EmployeeDTO getEmployeeById(int id) {
-        Optional<Employee> list = employeeRepository.findById((long) id);
+    public EmployeeDTO getEmployeeById(long id) {
+        Optional<Employee> list = employeeRepository.findById(id);
         if (list.isPresent()) {
             return convertToDTO(list.get());
         }
@@ -157,8 +194,15 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     private EmployeeDTO convertToDTO(@NotNull Employee employee) {
+        byte[] avatarBytes = employee.getUser().getAvatar();
+        ByteBuffer buffer = ByteBuffer.wrap(avatarBytes);
+        int avatarId = buffer.getInt();
+        int avatarNumber = avatarValues.indexOf(avatarId) + 1;
         return EmployeeDTO.builder()
-                .user(employee.getId())
+                .userID(employee.getId())
+//                .dob(employee.getUser().getDob())
+//                .gender(employee.getUser().getGender())
+//                .address(employee.getUser().getAddress())
                 .password(employee.getPassword())
                 .fullname(employee.getUser().getFullname())
                 .email(employee.getUser().getEmail())
@@ -169,38 +213,39 @@ public class EmployeeServiceImpl implements EmployeeService {
                 .role(employee.getRole())
                 .status(employee.getUser().isStatus())
                 .workingName(employee.getWorkingName())
-                .interviewID(employee.getInterviewID())
+                .dob(employee.getUser().getDob())
+                .avatar(avatarNumber)
                 .build();
     }
 
-    private Employee convert(@NotNull EmployeeDTO dto, Department department, Position position) {
-        // if (dto == null)
-        // return null;
-        // User user = User.builder()
-        // .id(dto.getUser().getId()) // Nếu ID null, tạo User mới
-        // .dob(dto.getUser().getDob())
-        // .gender(dto.getUser().getGender())
-        // .email(dto.getUser().getEmail())
-        // .address(dto.getUser().getAddress())
-        // .fullname(dto.getUser().getFullname())
-        // .phone(dto.getUser().getPhone())
-        // .role(dto.getUser().getRole())
-        // .build();
+//    private Employee convert(@NotNull EmployeeDTO dto, Department department, Position position) {
+    // if (dto == null)
+    // return null;
+    // User user = User.builder()
+    // .id(dto.getUser().getId()) // Nếu ID null, tạo User mới
+    // .dob(dto.getUser().getDob())
+    // .gender(dto.getUser().getGender())
+    // .email(dto.getUser().getEmail())
+    // .address(dto.getUser().getAddress())
+    // .fullname(dto.getUser().getFullname())
+    // .phone(dto.getUser().getPhone())
+    // .role(dto.getUser().getRole())
+    // .build();
 
-        // Employee employee = Employee.builder()
-        // .id(dto.getUser().getId())
-        // .password(dto.getPassword())
-        // .position(position)
-        // .department(department)
-        // .build();
-        // return employee;
-        return Employee.builder()
-                .id(dto.getUser())
-                .password(dto.getPassword())
-                .role(dto.getRole())
-                .position(position)
-                .department(department)
-                .build();
-    }
+    // Employee employee = Employee.builder()
+    // .id(dto.getUser().getId())
+    // .password(dto.getPassword())
+    // .position(position)
+    // .department(department)
+    // .build();
+    // return employee;
+//        return Employee.builder()
+//                .user(dto.getUser())
+//                .password(dto.getPassword())
+//                .role(dto.getRole())
+//                .position(position)
+//                .department(department)
+//                .build();
+//    }
 
 }

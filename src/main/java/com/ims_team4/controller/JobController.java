@@ -2,22 +2,25 @@ package com.ims_team4.controller;
 
 import com.ims_team4.dto.JobDTO;
 import com.ims_team4.dto.UserDTO;
+import com.ims_team4.model.Benefit;
 import com.ims_team4.model.Job;
-import com.ims_team4.model.Users;
+import com.ims_team4.model.Level;
+import com.ims_team4.model.Skill;
 import com.ims_team4.service.*;
-
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.Optional;
-
 
 @Controller
 @RequestMapping("/jobs")
@@ -38,7 +41,8 @@ public class JobController {
     @Autowired
     private UserService userService;
 
-//    Role Manager
+
+    //    Role Manager
     @GetMapping("/manager/list/{managerId}")
     public String listManagerJobs(
             @PathVariable("managerId") Long userId, // userId của manager
@@ -92,48 +96,111 @@ public class JobController {
 
     @PostMapping("manager/create-job/{managerId}")
     public String createJob(@PathVariable("managerId") Long managerId,
-                            @ModelAttribute("jobDTO") JobDTO jobDTO,
+                            @ModelAttribute("jobDTO") @Valid JobDTO jobDTO,
                             BindingResult result,
-                            Model model) {
+                            Model model,
+                            RedirectAttributes redirectAttributes) {
 
-        System.out.println("Received managerId: " + managerId);
-        System.out.println("Received jobDTO: " + jobDTO);
+        //Check endDate >= startDate
+        if (!jobDTO.isEndDateValid()) {
+            result.rejectValue("endDate", "error.jobDTO", "End date must be after or equal to start date");
+        }
+
+        //Check salaryTo >= salaryFrom
+        if (!jobDTO.isSalaryValid()) {
+            result.rejectValue("salaryTo", "error.jobDTO", "Salary to must be greater than or equal to salary from");
+        }
 
         if (result.hasErrors()) {
-            System.out.println("Form has errors: " + result.getAllErrors());
             model.addAttribute("skills", skillService.getAllSkill());
             model.addAttribute("benefits", benefitService.getAllBenefit());
             model.addAttribute("levels", levelService.getAllLevels());
             return "Jobs/jobs-manager";
         }
 
-        // Kiểm tra manager có tồn tại không
-        Optional<UserDTO> manager = userService.getManagerById(managerId); // Lấy từ Users thay vì UserDTO
+
+        Optional<UserDTO> manager = userService.getManagerById(managerId);
 
         if (manager.isEmpty()) {
-            System.out.println("Error: Manager with ID " + managerId + " not found in database.");
-            model.addAttribute("error", "Manager not found.");
-            return "Jobs/jobs-manager";
+            model.addAttribute("errorMessage", "Manager not found.");
+            return "redirect:/jobs/manager/list/" + managerId;
         }
 
         try {
-            System.out.println("Manager found: " + manager.get().getFullname()); // Kiểm tra thông tin manager
-            System.out.println("Calling jobService.createJob()");
-
-            jobDTO.setId(null);
             jobService.createJob(managerId, jobDTO);
-            System.out.println("Job created successfully!");
+            redirectAttributes.addFlashAttribute("successMessage", "Job created successfully!");
         } catch (Exception e) {
-            System.out.println("Error while creating job: " + e.getMessage());
-            model.addAttribute("error", e.getMessage());
-            return "Jobs/jobs-manager";
+            redirectAttributes.addFlashAttribute("errorMessage", "Failed to create job: " + e.getMessage());
+            return "redirect:/jobs/manager/list/" + managerId;
         }
 
         return "redirect:/jobs/manager/list/" + managerId;
     }
 
+    @GetMapping("manager/edit-job/{managerId}/{jobId}")
+    public String jobManagerEdit(@PathVariable("managerId") Long managerId,
+                                 @PathVariable("jobId") Long jobId,
+                                 Model model) {
 
-//    Role Admin
+        Optional<Job> jobOptional = jobService.getJobDetailForManager(managerId, jobId);
+
+        if (jobOptional.isPresent()) {
+            Job job = jobOptional.get();
+            JobDTO jobDTO = JobDTO.builder()
+                    .id(job.getId())
+                    .title(job.getTitle())
+                    .startDate(job.getStartDate())
+                    .endDate(job.getEndDate())
+                    .salaryFrom(job.getSalaryFrom())
+                    .salaryTo(job.getSalaryTo())
+                    .location(job.getLocation())
+                    .status(job.isStatus())
+                    .description(job.getDescription())
+                    .levelNames(job.getLevels().stream().map(Level::getName).toList())
+                    .skillNames(job.getSkills().stream().map(Skill::getName).toList())
+                    .benefitNames(job.getBenefits().stream().map(Benefit::getName).toList())
+                    .build();
+            // Truyền dữ liệu vào Model
+            model.addAttribute("job", jobDTO);
+            model.addAttribute("levels", levelService.getAllLevels());
+            model.addAttribute("skills", skillService.getAllSkill());
+            model.addAttribute("benefits", benefitService.getAllBenefit());
+
+            return "Jobs/edit-job-manager";
+        } else {
+            return "error";
+        }
+    }
+
+
+    @Transactional
+    @PostMapping("manager/edit-job/{managerId}/{jobId}")
+    public String editJobForManager(@PathVariable("managerId") Long managerId,
+                                    @PathVariable("jobId") Long jobId,
+                                    @ModelAttribute JobDTO jobDTO,
+                                    RedirectAttributes redirectAttributes) {
+        boolean success = jobService.editJob(managerId, jobId, jobDTO);
+
+        if (success) {
+            redirectAttributes.addFlashAttribute("successMessage", "Job updated successfully!");
+            return "redirect:/jobs/manager/list/" + managerId;
+        } else {
+            redirectAttributes.addFlashAttribute("errorMessage", "Job can not update!");
+            return "redirect:/jobs/manager/list/" + managerId;
+        }
+    }
+
+    @PostMapping("manager/delete-job/{managerId}/{jobId}")
+    public String deletedJobForManager(
+            @PathVariable("managerId") Long managerId,
+            @PathVariable("jobId") Long jobId
+    ) {
+        jobService.deleteJobById(jobId);
+        return "redirect:/jobs/manager/list/" + managerId;
+    }
+
+
+    //    Role Admin
     @GetMapping("admin/listAllJob")
     public String listJobsForAdmin(
             @RequestParam(required = false) String title,
@@ -168,8 +235,6 @@ public class JobController {
             return "error";
         }
     }
-
-
 
     @ExceptionHandler(EntityNotFoundException.class)
     public String handleEntityNotFound(EntityNotFoundException ex, Model model) {

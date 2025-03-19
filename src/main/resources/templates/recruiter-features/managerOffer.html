@@ -80,7 +80,7 @@
         /* Bảng dữ liệu */
         .table-container {
             background: white;
-            padding: 20px;
+            padding: 10px;
             border-radius: 8px;
             box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
         }
@@ -211,6 +211,28 @@
             font-size: 16px;
         }
 
+        .chat-button {
+            background: linear-gradient(45deg, #0084FF, #00C6FF);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            border-radius: 25px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .chat-button:hover {
+            background: linear-gradient(45deg, #0078FF, #00B8FF);
+        }
+
+        .chat-button i {
+            font-size: 20px;
+        }
+
     </style>
 </head>
 <body>
@@ -227,7 +249,7 @@
 <div class="sidebar" th:replace="~{component/left-sidebar::leftSidebar}"></div>
 
 <!-- Nội dung -->
-<div class="content">
+<div class="content" style="padding-top: 12px;">
     <div class="d-flex justify-content-between align-items-center mb-0">
         <div class="container py-2 flex-grow-1" style="flex-basis: 68%;">
             <h3 class="page-title fw-bold text-dark">
@@ -263,6 +285,10 @@
                         th:text="${statusOffer.getStatusName()}"></option>
             </select>
             <button type="submit" class="btn btn-secondary">Search</button>
+            <a th:href="@{/chat(mid=${session.account.userID}, rid=${session.rid}, role=${session.account.role})}"
+               class="chat-button fw-bold text-decoration-none">
+                <i class="fa-brands fa-facebook-messenger"></i> Chat
+            </a>
             <button type="button" class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#exportModal">
                 Export
             </button>
@@ -313,8 +339,8 @@
             <tbody>
             <th:block th:each="offer : ${listO}">
                 <tr>
-                    <th:block th:each="candidate : ${listC}" th:if="${candidate.getId() == offer.getCandidateId()}">
-                        <th:block th:each="user : ${listU}" th:if="${user.getId() == candidate.getId()}">
+                    <th:block th:each="candidate : ${listC}" th:if="${candidate.getUserId() == offer.getCandidateId()}">
+                        <th:block th:each="user : ${listU}" th:if="${user.getId() == candidate.getUserId()}">
                             <td th:text="${user.getFullname()}"></td>
                             <td th:text="${user.getEmail()}"></td>
                             <td th:each="emp : ${listU}" th:if="${emp.getId() == offer.getEmployeeId()}"

@@ -6,11 +6,13 @@ import com.ims_team4.model.Offer;
 import com.ims_team4.repository.ChatRepository;
 import jakarta.persistence.EntityManager;
 import org.hibernate.Session;
+import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
 
+@Repository
 public class ChatRepositoryImpl implements ChatRepository {
     private final EntityManager em;
 
@@ -29,7 +31,7 @@ public class ChatRepositoryImpl implements ChatRepository {
     @Override
     public List<Chat> getAllChatOfRecruiter(int recruiterId) {
         Session session = em.unwrap(Session.class);
-        List<Chat> chats = session.createQuery("select c from Chat c where c.recruiter.id =:recruiterId", Chat.class)
+        List<Chat> chats = session.createQuery("select c from Chat c, ChatDetail cd where c.id = cd.chat.id and c.recruiter.id =:recruiterId order by cd.id desc", Chat.class)
                 .setParameter("recruiterId", recruiterId)
                 .getResultList();
         session.close();
@@ -40,7 +42,7 @@ public class ChatRepositoryImpl implements ChatRepository {
     public List<Chat> getAllChatOfManager(int managerId) {
         Session session = em.unwrap(Session.class);
         List<Chat> chats = session.createQuery("select c from Chat c where c.manager.id =: managerId", Chat.class)
-                .setParameter("recruiterId", managerId)
+                .setParameter("managerId", managerId)
                 .getResultList();
         session.close();
         return chats;
@@ -84,13 +86,15 @@ public class ChatRepositoryImpl implements ChatRepository {
 
     @Override
     public int getChatIdByRecruiterAndManager(int rid, int mid) {
-        Session session = em.unwrap(Session.class);
-        Chat chat = session.createQuery("select c from Chat c where c.manager.id =: mid and c.recruiter.id =: rid", Chat.class)
-                .setParameter("rid", rid)
-                .setParameter("mid", mid)
-                .getSingleResult();
-        session.close();
-        return (int) chat.getId();
+        try (Session session = em.unwrap(Session.class)) {
+            Chat chat = session.createQuery("select c from Chat c where c.manager.id =: mid and c.recruiter.id =: rid", Chat.class)
+                    .setParameter("rid", rid)
+                    .setParameter("mid", mid)
+                    .getSingleResult();
+            return (int) chat.getId();
+        } catch (Exception e) {
+            return -1;
+        }
     }
 
     @Override

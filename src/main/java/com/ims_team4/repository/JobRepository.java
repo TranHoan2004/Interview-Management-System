@@ -5,10 +5,13 @@ import com.ims_team4.model.Job;
 import com.ims_team4.model.utils.HrRole;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -19,39 +22,33 @@ import java.util.Optional;
 public interface JobRepository extends JpaRepository<Job, Long> {
     @Query("SELECT j FROM Job j LEFT JOIN FETCH j.skills LEFT JOIN FETCH j.levels")
     List<Job> findAllWithDetails();
-    List<Job> findByTitleContaining(String title);
-    List<Job> findByStatus(Boolean status);
-    List<Job> findByTitleContainingAndStatus(String title, Boolean status);
+    @EntityGraph(attributePaths = {"levels", "benefits", "skills"})
     @Query("SELECT j FROM Job j " +
-            "JOIN Employee e ON e.position.id = j.id " +
-            "JOIN Users u ON e.id = u.id " +
-            "WHERE u.id = :userId AND e.role = :role " +
+            "WHERE j.user.id = :employeeId " +
             "AND (:title IS NULL OR :title = '' OR LOWER(j.title) LIKE LOWER(CONCAT('%', :title, '%'))) " +
             "AND (:status IS NULL OR j.status = :status)")
-    Page<Job> findJobsForManager(@Param("userId") Long userId,
+    Page<Job> findJobsByEmployee(@Param("employeeId") Long employeeId,
                                  @Param("title") String title,
                                  @Param("status") Boolean status,
-                                 @Param("role") HrRole role,
                                  Pageable pageable);
 
+    @Transactional(readOnly = true)
     @Query(value = "SELECT " +
             "    j.*, " +
-            "    e.id AS manager_id, " +
+            "    j.user_id AS manager_id, " +
             "    GROUP_CONCAT(DISTINCT l.name SEPARATOR ', ') AS level_names, " +
             "    GROUP_CONCAT(DISTINCT s.name SEPARATOR ', ') AS skill_names " +
             "FROM Job j " +
-            "JOIN employee e ON e.position_id = j.id " +
-            "JOIN users u ON e.id = u.id " +
-            "JOIN job_level jl ON jl.job_id = j.id " +
-            "JOIN levels l ON jl.level_id = l.id " +
-            "JOIN job_skill js ON js.job_id = j.id " +
-            "JOIN skill s ON js.skill_id = s.id " +
-            "WHERE u.id = :managerId " +
-            "AND e.role = 'ROLE_MANAGER' " +
+            "LEFT JOIN Job_Level jl ON jl.job_id = j.id " +
+            "LEFT JOIN Levels l ON jl.level_id = l.id " +
+            "LEFT JOIN Job_Skill js ON js.job_id = j.id " +
+            "LEFT JOIN Skill s ON js.skill_id = s.id " +
+            "WHERE j.user_id  = :managerId " +
             "AND j.id = :jobId " +
-            "GROUP BY j.id, e.id",
+            "GROUP BY j.id, j.user_id",
             nativeQuery = true)
     Optional<Job> findJobDetailForManager(@Param("managerId") Long managerId, @Param("jobId") Long jobId);
+
 
     @Query("SELECT j FROM Job j " +
             "WHERE (:title IS NULL OR LOWER(j.title) LIKE LOWER(CONCAT('%', :title, '%'))) " +
@@ -61,4 +58,10 @@ public interface JobRepository extends JpaRepository<Job, Long> {
     Job saveJob(Job job);
 
     Optional<Job> findJobById(Long id);
+
+    @Modifying
+    @Transactional
+    @Query("DELETE FROM Job j WHERE j.id = :id")
+    void deleteJobById(@Param("id") Long id);
+
 }

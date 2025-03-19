@@ -11,7 +11,6 @@ import java.util.stream.Collectors;
 
 @Service
 public class ContractTypeServiceImpl implements ContractTypeService {
-
     private final ContractTypeRepository contractTypeRepository;
 
     public ContractTypeServiceImpl(ContractTypeRepository contractTypeRepository) {

@@ -1,19 +1,18 @@
-package com.ims_team4.repository.impl;
+package com.ims_team4.service.impl;
 
-import com.ims_team4.dto.BenefitDTO;
 import com.ims_team4.dto.ChatDTO;
-import com.ims_team4.model.Benefit;
 import com.ims_team4.model.Chat;
 import com.ims_team4.repository.ChatRepository;
 import com.ims_team4.service.ChatService;
 import org.jetbrains.annotations.NotNull;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Service
 public class ChatServiceImpl implements ChatService {
-
-    private ChatRepository chatRepository;
+    private final ChatRepository chatRepository;
 
     public ChatServiceImpl(ChatRepository chatRepository) {
         this.chatRepository = chatRepository;
@@ -55,11 +54,22 @@ public class ChatServiceImpl implements ChatService {
         return chatRepository.getChatIdByRecruiterAndManager(rid, mid);
     }
 
-    private ChatDTO convertToDTO(@NotNull Chat chat) {
-        return ChatDTO.builder()
-                .chatId(chat.getId())
-                .managerId(chat.getManager().getId())
-                .recuiterId(chat.getRecruiter().getId())
-                .build();
+    public ChatDTO convertToDTO(Chat chat) {
+        ChatDTO chatDTO = new ChatDTO();
+        chatDTO.setChatId(chat.getId());
+        if (chat.getManager() != null) {
+            chatDTO.setManagerId(chat.getManager().getId());
+        } else {
+            chatDTO.setManagerId(-1);
+        }
+
+        // Tương tự kiểm tra cho recruiter
+        if (chat.getRecruiter() != null) {
+            chatDTO.setRecuiterId(chat.getRecruiter().getId());
+        } else {
+            chatDTO.setRecuiterId(-1);
+        }
+
+        return chatDTO;
     }
 }

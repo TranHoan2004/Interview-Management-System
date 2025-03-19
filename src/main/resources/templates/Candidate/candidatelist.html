@@ -52,7 +52,7 @@
         background: #34495e;
     }
 
-    .sidebar a:hover{
+    .sidebar a:hover {
         background: #1abc9c;
     }
 
@@ -222,6 +222,7 @@
         padding: 8px; /* Căn chỉnh khoảng cách bên trong */
         border-radius: 5px; /* Làm bo tròn góc */
     }
+
     /* Nút Chi tiết - Vàng */
     .btn-details {
         background-color: #FFC107; /* Màu vàng */
@@ -254,11 +255,7 @@
 </style>
 
 <body>
-<!-- Toàn bộ thông tin chỉ hiển thị nếu người dùng có một trong các role -->
-<div sec:authorize="hasAnyRole('ROLE_RECRUITER', 'ROLE_MANAGER', 'ROLE_ADMINISTRATOR', 'ROLE_INTERVIEWER')">
-    <!-- Nội dung chi tiết ứng viên ở đây -->
-
-
+<!-- Nội dung chi tiết ứng viên ở đây -->
 <div class="d-flex">
     <!-- Left sidebar -->
     <div class="sidebar" th:replace="~{component/left-sidebar::leftSidebar}"></div>
@@ -278,7 +275,11 @@
                             </li>
                         </ol>
                     </nav>
-                    <a href="candidates/create" class="btn btn-dark">Add new</a>
+                    <a th:href="@{/candidate/add}" class="btn btn-dark"
+                       th:if="${!session.get('account').getRole().name().equals('ROLE_INTERVIEWER')}">
+                        Add new
+                    </a>
+
                 </div>
                 <div th:replace="~{component/top-sidebar::topSidebar}"></div>
             </div>
@@ -316,9 +317,10 @@
                         <td th:text="${candidate.fullName ?: 'N/A'}"></td>
                         <td>
                             <ul>
-                                <li th:each="skill : ${candidate.skills}" th:text="${skill}"></li>
+                                <li th:each="skill : ${candidate.skills ?: {}}" th:text="${skill}"></li>
                             </ul>
                         </td>
+
                         <td th:text="${candidate.experience ?: '0'} + ' years'"></td>
                         <td th:text="${candidate.positionName ?: 'N/A'}"></td>
                         <td th:text="${#strings.capitalize(#strings.toLowerCase(candidate.status ?: 'Unknown'))}"></td>
@@ -330,24 +332,37 @@
                                 <!-- Nhóm nút thay thế -->
                                 <div class="action-group d-none">
                                     <!-- Nút Chi tiết - Vàng -->
-                                    <a th:href="@{/candidate/details/{id}(id=${candidate.id})}"
+                                    <a th:href="@{/candidate/details/{userId}(userId=${candidate.userId})}"
                                        class="btn btn-details">ℹ️</a>
 
-                                    <!-- Chỉnh sửa  -->
-                                    <a th:href="@{/candidates/edit/{id}(id=${candidate.id})}"
+                                    <!-- Chỉnh sửa -->
+                                    <a th:href="@{/candidates/edit/{userId}(userId=${candidate.userId})}"
                                        class="btn btn-edit"
-                                       sec:authorize="hasAnyRole('ROLE_RECRUITER', 'ROLE_MANAGER', 'ROLE_ADMINISTRATOR')">✏️</a>
+                                       th:if="${!session.get('account').getRole().name().equals('ROLE_INTERVIEWER')}">✏️</a>
 
-                                    <!-- Xóa  -->
-                                    <a th:href="@{/candidates/delete/{id}(id=${candidate.id})}"
-                                       class="btn btn-delete"
-                                       sec:authorize="hasAnyRole('ROLE_RECRUITER', 'ROLE_MANAGER', 'ROLE_ADMINISTRATOR')"
-                                       onclick="return confirm('Are you sure you want to delete this candidate?');">🗑️</a>
+                                    <!-- Xóa -->
+                                    <button type="button"
+                                            class="btn btn-danger btn-sm delete-btn"
+                                            data-bs-toggle="modal"
+                                            data-bs-target="#deleteModal"
+                                            th:attr="data-user-id=${candidate.userId}"
+                                            th:if="${!session.get('account').getRole().name().equals('ROLE_INTERVIEWER') && candidate.status == 'OPEN'}">
+                                        🗑️
+                                    </button>
 
-                                    <!-- Ban  -->
-                                    <a th:href="@{/candidates/ban/{id}(id=${candidate.id})}"
-                                       class="btn btn-dark"
-                                       sec:authorize="hasAnyRole('ROLE_RECRUITER', 'ROLE_MANAGER', 'ROLE_ADMINISTRATOR')">🚫</a>
+                                    <!-- Nút Ban -->
+                                    <form th:action="@{/candidate/ban/{userId}(userId=${candidate.userId})}"
+                                          method="post" style="display: inline;">
+                                        <button type="button"
+                                                class="btn btn-warning btn-sm ban-btn"
+                                                data-bs-toggle="modal"
+                                                data-bs-target="#banModal"
+                                                th:attr="data-user-id=${candidate.userId}"
+                                                th:if="${!session.get('account').getRole().name().equals('ROLE_INTERVIEWER') && candidate.status != 'BANNED'}">
+                                            🚫
+                                        </button>
+                                    </form>
+
 
                                     <!-- Hủy  -->
                                     <button class="btn btn-cancel">❌</button>
@@ -370,6 +385,46 @@
         </div>
     </div>
 </div>
+</div>
+
+<!-- Modal Xác Nhận Xóa -->
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteModalLabel">Confirm Delete</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Are you sure you want to delete this candidate?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <a id="confirmDeleteBtn" href="#" class="btn btn-danger">Delete</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Xác Nhận Ban -->
+<div class="modal fade" id="banModal" tabindex="-1" aria-labelledby="banModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="banModalLabel">Confirm Ban</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Are you sure you want to ban this candidate?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <form id="banForm" method="post">
+                    <button type="submit" class="btn btn-warning">Ban</button>
+                </form>
+            </div>
+        </div>
+    </div>
 </div>
 
 
@@ -635,6 +690,78 @@
     updatePagination();
 
 
+</script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const deleteButtons = document.querySelectorAll(".delete-btn");
+        const confirmDeleteBtn = document.getElementById("confirmDeleteBtn");
+
+        deleteButtons.forEach(button => {
+            button.addEventListener("click", function () {
+                const userId = this.getAttribute("data-user-id");
+                console.log("🛑 Candidate UserID: ", userId); // Debug
+
+                if (userId) {
+                    confirmDeleteBtn.setAttribute("href", "/candidate/delete/" + userId);
+                } else {
+                    console.error("❌ Error: Cannot get userId!");
+                }
+            });
+        });
+    });
+</script>
+
+<!-- SweetAlert2 Delete & Ban Candidate -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const successMessage = "[[${success}]]";
+        const errorMessage = "[[${error}]]";
+        const banMessage = "[[${banSuccess}]]";
+
+        if (banMessage && banMessage.trim() !== "" && banMessage !== "null") {
+            Swal.fire({
+                icon: 'success',
+                title: 'Banned successfully!',
+                text: banMessage,
+                confirmButtonText: 'OK'
+            });
+        } else if (successMessage && successMessage.trim() !== "" && successMessage !== "null") {
+            Swal.fire({
+                icon: 'success',
+                title: 'Deleted successfully!',
+                text: successMessage,
+                confirmButtonText: 'OK'
+            });
+        } else if (errorMessage && errorMessage.trim() !== "" && errorMessage !== "null") {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error!',
+                text: errorMessage,
+                confirmButtonText: 'OK'
+            });
+        }
+    });
+</script>
+
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const banButtons = document.querySelectorAll(".ban-btn");
+        const banForm = document.getElementById("banForm");
+
+        banButtons.forEach(button => {
+            button.addEventListener("click", function () {
+                const userId = this.getAttribute("data-user-id");
+                console.log("🚫 Ban Candidate UserID: ", userId);
+                if (userId) {
+                    banForm.setAttribute("action", "/candidate/ban/" + userId);
+                }
+            });
+        });
+    });
 </script>
 
 

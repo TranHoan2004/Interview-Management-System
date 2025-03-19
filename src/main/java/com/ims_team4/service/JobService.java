@@ -18,6 +18,9 @@ public interface JobService {
 
     Job createJob(Long managerId, JobDTO jobDTO);
 
+    void deleteJobById(Long id);
+
+    boolean editJob(Long managerId, Long jobId, JobDTO jobDTO);
     //Admin
     Page<JobDTO> filterJobsForAdmin(String title, Boolean status, Pageable pageable);
 

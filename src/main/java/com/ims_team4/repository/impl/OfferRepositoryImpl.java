@@ -448,23 +448,24 @@ public class OfferRepositoryImpl implements OfferRepository {
 
     @Override
     public List<Offer> getAllOfferFromToOfEid(LocalDate from, LocalDate to, int eid) {
-        Session session = null;
         List<Offer> offers = new ArrayList<>();
-        try {
-            session = em.unwrap(Session.class);
+
+        try (Session session = em.unwrap(Session.class)) {
             Employee e = session.get(Employee.class, eid);
             if (e == null) {
                 return offers;
             }
 
-            String queryString = "";
+            String queryString;
             switch (e.getRole()) {
                 case ROLE_RECRUITER:
-                    queryString = "SELECT o FROM Offer o WHERE o.recruiterOwner = :eid AND o.contractPeriodFrom >= :from AND o.contractPeriodTo <= :to";
+                    queryString = "SELECT o FROM Offer o WHERE o.recruiterOwner = :eid "
+                            + "AND o.contractPeriodFrom <= :to AND o.contractPeriodTo >= :from";
                     break;
                 case ROLE_MANAGER:
                 case ROLE_ADMINISTRATOR:
-                    queryString = "SELECT o FROM Offer o WHERE o.employee.id = :eid AND o.contractPeriodFrom >= :from AND o.contractPeriodTo <= :to";
+                    queryString = "SELECT o FROM Offer o WHERE o.employee.id = :eid "
+                            + "AND o.contractPeriodFrom <= :to AND o.contractPeriodTo >= :from";
                     break;
                 default:
                     return offers;
@@ -475,13 +476,14 @@ public class OfferRepositoryImpl implements OfferRepository {
                     .setParameter("from", from)
                     .setParameter("to", to)
                     .getResultList();
-        } finally {
-            if (session != null) {
-                session.close();
-            }
+
+        } catch (Exception ex) {
+            ex.printStackTrace();
         }
+
         return offers;
     }
+
 
 
     // </editor-fold>

@@ -24,7 +24,8 @@
                 <nav aria-label="breadcrumb">
                     <ol class="breadcrumb bg-white shadow-sm p-2 rounded">
                         <li class="breadcrumb-item">
-                            <a th:href="@{/jobs/manager/list/{id}(id=${session.account.getUser()})}" class="text-decoration-none text-primary fw-bold">Job List</a>
+                            <a th:href="@{/jobs/manager/list/{id}(id=${session.account.getUserID()})}"
+                               class="text-decoration-none text-primary fw-bold">Job List</a>
                         </li>
                     </ol>
                 </nav>
@@ -104,8 +105,9 @@
                 </div>
             </div>
             <div class="d-flex justify-content-end gap-3 mt-5">
-                <a th:href="@{/jobs/edit/{id}(id=${job.id})}" class="btn btn-light border text-dark">Edit</a>
-                <a th:href="@{/jobs/manager/list/{id}(id=${session.account.getUser()})}"
+                <a th:href="@{/jobs/manager/edit-job/{managerId}/{jobId}(managerId=${session.account.getUserID()}, jobId=${job.id})}"
+                   class="btn btn-light border text-dark">Edit</a>
+                <a th:href="@{/jobs/manager/list/{id}(id=${session.account.getUserID()})}"
                    class="btn btn-secondary"
                    type="button">Cancel</a>
             </div>

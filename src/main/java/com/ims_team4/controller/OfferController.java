@@ -7,6 +7,7 @@ import com.ims_team4.utils.email.EmailService;
 import com.ims_team4.utils.email.EmailServiceImpl;
 import com.ims_team4.utils.excel.ExportExcelFile;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -17,11 +18,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
-import org.thymeleaf.templateresolver.ClassLoaderTemplateResolver;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.logging.Level;
@@ -42,9 +40,11 @@ public class OfferController {
     private final ContractTypeService contractTypeService;
     private final LevelService levelService;
     private final TemplateEngine templateEngine;
+    private final ChatDetailService chatDetailService;
+    private final ChatService chatService;
     private final Logger logger = Logger.getLogger(OfferController.class.getName());
 
-    public OfferController(CandidateService candidateService, UserService userService, DepartmentService departmentService, StatusOfferService statusOfferService, PositionService positionService, EmployeeService employeeService, InterviewService interviewService, ContractTypeService contractTypeService, LevelService levelService, OfferService offerService, TemplateEngine templateEngine) {
+    public OfferController(CandidateService candidateService, UserService userService, DepartmentService departmentService, StatusOfferService statusOfferService, PositionService positionService, EmployeeService employeeService, InterviewService interviewService, ContractTypeService contractTypeService, LevelService levelService, OfferService offerService, TemplateEngine templateEngine, ChatService chatService, ChatDetailService chatDetailService) {
         this.candidateService = candidateService;
         this.userService = userService;
         this.departmentService = departmentService;
@@ -56,11 +56,13 @@ public class OfferController {
         this.levelService = levelService;
         this.offerService = offerService;
         this.templateEngine = templateEngine;
+        this.chatService = chatService;
+        this.chatDetailService = chatDetailService;
     }
 
     @GetMapping("/offer/{id}")
     public String index(@RequestParam(name = "page", defaultValue = "1") int page,
-                        @RequestParam(name = "size", defaultValue = "5") int size, @PathVariable("id") String idStr, Model model) {
+                        @RequestParam(name = "size", defaultValue = "5") int size, @PathVariable("id") String idStr, Model model, HttpSession session) {
         int id = Integer.parseInt(idStr);
         Page<OfferDTO> offerPage = offerService.findPaginatedByEmployee(page, size, id);
         model.addAttribute("listO", offerPage.getContent());
@@ -71,6 +73,15 @@ public class OfferController {
         List<DepartmentDTO> listD = departmentService.getAllDepartments();
         List<StatusOfferDTO> listS = statusOfferService.getStatusOffer();
         List<InterviewDTO> listI = interviewService.getAllInterviews();
+        List<ChatDetailDTO> listL = chatDetailService.getFirstChatDetailOfRecruiter(id);
+        int mid = 0;
+        ChatDetailDTO cdDTO = new ChatDetailDTO();
+        for (ChatDetailDTO cd : listL) {
+            int chatId = (int) cd.getChatID();
+            ChatDTO cDTO = chatService.getChatById(chatId);
+            mid = (int) cDTO.getManagerId();
+        }
+        session.setAttribute("mid", mid);
         model.addAttribute("listC", listC);
         model.addAttribute("listU", listU);
         model.addAttribute("listD", listD);
@@ -210,11 +221,10 @@ public class OfferController {
 //        return "redirect:/offer/offerdetail/" + Integer.parseInt(offeridStr) + "?rid=" + rid;
         String role = employeeService.getEmployeeById(rid).getRole().name();
         if (role.equals(HrRole.ROLE_MANAGER.name())) {
-            return "redirect:/offer/managerOffer/"  + rid;
-        } else if(role.equals(HrRole.ROLE_RECRUITER.name())){
+            return "redirect:/offer/managerOffer/" + rid;
+        } else if (role.equals(HrRole.ROLE_RECRUITER.name())) {
             return "redirect:/offer/offer/" + rid;
-        }
-        else{
+        } else {
             return "redirect:/offer/adminOffer/" + rid;
         }
     }
@@ -382,7 +392,7 @@ public class OfferController {
         try {
             String body = templateEngine.process("recruiter-features/candidateOffer", context);
 
-            emailService.sendEmail(email, subject, body);
+            emailService.sendNormalEmail(email, subject, body);
             System.out.println("Email sent successfully to ");
         } catch (Exception e) {
             System.out.println(e.getMessage());
@@ -441,7 +451,7 @@ public class OfferController {
 
     @GetMapping("/managerOffer/{id}")
     public String managerOffer(@RequestParam(name = "page", defaultValue = "1") int page,
-                               @RequestParam(name = "size", defaultValue = "5") int size, @PathVariable("id") String idStr, Model model) {
+                               @RequestParam(name = "size", defaultValue = "5") int size, @PathVariable("id") String idStr, Model model, HttpSession session) {
         int id = Integer.parseInt(idStr);
         Page<OfferDTO> offerPage = offerService.findPaginatedByEmployee(page, size, id);
         model.addAttribute("listO", offerPage.getContent());
@@ -452,6 +462,15 @@ public class OfferController {
         List<DepartmentDTO> listD = departmentService.getAllDepartments();
         List<StatusOfferDTO> listS = statusOfferService.getStatusOffer();
         List<InterviewDTO> listI = interviewService.getAllInterviews();
+        List<ChatDetailDTO> listL = chatDetailService.getFirstChatDetailOfManager(id);
+        int rid = 0;
+        ChatDetailDTO cdDTO = new ChatDetailDTO();
+        for (ChatDetailDTO cd : listL) {
+            int chatId = (int) cd.getChatID();
+            ChatDTO cDTO = chatService.getChatById(chatId);
+            rid = (int) cDTO.getRecuiterId();
+        }
+        session.setAttribute("rid", rid);
         model.addAttribute("listC", listC);
         model.addAttribute("listU", listU);
         model.addAttribute("listD", listD);

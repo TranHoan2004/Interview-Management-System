@@ -5,6 +5,66 @@
     <title>Title</title>
 </head>
 <body>
-ehehe
+Gia lap co che tao thong bao
+<p th:text="${content}"></p>
+<p th:text="${id}"></p>
+<a th:href="@{/interview/reminder}">Click to send reminder</a>
+<script src="https://cdn.jsdelivr.net/npm/sockjs-client@1.5.1/dist/sockjs.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js"></script>
+<script>
+    function getQueryParams() {
+        const params = new URLSearchParams(window.location.search);
+        const success = params.get('success');
+
+        if (success === "true") {
+            console.log('successfully');
+        } else {
+            console.log('not gud');
+        }
+    }
+
+    let socket = new SockJS('/ws');
+    let stompClient = Stomp.over(socket);
+
+    stompClient.connect({}, function (frame) {
+        console.log('Connected: ', frame === null ? 'null' : frame);
+        setTimeout(() => sendNotification(), 500);
+        // sendNotification();
+        stompClient.subscribe('/topic/notifications', function (notification) {
+            console.log('Message: ', notification);
+            let data = JSON.parse(notification.body);
+            let content = data.content;
+            let id = data.employee;
+
+            if (id === 11) {
+                let msgBox = document.createElement("div");
+                msgBox.innerHTML = content;
+                msgBox.style.position = "fixed";
+                msgBox.style.bottom = "10px";
+                msgBox.style.right = "10px";
+                msgBox.style.backgroundColor = "#ffcc00";
+                msgBox.style.padding = "10px";
+                msgBox.style.borderRadius = "5px";
+                msgBox.style.marginBottom = "5px";
+                msgBox.classList.add("notification");
+
+                document.body.appendChild(msgBox);
+                setTimeout(() => msgBox.remove(), 5000);
+            }
+        });
+    });
+
+    function sendNotification() {
+        fetch(`/notification/create`, {
+            method: 'POST',
+            headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+            body: new URLSearchParams('content=[[${content}]]&employee=[[${employee}]]&title=[[${title}]]')
+        });
+    }
+
+    window.onload = function () {
+        getQueryParams();
+    }
+</script>
 </body>
 </html>

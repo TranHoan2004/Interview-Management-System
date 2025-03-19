@@ -1,6 +1,7 @@
 package com.ims_team4.repository.impl;
 
 import com.ims_team4.model.Notification;
+import com.ims_team4.model.Users;
 import com.ims_team4.repository.NotificationRepository;
 import jakarta.persistence.EntityManager;
 import org.hibernate.Session;
@@ -11,12 +12,14 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.logging.Logger;
 
 @Repository
 @Transactional(propagation = Propagation.REQUIRED)
 // Duc Long
 public class NotificationRepositoryImpl implements NotificationRepository {
     private final EntityManager em;
+    private final Logger logger = Logger.getLogger(NotificationRepositoryImpl.class.getName());
 
     public NotificationRepositoryImpl(EntityManager em) {
         this.em = em;
@@ -25,15 +28,28 @@ public class NotificationRepositoryImpl implements NotificationRepository {
     @Override
     public List<Notification> getAllNotificationByUserId() {
         Session session = em.unwrap(Session.class);
-        List<Notification> notifications = session.createQuery("select n from Notification n", Notification.class).getResultList();
+        List<Notification> notifications = session.createQuery("FROM Notification", Notification.class).getResultList();
         session.close();
         return notifications;
+    }
+
+    @Override
+    public Notification getByUserId(Long id) {
+        logger.info("Find notification in repo impl");
+        return em.unwrap(Session.class).createQuery("FROM Notification n WHERE n.user.id=:id", Notification.class)
+                .setParameter("id", id).getSingleResult();
     }
 
     @NotNull
     @Override
     public <S extends Notification> S save(@NotNull S entity) {
-        return null;
+        Session session = em.unwrap(Session.class);
+        Users user = session
+                .createQuery("FROM Users u WHERE u.id = :userId", Users.class)
+                .setParameter("userId", entity.getId())
+                .getSingleResult();
+        entity.setUser(user);
+        return session.merge(entity);
     }
 
     @Override

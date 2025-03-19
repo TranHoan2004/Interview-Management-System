@@ -22,7 +22,6 @@ import java.util.Set;
 @Table(name = "users")
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @ToString(exclude = "candidate") // ✅ Tránh vòng lặp khi log
-
 // HoanTX
 public class Users implements Constants.Regex {
     @Id
@@ -65,10 +64,14 @@ public class Users implements Constants.Regex {
     private Candidate candidate;
 
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.MERGE, mappedBy = "user")
+    @JsonIgnore
     private Employee employee;
 
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "user")
-    private Notification notification;
+//    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "user")
+//    private Notification notification;
+
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "user")
+    private Set<Notification> notifications;
 
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private Set<Job> jobs;

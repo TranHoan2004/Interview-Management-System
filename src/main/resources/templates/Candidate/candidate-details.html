@@ -284,7 +284,8 @@
 
                     <!-- Skills -->
                     <p><strong>Skills:</strong>
-                        <span th:each="skill : ${candidate.skills}" class="badge bg-secondary me-1" th:text="${skill}"></span>
+                        <span th:if="${candidate.skills != null}" th:each="skill : ${candidate.skills}" class="badge bg-secondary me-1" th:text="${skill}"></span>
+                        <span th:unless="${candidate.skills != null}">N/A</span>
                     </p>
 
                     <p><strong>Recruiter:</strong>
@@ -302,22 +303,153 @@
     <div class="text-center mt-4">
         <a href="/candidate/list" class="btn btn-outline-primary">🔙 Back to List</a>
         <!-- Chỉ ROLE_RECRUITER, ROLE_MANAGER, và ROLE_ADMINISTRATOR mới có quyền chỉnh sửa -->
-        <a th:href="@{/candidates/edit/{id}(id=${candidate.id})}" class="btn btn-warning"
+        <a th:href="@{/candidates/edit/{id}(id=${candidate.userId})}" class="btn btn-warning"
            sec:authorize="hasAnyRole('ROLE_RECRUITER', 'ROLE_MANAGER', 'ROLE_ADMINISTRATOR')">✏️ Edit</a>
 
         <!-- Chỉ ROLE_RECRUITER, ROLE_MANAGER, và ROLE_ADMINISTRATOR mới có quyền xóa -->
-        <a th:href="@{/candidates/delete/{id}(id=${candidate.id})}" class="btn btn-danger"
-           sec:authorize="hasAnyRole('ROLE_RECRUITER', 'ROLE_MANAGER', 'ROLE_ADMINISTRATOR')"
-           onclick="return confirm('Are you sure you want to delete this candidate?');">🗑 Delete</a>
-
+        <button type="button" class="btn btn-danger delete-btn"
+                data-bs-toggle="modal" data-bs-target="#deleteModal"
+                th:attr="data-user-id=${candidate.userId}"
+                sec:authorize="hasAnyRole('ROLE_RECRUITER', 'ROLE_MANAGER', 'ROLE_ADMINISTRATOR')"
+                th:if="${candidate.status == 'OPEN'}">
+            🗑 Delete
+        </button>
         <!-- Chỉ ROLE_RECRUITER, ROLE_MANAGER, và ROLE_ADMINISTRATOR mới có quyền cấm -->
-        <a th:href="@{/candidates/ban/{id}(id=${candidate.id})}" class="btn btn-dark"
-           sec:authorize="hasAnyRole('ROLE_RECRUITER', 'ROLE_MANAGER', 'ROLE_ADMINISTRATOR')">🚫 Ban Candidate</a>
+        <!-- Nút Ban -->
+        <button type="button"
+                class="btn btn-warning ban-btn"
+                data-bs-toggle="modal"
+                data-bs-target="#banModal"
+                th:attr="data-user-id=${candidate.userId}"
+                sec:authorize="hasAnyRole('ROLE_RECRUITER', 'ROLE_MANAGER', 'ROLE_ADMINISTRATOR')"
+                th:if="${candidate.status != 'BANNED'}">
+            🚫 Ban
+        </button>
+
+
+
     </div>
 </div>
     </div>
 </div>
     </div>
     </div>
+
+<!-- Modal Xác Nhận Xóa -->
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteModalLabel">Confirm Delete</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Are you sure you want to delete this candidate?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <a id="confirmDeleteBtn" href="#" class="btn btn-danger">Delete</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Xác Nhận Ban -->
+<div class="modal fade" id="banModal" tabindex="-1" aria-labelledby="banModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="banModalLabel">Confirm Ban</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Are you sure you want to ban this candidate?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <form id="banForm" method="post">
+                    <button type="submit" class="btn btn-warning">Ban</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<!-- SweetAlert2 Delete Candidate -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const deleteButtons = document.querySelectorAll(".delete-btn");
+        const confirmDeleteBtn = document.getElementById("confirmDeleteBtn");
+
+        // Khi nhấn nút Delete, cập nhật đường dẫn xóa
+        deleteButtons.forEach(button => {
+            button.addEventListener("click", function () {
+                const userId = this.getAttribute("data-user-id");
+                if (userId) {
+                    confirmDeleteBtn.setAttribute("href", "/candidate/delete/" + userId);
+                }
+            });
+        });
+
+        // Hiển thị thông báo sau khi xóa
+        const successMessage = "[[${success}]]";
+        const errorMessage = "[[${error}]]";
+
+        if (successMessage && successMessage !== "null") {
+            Swal.fire({
+                icon: 'success',
+                title: 'Deleted successfully!',
+                text: successMessage,
+                confirmButtonText: 'OK'
+            }).then(() => {
+                window.location.href = "/candidate/list"; // Chuyển về Candidate List
+            });
+        }
+
+
+        if (banMessage && banMessage !== "null") {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Banned successfully!',
+                text: banMessage,
+                confirmButtonText: 'OK'
+            });
+        }
+
+
+        if (errorMessage && errorMessage !== "null") {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error!',
+                text: errorMessage,
+                confirmButtonText: 'OK'
+            }).then(() => {
+                window.location.href = "/candidate/list"; // Chuyển về Candidate List
+            });
+        }
+    });
+</script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const banButtons = document.querySelectorAll(".ban-btn");
+        const banForm = document.getElementById("banForm");
+
+        banButtons.forEach(button => {
+            button.addEventListener("click", function () {
+                const userId = this.getAttribute("data-user-id");
+                console.log("🚫 Ban Candidate UserID: ", userId);
+                if (userId) {
+                    banForm.setAttribute("action", "/candidate/ban/" + userId);
+                }
+            });
+        });
+    });
+</script>
+
 </body>
 </html>
