@@ -32,4 +32,9 @@ public class DepartmentServiceImpl implements DepartmentService {
                 .orElseThrow(() -> new RuntimeException("Department not found: " + name));
         return new DepartmentDTO(department.getId(), department.getName());
     }
+
+    @Override
+    public Department findById(long id) {
+        return departmentRepository.getDepartmentById(id);
+    }
 }

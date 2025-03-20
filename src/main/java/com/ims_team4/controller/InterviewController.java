@@ -56,20 +56,18 @@ public class InterviewController implements Constants.Link {
     private final CandidateRepository candidateRepository;
     private final EmployeeRepository employeeRepository;
     private final JobRepository jobRepository;
-    private final SimpMessagingTemplate messagingTemplate;
     private final Logger logger = Logger.getLogger(InterviewController.class.getName());
 
     public InterviewController(InterviewService interviewService, EmployeeService empSrv,
                                CandidateService cSrv, CandidateRepository candidateRepository,
                                EmployeeRepository employeeRepository,
-                               JobRepository jobRepository, SimpMessagingTemplate template) {
+                               JobRepository jobRepository) {
         this.interviewService = interviewService;
         this.empSrv = empSrv;
         this.cSrv = cSrv;
         this.candidateRepository = candidateRepository;
         this.employeeRepository = employeeRepository;
         this.jobRepository = jobRepository;
-        this.messagingTemplate = template;
     }
 
     // UC16: View (search) interview schedules. GET /interview/list
@@ -275,7 +273,7 @@ public class InterviewController implements Constants.Link {
         try {
             List<InterviewDTO> list = checkUpcomingInterview();
             if (!CollectionUtils.isEmpty(list)) {
-                logger.info("There is " + list.size() + " upcoming interviews at" + LocalTime.now().plusHours(24));
+//                logger.info("There is " + list.size() + " upcoming interviews at" + LocalTime.now().plusHours(24));
                 list.forEach(interviewDTO -> {
                     CandidateDTO candidateDTO = cSrv.getCandidateByUserId(interviewDTO.getCandidateId()).getFirst();
                     String recruiterEmail = empSrv.getEmployeeById(Math.toIntExact(interviewDTO.getId())).getEmail();
@@ -284,7 +282,7 @@ public class InterviewController implements Constants.Link {
                     interviewService.updateNotificationSent(interviewDTO.getId());
                 });
             } else {
-                logger.info("There is no upcoming interviews at" + LocalTime.now().plusHours(24));
+//                logger.info("There is no upcoming interviews at" + LocalTime.now().plusHours(24));
             }
         } catch (Exception e) {
             logger.log(Level.SEVERE, e.getMessage(), e);

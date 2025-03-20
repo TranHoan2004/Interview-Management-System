@@ -157,6 +157,6 @@ public class EmailServiceImpl implements EmailService {
                 "Thanks & Regards!<br/>IMS Team";
         String subject = "no-reply-email-IMS-system <" + "interviewDTO.getTitle()" + ">";
         String path = "C:\\Users\\ADMIN\\OneDrive\\Máy tính\\SWP.txt";
-        mailService.sendEmailAttachFile("@gmail.com", subject, content, path);
+        mailService.sendEmailAttachFile("", subject, content, path);
     }
 }

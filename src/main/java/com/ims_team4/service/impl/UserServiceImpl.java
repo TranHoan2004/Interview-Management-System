@@ -5,16 +5,10 @@ import com.ims_team4.model.Users;
 import com.ims_team4.repository.UserRepository;
 import com.ims_team4.service.UserService;
 import org.jetbrains.annotations.NotNull;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
@@ -76,6 +70,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public Users getUser(long id) {
+        return userRepository.getUserById(id);
+    }
+
+    @Override
     public Optional<UserDTO> getManagerById(Long id) {
         Users user = userRepository.getUserById(id);
         return user != null ? Optional.of(convertToDTO(user)) : Optional.empty();
@@ -108,6 +107,9 @@ public class UserServiceImpl implements UserService {
     }
 
     private UserDTO convertToDTO(@NotNull Users user) {
+        Logger log = Logger.getLogger(this.getClass().getName());
+        log.info("convertToDTO, User: " + user);
+//        log.info(user.getEmployee().getRole().name());
         return UserDTO.builder()
                 .id(user.getId())
                 .dob(user.getDob())
@@ -119,6 +121,7 @@ public class UserServiceImpl implements UserService {
                 .phone(user.getPhone())
                 .status(user.isStatus())
                 .note(user.getNote())
+                .role(user.getEmployee() == null ? null : user.getEmployee().getRole())
                 .build();
     }
 }

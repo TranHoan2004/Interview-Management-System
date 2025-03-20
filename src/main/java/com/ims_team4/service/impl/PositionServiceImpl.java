@@ -25,6 +25,11 @@ public class PositionServiceImpl implements PositionService {
                 .collect(Collectors.toList());
     }
 
+    @Override
+    public Position findById(long id) {
+        return positionRepository.getPosById(id);
+    }
+
     private PositionDTO convertToDTO(@NotNull Position position) {
         return PositionDTO.builder()
                 .id(position.getId())

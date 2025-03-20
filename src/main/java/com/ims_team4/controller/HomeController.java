@@ -36,7 +36,6 @@ public class HomeController {
      */
     @GetMapping("/dashboard")
     public String dashboard(@NotNull Model model, HttpSession session, Locale locale) {
-        details.throwDataToTopSidebar(session, model);
         return "component/dashboard";
     }
 

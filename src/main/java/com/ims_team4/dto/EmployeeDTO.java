@@ -31,7 +31,8 @@ public class EmployeeDTO {
     private HrRole role;
     private String workingName;
     private LocalDate dob;
-    private int avatar;
-
+    private String avatar;
+    private int gender;
+    private String address;
 }
 

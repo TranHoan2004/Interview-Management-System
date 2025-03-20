@@ -10,7 +10,10 @@ import com.ims_team4.repository.DepartmentRepository;
 import com.ims_team4.repository.EmployeeRepository;
 import com.ims_team4.repository.PositionRepository;
 import com.ims_team4.repository.UserRepository;
+import com.ims_team4.service.DepartmentService;
 import com.ims_team4.service.EmployeeService;
+import com.ims_team4.service.PositionService;
+import com.ims_team4.service.UserService;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import org.jetbrains.annotations.NotNull;
@@ -29,17 +32,18 @@ import static com.ims_team4.utils.webSocket.InsertImageToMySQL.avatarValues;
 // TrangNT
 public class EmployeeServiceImpl implements EmployeeService {
     private final EmployeeRepository employeeRepository;
-    private final DepartmentRepository departmentRepository;
-    private final PositionRepository positionRepository;
-    private final UserRepository userRepository;
+    private final DepartmentService departmentService;
+    private final PositionService positionService;
+    private final UserService userService;
     private final BCryptPasswordEncoder encoder;
 
-    public EmployeeServiceImpl(BCryptPasswordEncoder encoder, EmployeeRepository employeeRepository, DepartmentRepository departmentRepository, PositionRepository positionRepository, UserRepository userRepository) {
+    public EmployeeServiceImpl(BCryptPasswordEncoder encoder, EmployeeRepository employeeRepository,
+                               DepartmentService departmentService, PositionService positionService, UserService userService) {
         this.encoder = encoder;
         this.employeeRepository = employeeRepository;
-        this.departmentRepository = departmentRepository;
-        this.positionRepository = positionRepository;
-        this.userRepository = userRepository;
+        this.departmentService = departmentService;
+        this.positionService = positionService;
+        this.userService = userService;
     }
 
     @Override
@@ -96,17 +100,17 @@ public class EmployeeServiceImpl implements EmployeeService {
         if (existingEmployee == null) {
             // Employee chưa tồn tại => INSERT
             existingEmployee = Employee.builder()
-                    .user(userRepository.getUserById(employeeDTO.getUserID()))
-                    .department(departmentRepository.getDepartmentById(employeeDTO.getDepartmentId()))
-                    .position(positionRepository.getPosById(employeeDTO.getPositionId()))
+                    .user(userService.getUser(employeeDTO.getUserID()))
+                    .department(departmentService.findById(employeeDTO.getDepartmentId()))
+                    .position(positionService.findById(employeeDTO.getPositionId()))
                     .password(encoder.encode("123"))
                     .workingName(generateSixRandomCodes())
                     .role(employeeDTO.getRole())
                     .build();
         } else {
             // Employee đã tồn tại => UPDATE
-            existingEmployee.setDepartment(departmentRepository.getDepartmentById(employeeDTO.getDepartmentId()));
-            existingEmployee.setPosition(positionRepository.getPosById(employeeDTO.getPositionId()));
+            existingEmployee.setDepartment(departmentService.findById(employeeDTO.getDepartmentId()));
+            existingEmployee.setPosition(positionService.findById(employeeDTO.getPositionId()));
             existingEmployee.setRole(employeeDTO.getRole());
         }
 
@@ -133,13 +137,9 @@ public class EmployeeServiceImpl implements EmployeeService {
 
 
 //         Kiểm tra & lấy Department & Position từ DB
-        Department dept =
-                departmentRepository.findById(employeeDTO.getDepartmentId())
-                        .orElseThrow(() -> new RuntimeException("Department not found"));
+        Department dept = departmentService.findById(employeeDTO.getDepartmentId());
 
-        Position position =
-                positionRepository.findById(employeeDTO.getPositionId())
-                        .orElseThrow(() -> new RuntimeException("Position not found"));
+        Position position =  positionService.findById(employeeDTO.getPositionId());
 
         // Cập nhật thông tin Employee
         existingEmployee.setPassword(employeeDTO.getPassword());
@@ -195,26 +195,25 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     private EmployeeDTO convertToDTO(@NotNull Employee employee) {
         byte[] avatarBytes = employee.getUser().getAvatar();
-        ByteBuffer buffer = ByteBuffer.wrap(avatarBytes);
-        int avatarId = buffer.getInt();
-        int avatarNumber = avatarValues.indexOf(avatarId) + 1;
+        String avatar = avatarBytes != null ? new String(avatarBytes) : "";
+        System.out.println(avatar);
         return EmployeeDTO.builder()
                 .userID(employee.getId())
-//                .dob(employee.getUser().getDob())
-//                .gender(employee.getUser().getGender())
-//                .address(employee.getUser().getAddress())
+                .dob(employee.getUser().getDob())
+                .gender(employee.getUser().getGender())
+                .address(employee.getUser().getAddress())
                 .password(employee.getPassword())
                 .fullname(employee.getUser().getFullname())
                 .email(employee.getUser().getEmail())
                 .phone(employee.getUser().getPhone())
-                .positionId(Math.toIntExact(employee.getPosition().getId()))
+                .positionId((employee.getPosition().getId()))
                 .positionName(employee.getPosition().getName())
                 .departmentName(employee.getDepartment().getName())
                 .role(employee.getRole())
                 .status(employee.getUser().isStatus())
                 .workingName(employee.getWorkingName())
                 .dob(employee.getUser().getDob())
-                .avatar(avatarNumber)
+                .avatar(avatar)
                 .build();
     }
 

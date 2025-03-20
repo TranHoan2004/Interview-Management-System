@@ -21,7 +21,7 @@ import java.util.Set;
 @Entity
 @Table(name = "users")
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
-@ToString(exclude = "candidate") // ✅ Tránh vòng lặp khi log
+@ToString(exclude = {"candidate", "employee", "jobs", "notifications"}) // ✅ Tránh vòng lặp khi log
 // HoanTX
 public class Users implements Constants.Regex {
     @Id
@@ -63,7 +63,7 @@ public class Users implements Constants.Regex {
     @JsonIgnore // ✅ Tránh vòng lặp Hibernate
     private Candidate candidate;
 
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.MERGE, mappedBy = "user")
+    @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.MERGE, mappedBy = "user")
     @JsonIgnore
     private Employee employee;
 
@@ -76,3 +76,4 @@ public class Users implements Constants.Regex {
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private Set<Job> jobs;
 }
+

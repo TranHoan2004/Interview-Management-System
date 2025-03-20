@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 
 import java.util.Set;
@@ -15,6 +16,7 @@ import java.util.Set;
 @AllArgsConstructor
 @Entity
 @Table(name = "employee")
+@ToString(exclude = {"offers", "candidates", "managedChats", "recruitedChats"})
 // HoanTX
 public class Employee {
     @Id
@@ -59,3 +61,4 @@ public class Employee {
 //    @OneToMany(mappedBy = "employee", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 //    private Set<Job> jobs;
 }
+

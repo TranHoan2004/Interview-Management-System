@@ -36,7 +36,7 @@ public class SessionController {
             Authentication authentication = context.getAuthentication();
             if (authentication != null && authentication.getPrincipal() instanceof UserDetails) {
                 UserDetails user = (UserDetails) authentication.getPrincipal();
-                Logger.getLogger(LoginController.class.getName()).log(Level.FINE, user == null ? "user detail null" : user.toString());
+                Logger.getLogger(LoginController.class.getName()).log(Level.FINE, user == null ? "user detail null" : "getUserDetailsFromSession: " + user.toString());
                 return user;
             }
         } else {
@@ -45,11 +45,11 @@ public class SessionController {
         return null;
     }
 
-    public void throwDataToTopSidebar(HttpSession session, @NotNull Model model) {
+    public void throwDataToTopSidebar(HttpSession session) {
         EmployeeDTO employeeDTO = getEntityFromSession(session);
         Logger logger = Logger.getLogger(SessionController.class.getName());
-        logger.info(employeeDTO.toString());
-        session.setAttribute("account", getEntityFromSession(session));
+        logger.info("throwDataToTopSidebar: " + employeeDTO.toString());
+        session.setAttribute("account", employeeDTO);
     }
 
     private EmployeeDTO getEntityFromSession(HttpSession session) {

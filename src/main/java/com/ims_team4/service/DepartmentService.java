@@ -8,6 +8,7 @@ import java.util.Optional;
 
 public interface DepartmentService {
     List<DepartmentDTO> getAllDepartments();
-    DepartmentDTO findByName(String name); // ✅ Thêm method findByName
+    DepartmentDTO findByName(String name);
+    Department findById(long id);
 }
 

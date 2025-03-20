@@ -50,8 +50,8 @@
         }
 
         .message .avatar {
-            width: 30px;
-            height: 30px;
+            width: 27px;
+            height: 27px;
             border-radius: 50%;
             margin: 0 10px;
         }
@@ -111,7 +111,7 @@
         .inbox_chat {
             border: 1px solid #ced4da;
             background-color: #f8f9fa; /* Light background */
-            padding: 10px;
+            padding: 0px;
             height: 80vh; /* Full height */
             overflow-y: auto; /* Scrollable if needed */
         }
@@ -127,16 +127,37 @@
         }
 
         .chat_img {
-            display: inline-block;
-            height: 80px;
-            overflow: hidden;
-            border-radius: 50%; /* Circle profile images */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%; /* Chiếm toàn bộ col-lg-3 */
+            height: 100px; /* Điều chỉnh chiều cao phù hợp */
+            padding-left: 20px;
         }
 
         .chat_img img {
-            width: 100%; /* Make image fill the container */
-            height: auto; /* Maintain aspect ratio */
+            width: 80px; /* Để ảnh tròn chiếm phần lớn không gian */
+            height: 82px;
+            border-radius: 50%;
+            object-fit: cover;
         }
+
+        .chat_ib {
+            margin-left: 0 !important;
+            padding-left: 0 !important;
+            text-align: left !important;
+        }
+
+        .chat_ib .row,
+        .chat_ib .col-lg-2,
+        .chat_ib .col-lg-10,
+        .chat_ib div,
+        .chat_ib span {
+            margin-left: 0 !important;
+            padding-left: 0 !important;
+            text-align: left !important;
+        }
+
 
         .headmessage {
             position: sticky; /* Makes the header sticky */
@@ -149,8 +170,8 @@
         }
 
         .search-box {
-            width: 100%;
-            margin: 0 auto;
+            width: 95%;
+            margin: 10px 10px;
             background-color: #f1f2f6;
             border-radius: 20px;
             padding: 5px 12px;
@@ -194,10 +215,12 @@
         }
 
         .profile-img {
-            width: 35%;
+            width: 37%;
+            height: 125px;
             border-radius: 50%;
             border: 3px solid #007bff;
             padding: 5px;
+            object-fit: cover;
         }
 
         .profile-name {
@@ -257,7 +280,7 @@
             <div class="col-lg-3"
                  style="margin-left: -14px !important; margin-right: -15px; padding-right: 0px !important">
                 <div class="inbox_chat" style="height: 89vh">
-                    <h3 class="mb-3" style="font-weight: bold; font-size: 2rem">Đoạn chat</h3>
+                    <h3 class="mb-3" style="font-weight: bold; font-size: 2rem; margin-left: 10px">Đoạn chat</h3>
                     <div class="search-box">
                         <i class="fa fa-search"></i>
                         <input type="text" placeholder="Tìm kiếm trên Messenger" oninput="searchChat(this)">
@@ -268,11 +291,14 @@
                                 <a th:href="@{/chat(rid=${session.account.getUserID()}, mid=${liC.getManagerId()}, role=${session.account.getRole()})}"
                                    style="text-decoration: none; color: black">
                                     <div class="chat_people row d-flex justify-content-center align-items-center">
-                                        <div class="chat_img col-lg-3 d-flex justify-content-center align-items-center">
-                                            <img th:src="@{/images/avatar/avatar{avatar}.jpg(avatar=${manager.avatar})}"
-                                                 alt="Employee Avatar">
+                                        <div class="chat_img col-lg-4 d-flex justify-content-center align-items-center">
+                                            <th:block th:each="liE : ${listE}">
+                                                <th:block th:if="${liE.getUserID() == liC.getManagerId()}">
+                                                    <img th:src="${liE.getAvatar()}"/>
+                                                </th:block>
+                                            </th:block>
                                         </div>
-                                        <div class="chat_ib col-lg-9">
+                                        <div class="chat_ib col-lg-8 ps-0">
                                             <div class="row">
                                                 <div class="col-lg-2">
                                                     <th:block th:each="liE : ${listE}">
@@ -285,7 +311,8 @@
                                                 <div class="col-lg-10">
                                                     <th:block th:each="liL : ${listL}">
                                                         <th:block th:if="${liC.getChatId() == liL.chatID}">
-                                                            <div style="text-align: right !important" id="time"
+                                                            <div style="text-align: right !important; padding-right: 8px"
+                                                                 id="time"
                                                                  th:text="${#strings.substring(liL.timestamp, 8, 10) + '-' + #strings.substring(liL.timestamp, 5, 7) + '-' + #strings.substring(liL.timestamp, 0, 4) + ' ' + #strings.substring(liL.timestamp, 11, 13) + ':' + #strings.substring(liL.timestamp, 14, 16)}"></div>
                                                         </th:block>
                                                     </th:block>
@@ -293,8 +320,13 @@
                                             </div>
                                             <div class="mt-1">
                                                 <th:block th:each="liL : ${listL}">
-                                                    <th:block th:if="${liC.getChatId() == liL.chatID}">
-                                                        <span th:text="${liL.message}"></span>
+                                                    <th:block th:if="${liC.chatId eq liL.chatID}">
+                                                        <th:block th:if="${liL.sender eq 'ROLE_RECRUITER'}">
+                                                            Bạn: <span th:text="${liL.message}"></span>
+                                                        </th:block>
+                                                        <th:block th:if="${liL.sender eq 'ROLE_MANAGER'}">
+                                                            <span th:text="${liL.message}"></span>
+                                                        </th:block>
                                                     </th:block>
                                                 </th:block>
                                             </div>
@@ -310,8 +342,8 @@
                 <div class="chat-messages" id="chatMessages" style="height: 80vh; border: 1px; margin-right: -30px">
                     <div class="headmessage d-flex align-items-center my-3">
                         <div class="col-lg-6 d-flex align-items-center">
-                            <img class="rounded-circle" style="width: 60px; height: 60px;"
-                                 src="https://ptetutorials.com/images/user-profile.png" alt="User Profile Picture">
+                            <img class="rounded-circle" style="width: 60px; height: 60px; object-fit: cover;"
+                                 th:src="${manager.getAvatar()}" alt="User Profile Picture">
                             <span class="ml-3 font-weight-bold text-primary h5"
                                   th:text="${manager.getWorkingName()}"></span>
                         </div>
@@ -320,11 +352,11 @@
                         <th:block th:if="${not #lists.isEmpty(listCd)}">
                             <th:block th:each="item : ${listCd}">
                                 <div th:if="${item.sender eq 'ROLE_RECRUITER'}" class="message sender">
-                                    <img class="avatar" src="https://ptetutorials.com/images/user-profile.png" alt="Sender Avatar">
+                                    <img class="avatar" th:src="${recruiter.getAvatar()}" alt="Sender Avatar">
                                     <span class="message sender" th:text="${item.message}"></span>
                                 </div>
                                 <div th:if="${item.sender eq 'ROLE_MANAGER'}" class="message receiver">
-                                    <img class="avatar" src="https://ptetutorials.com/images/user-profile.png" alt="Receiver Avatar">
+                                    <img class="avatar" th:src="${manager.getAvatar()}" alt="Receiver Avatar">
                                     <span class="message receiver" th:text="${item.message}"></span>
                                 </div>
                             </th:block>
@@ -338,7 +370,7 @@
                     <div class="input-group-append">
                         <button class="btn" type="button" onclick="toggleEmojiPicker()">😀</button>
                         <!-- Thêm nút emoji -->
-                        <button class="btn" type="button" onclick="sendMessage()">Send</button>
+                        <button class="btn" type="button" onclick="sendMessage()"><i class="fa fa-paper-plane"></i></button>
                     </div>
                 </div>
 
@@ -348,7 +380,7 @@
             <div class="col-lg-3">
                 <div class="inbox_chat profile-card" style="margin-right: -44px; height: 89vh;">
                     <div class="text-center">
-                        <img class="profile-img" src="https://ptetutorials.com/images/user-profile.png" alt="user">
+                        <img class="profile-img" th:src="${manager.getAvatar()}" alt="user">
                         <h3 class="mt-3 profile-name" th:text="${manager.getWorkingName()}"></h3>
                     </div>
                     <div class="profile-info">
@@ -388,7 +420,7 @@
             <div class="col-lg-3"
                  style="margin-left: -14px !important; margin-right: -15px; padding-right: 0px !important">
                 <div class="inbox_chat" style="height: 89vh">
-                    <h3 class="mb-3" style="font-weight: bold; font-size: 2rem">Đoạn chat</h3>
+                    <h3 class="mb-3" style="font-weight: bold; font-size: 2rem; margin-left: 10px">Đoạn chat</h3>
                     <div class="search-box">
                         <i class="fa fa-search"></i>
                         <input type="text" placeholder="Tìm kiếm trên Messenger" oninput="searchChat(this)">
@@ -399,10 +431,14 @@
                                 <a th:href="@{/chat(mid=${session.account.getUserID()}, rid=${liC.getRecuiterId()}, role=${session.account.role})}"
                                    style="text-decoration: none; color: black">
                                     <div class="chat_people row d-flex justify-content-center align-items-center">
-                                        <div class="chat_img col-lg-3 d-flex justify-content-center align-items-center">
-                                            <img src="https://ptetutorials.com/images/user-profile.png" alt="user">
+                                        <div class="chat_img col-lg-4 d-flex justify-content-center align-items-center">
+                                            <th:block th:each="liE : ${listE}">
+                                                <th:block th:if="${liE.getUserID() == liC.getRecuiterId()}">
+                                                    <img th:src="${liE.getAvatar()}"/>
+                                                </th:block>
+                                            </th:block>
                                         </div>
-                                        <div class="chat_ib col-lg-9">
+                                        <div class="chat_ib col-lg-8">
                                             <div class="row">
                                                 <div class="col-lg-2">
                                                     <th:block th:each="liE : ${listE}">
@@ -415,7 +451,8 @@
                                                 <div class="col-lg-10">
                                                     <th:block th:each="liL : ${listL}">
                                                         <th:block th:if="${liC.getChatId() == liL.getChatID()}">
-                                                            <div style="text-align: right !important" id="time"
+                                                            <div style="text-align: right !important; padding-right: 8px"
+                                                                 id="time"
                                                                  th:text="${#strings.substring(liL.getTimestamp(), 8, 10) + '-' + #strings.substring(liL.getTimestamp(), 5, 7) + '-' + #strings.substring(liL.getTimestamp(), 0, 4) + ' ' + #strings.substring(liL.getTimestamp(), 11, 13) + ':' + #strings.substring(liL.getTimestamp(), 14, 16)}"></div>
                                                         </th:block>
                                                     </th:block>
@@ -423,8 +460,13 @@
                                             </div>
                                             <div class="mt-1">
                                                 <th:block th:each="liL : ${listL}">
-                                                    <th:block th:if="${liC.getChatId() == liL.chatID}">
-                                                        <span th:text="${liL.getMessage()}"></span>
+                                                    <th:block th:if="${liC.chatId eq liL.chatID}">
+                                                        <th:block th:if="${liL.sender eq 'ROLE_MANAGER'}">
+                                                            Bạn: <span th:text="${liL.message}"></span>
+                                                        </th:block>
+                                                        <th:block th:if="${liL.sender eq 'ROLE_RECRUITER'}">
+                                                            <span th:text="${liL.message}"></span>
+                                                        </th:block>
                                                     </th:block>
                                                 </th:block>
                                             </div>
@@ -441,8 +483,8 @@
                      style="height: 80vh; border: 1px;border-radius: 8px; margin-right: -30px">
                     <div class="headmessage d-flex align-items-center my-3">
                         <div class="col-lg-6 d-flex align-items-center">
-                            <img class="rounded-circle" style="width: 60px; height: 60px;"
-                                 src="https://ptetutorials.com/images/user-profile.png" alt="User Profile Picture">
+                            <img class="rounded-circle" style="width: 60px; height: 60px; object-fit: cover;"
+                                 th:src="${recruiter.getAvatar()}" alt="User Profile Picture">
                             <span class="ml-3 font-weight-bold text-primary h5"
                                   th:text="${recruiter.workingName}"></span>
                         </div>
@@ -451,11 +493,11 @@
                         <th:block th:if="${not #lists.isEmpty(listCd)}">
                             <th:block th:each="item : ${listCd}">
                                 <div th:if="${item.sender eq 'ROLE_MANAGER'}" class="message sender">
-                                    <img class="avatar" src="https://ptetutorials.com/images/user-profile.png" alt="Sender Avatar">
+                                    <img class="avatar" th:src="${manager.getAvatar()}" alt="Sender Avatar">
                                     <span class="message sender" th:text="${item.message}"></span>
                                 </div>
                                 <div th:if="${item.sender eq 'ROLE_RECRUITER'}" class="message receiver">
-                                    <img class="avatar" src="https://ptetutorials.com/images/user-profile.png" alt="Receiver Avatar">
+                                    <img class="avatar" th:src="${recruiter.getAvatar()}" alt="Receiver Avatar">
                                     <span class="message receiver" th:text="${item.message}"></span>
                                 </div>
                             </th:block>
@@ -466,14 +508,14 @@
                 <div class="input-group" style="width: 105%">
                     <input type="text" class="form-control" placeholder="Type your message" id="messageInput">
                     <div class="input-group-append">
-                        <button class="btn" type="button" onclick="sendMessage()">Send</button>
+                        <button class="btn" type="button" onclick="sendMessage()"><i class="fa fa-paper-plane"></i></button>
                     </div>
                 </div>
             </div>
             <div class="col-lg-3">
                 <div class="inbox_chat profile-card" style="margin-right: -44px; height: 89vh;">
                     <div class="text-center">
-                        <img class="profile-img" src="https://ptetutorials.com/images/user-profile.png" alt="user">
+                        <img class="profile-img" th:src="${recruiter.getAvatar()}" alt="user">
                         <h3 class="mt-3 profile-name" th:text="${recruiter.getWorkingName()}"></h3>
                     </div>
                     <div class="profile-info">
@@ -584,9 +626,7 @@
 </script>
 <script th:inline="javascript">
     /*<![CDATA[*/
-    var conversationId = [[${conversationId != null ? conversationId : 'null'
-    }]]
-    ;
+    var conversationId = [[${conversationId != null ? conversationId : 'null'}]];
     var role = [[${session.account != null && session.account.role != null ? session.account.role : 'null'}]];
     /*]]>*/
 </script>
@@ -610,11 +650,32 @@
         var messageDiv = document.createElement("div");
         messageDiv.classList.add("message", senderType);
 
+        // Tạo avatar
         var avatarImg = document.createElement("img");
         avatarImg.classList.add("avatar");
-        avatarImg.src = "https://ptetutorials.com/images/user-profile.png";
-        avatarImg.alt = senderType === 'sender' ? "Sender Avatar" : "Receiver Avatar";
 
+        // Xác định avatar dựa trên loại người gửi (sender hoặc receiver)
+        if(role == 'ROLE_RECRUITER') {
+            if (senderType === 'sender') {
+                avatarImg.src = "[[${recruiter.getAvatar()}]]"; // Avatar của người gửi (recruiter)
+                avatarImg.alt = "Sender Avatar";
+            } else {
+                avatarImg.src = "[[${manager.getAvatar()}]]"; // Avatar của người nhận (manager)
+                avatarImg.alt = "Receiver Avatar";
+            }
+        }
+
+        if(role == 'ROLE_MANAGER') {
+            if (senderType === 'sender') {
+                avatarImg.src = "[[${manager.getAvatar()}]]"; // Avatar của người gửi (recruiter)
+                avatarImg.alt = "Sender Avatar";
+            } else {
+                avatarImg.src = "[[${recruiter.getAvatar()}]]"; // Avatar của người nhận (manager)
+                avatarImg.alt = "Receiver Avatar";
+            }
+        }
+
+        // Tạo nội dung tin nhắn
         var messageSpan = document.createElement("span");
         messageSpan.textContent = message;
 

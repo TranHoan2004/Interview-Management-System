@@ -16,6 +16,7 @@ import java.sql.Date;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Set;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 /**
@@ -27,6 +28,7 @@ import java.util.stream.Collectors;
 @Transactional
 public class InterviewServiceImpl implements InterviewService {
     private final InterviewRepository interviewRepository;
+    private final Logger log = Logger.getLogger(this.getClass().getName());
 
     @Autowired
     public InterviewServiceImpl(InterviewRepository interviewRepository) {
@@ -54,10 +56,14 @@ public class InterviewServiceImpl implements InterviewService {
         Pageable pageable = PageRequest.of(page, size, Sort.by("scheduleTime").descending());
         Page<Interview> interviewPage = interviewRepository.searchInterviews(search, status, employeeId, pageable);
 
+        log.info("searchInterviews begin");
+
         List<InterviewDTO> dtoList = interviewPage.getContent()
                 .stream()
                 .map(this::mapEntity)
                 .collect(Collectors.toList());
+
+        log.info("interviewPage.getContent(), searchInterviews end");
 
         return new PageImpl<>(dtoList, pageable, interviewPage.getTotalElements());
     }
@@ -65,7 +71,7 @@ public class InterviewServiceImpl implements InterviewService {
     // ---------------------------------------------------------------------
     // UC17 - Create a new interview schedule
     @Override
-    public InterviewDTO createInterview(Interview interview) {
+    public InterviewDTO createInterview(@org.jetbrains.annotations.NotNull Interview interview) {
         interview.setStatus(InterviewStatus.NEW);
         Interview saved = interviewRepository.save(interview);
         return mapEntity(saved);
@@ -90,7 +96,7 @@ public class InterviewServiceImpl implements InterviewService {
     // ---------------------------------------------------------------------
     // UC20 - Edit interview schedule details
     @Override
-    public InterviewDTO updateInterview(Interview interview) {
+    public InterviewDTO updateInterview(@org.jetbrains.annotations.NotNull Interview interview) {
         Interview old = interviewRepository.findById(interview.getId())
                 .orElseThrow(() -> new RuntimeException("Interview not found."));
 

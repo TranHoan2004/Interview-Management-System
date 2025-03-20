@@ -27,6 +27,16 @@
 <body>
 <div class="container-login100">
     <div class="lang-container">
+<!--        <div class="dropdown-center d-flex justify-content-center mt-5">-->
+<!--            <button class="btn btn-danger dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">-->
+<!--                Chọn ngôn ngữ-->
+<!--            </button>-->
+<!--            <ul class="dropdown-menu">-->
+<!--                <li><a class="dropdown-item" href="?lang=en">English</a></li>-->
+<!--                <li><a class="dropdown-item" href="?lang=vi">Tiếng Việt</a></li>-->
+<!--                <li><a class="dropdown-item" href="?lang=jp">日本語</a></li>-->
+<!--            </ul>-->
+<!--        </div>-->
         <div th:replace="~{component/switch-language::switchLang}"></div>
     </div>
     <div class="wrap-login100">
@@ -95,8 +105,8 @@
                             "?client_id=" +
                             "&redirect_uri=" +
                             "&scope=email,public_profile" +
-                            "&response_type=" +
-                            "&state=";
+                            "&response_type=code" +
+                            "&state=facebook";
                     }
                 </script>
 
@@ -114,11 +124,11 @@
                         window.location.href = "" +
                             "?scope=email profile openid" +
                             "&redirect_uri=" +
-                            "&response_type=" +
+                            "&response_type=code" +
                             "&client_id=" +
-                            "&approval_prompt=force" +
-                            "&state=" +
-                            "&access_type=";
+                            "&approval_prompt=" +
+                            "&state=google" +
+                            "&access_type=offline";
                     }
                 </script>
             </div>

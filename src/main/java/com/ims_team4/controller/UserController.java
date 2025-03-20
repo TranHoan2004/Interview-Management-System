@@ -12,6 +12,7 @@ import com.ims_team4.service.PositionService;
 import com.ims_team4.service.UserService;
 import com.ims_team4.service.impl.UserServiceImpl;
 import jakarta.servlet.http.HttpSession;
+import org.jboss.logging.Logger;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -30,6 +31,7 @@ public class UserController {
     private final PositionService positionService;
     private final DepartmentService depSrv;
     private final UserService userService;
+    private final Logger log = Logger.getLogger(this.getClass().getName());
 
 
     public UserController(UserServiceImpl impl, EmployeeService empSrv, PositionService positionService,
@@ -53,9 +55,7 @@ public class UserController {
         model.addAttribute("employees", list);
         model.addAttribute("dept", dept);
 
-        System.out.println(positionId);
-
-        details.throwDataToTopSidebar(session, model);
+        log.info("redirectToListScreen: " + positionId);
         return "admin-features/list-user";
     }
 
@@ -109,7 +109,6 @@ public class UserController {
 
     @GetMapping("/create")
     public String redirectToCreateUserScreen(Model model, HttpSession session) {
-        details.throwDataToTopSidebar(session, model);
         List<PositionDTO> position = positionService.getAllPosition();
         model.addAttribute("position", position);
         List<DepartmentDTO> dept = depSrv.getAllDepartments();
@@ -121,17 +120,17 @@ public class UserController {
     public String viewUser(@PathVariable("id") Long id, Model model) {
         EmployeeDTO employee = empSrv.getEmployeeById(id);
         UserDTO user = userService.getUserWithId(id);
-        model.addAttribute("employee", user);
         String department = employee.getDepartmentName();
-        model.addAttribute("department", department);
         String position = employee.getPositionName();
+
+        model.addAttribute("department", department);
+        model.addAttribute("employee", user);
         model.addAttribute("position", position);
         return "admin-features/employee-details";
     }
 
     @GetMapping("/edit/{id}")
     public String editUser(@PathVariable("id") Long id, Model model, HttpSession session) {
-        details.throwDataToTopSidebar(session, model);
         EmployeeDTO employee = empSrv.getEmployeeById(id);
         UserDTO user = userService.getUserWithId(id);
         model.addAttribute("employee", employee);
