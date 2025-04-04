@@ -6,8 +6,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
-import java.util.Set;
-
 @Data
 @SuperBuilder
 @NoArgsConstructor
@@ -17,12 +15,7 @@ import java.util.Set;
 // HoanTX
 public class Notification {
     @Id
-//    @Column(name = "user_id", nullable = false)
     private long id;
-
-//    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-//    @MapsId
-//    private Users user;
 
     @Column(nullable = false)
     private String link;
@@ -37,9 +30,13 @@ public class Notification {
     @Column(nullable = false, columnDefinition = "BOOLEAN DEFAULT FALSE")
     private boolean status;
 
-//    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "notification")
-//    private Set<NotificationDetails> details;
-
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private Users user;
+
+    // test ai, do not use
+    public Notification(String link, String message, String title) {
+        this.link = link;
+        this.message = message;
+        this.title = title;
+    }
 }

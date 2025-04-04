@@ -1,8 +1,6 @@
 package com.ims_team4.dto;
 
-import com.ims_team4.model.Interview;
-import com.ims_team4.model.Skill;
-import com.ims_team4.model.Position;
+import com.ims_team4.model.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -35,11 +33,19 @@ public class CandidateDTO {
     private String recruiter;
     private String note;
     private Set<String> skills;
+    private Long recruiterId;
+
+
+    private HighestLevel highestLevelEntity;
+    private Position positionEntity;
+    private Employee employeeEntity;
 
 
     // Getter cho cvLink (trả về link giả định nếu có)
     public String getCvLink() {
         return (cv != null) ? "/cvs/" + userId : null;
     }
+
+
 
 }

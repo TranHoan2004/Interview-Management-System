@@ -1,21 +1,15 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Create Candidate</title>
+    <title th:text="${create_candidate_title}"></title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+          rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <link rel="stylesheet" type="text/css" th:href="@{/css/styles.css}"/>
     <style>
-        body {
-            background-color: #eef2f7;
-            font-family: 'Segoe UI', Arial, sans-serif;
-        }
-
-        .container {
-            background: white;
-            padding: 20px; /* Giảm padding */
-            border-radius: 8px; /* Giữ độ bo tròn nhẹ nhàng */
-            margin-top: 20px;
-            box-shadow: 0px 3px 10px rgba(0, 0, 0, 0.1);
-        }
 
         h2, h3 {
             color: #212529;
@@ -98,7 +92,7 @@
             gap: 8px; /* Thu gọn khoảng cách giữa các thẻ */
             border: 1px solid #ced4da;
             padding: 8px; /* Giảm padding */
-            min-height: 36px; /* Giảm chiều cao tối thiểu */
+        <!-- Toàn bộ thông tin chỉ hiển thị nếu người dùng có một trong các role --> < div class = "d-flex" > <!-- Left sidebar --> < div class = "sidebar" th: replace = "~{component/left-sidebar::leftSidebar}" > < / div > <!-- Nội dung chính --> < div class = "content flex-grow-1" > < div class = "main-content" > < div class = "top-sidebar" > < div class = "top-sidebar-container" > < div class = "breadcrumb-section" > < nav aria-label = "breadcrumb" > < ol class = "breadcrumb mb-0" > < li class = "breadcrumb-item" > < a href = "/dashboard" > < i class = "fas fa-home" > < / i > < span th: text = "${home_page}" > < / span > < / a > < / li > < li class = "breadcrumb-item" > < a th: href = "@{/candidate/list}" > < span th: text = "${candidate_list_title}" > < / span > < / a > < / li > < li class = "breadcrumb-item active" aria-current = "page" th: text = "${candidate_details}" > < / li > < / ol > < / nav > < / div > < div class = "top-sidebar-actions" > <!-- Notifications --> < div class = "dropdown" > < button class = "btn action-btn" type = "button" data-bs-toggle = "dropdown" aria-expanded = "false" > < i class = "fas fa-bell" > < / i > < span class = "notification-badge" > 3 < / span > < / button > < ul class = "dropdown-menu dropdown-menu-end notification-menu" > < li class = "dropdown-header" > < h6 class = "mb-0" > Notifications < / h6 > < span class = "text-muted small" > You have 3 unread messages < / span > < / li > < li > < hr class = "dropdown-divider" > < / li > < li > < a class = "dropdown-item notification-item unread" href = "#" > < div class = "notification-icon bg-primary" > < i class = "fas fa-calendar-check text-white" > < / i > < / div > < div class = "notification-text" > < p class = "mb-0" > New interview scheduled < / p > < span class = "text-muted small" > 15 minutes ago < / span > < / div > < / a > < / li > < li > < a class = "dropdown-item notification-item unread" href = "#" > < div class = "notification-icon bg-success" > < i class = "fas fa-user-check text-white" > < / i > < / div > < div class = "notification-text" > < p class = "mb-0" > Candidate profile updated < / p > < span class = "text-muted small" > 1 hour ago < / span > < / div > < / a > < / li > < li > < a class = "dropdown-item notification-item unread" href = "#" > < div class = "notification-icon bg-warning" > < i class = "fas fa-clock text-white" > < / i > < / div > < div class = "notification-text" > < p class = "mb-0" > Interview reminder < / p > < span class = "text-muted small" > Tomorrow, 10: 00 AM < / span > < / div > < / a > < / li > < li > < hr class = "dropdown-divider" > < / li > < li > < a class = "dropdown-item text-center small" href = "#" > View all notifications < / a > < / li > < / ul > < / div > <!-- Settings --> < div class = "dropdown" > < button class = "btn action-btn" type = "button" data-bs-toggle = "dropdown" aria-expanded = "false" > < i class = "fas fa-cog" > < / i > < / button > < ul class = "dropdown-menu dropdown-menu-end" > < li > < a class = "dropdown-item" href = "#" > < i class = "fas fa-user-cog me-2" > < / i > Account Settings < / a > < / li > < li > < a class = "dropdown-item" href = "#" > < i class = "fas fa-palette me-2" > < / i > Appearance < / a > < / li > < li > < a class = "dropdown-item" href = "#" > < i class = "fas fa-bell me-2" > < / i > Notification Settings < / a > < / li > < li > < hr class = "dropdown-divider" > < / li > < li > < a class = "dropdown-item" href = "#" > < i class = "fas fa-question-circle me-2" > < / i > Help Center < / a > < / li > < / ul > < / div > <!-- User Profile - REDESIGNED --> < div class = "dropdown" > < div class = "user-profile" data-bs-toggle = "dropdown" > < div class = "user-avatar-container" > < img th: src = "${session.account != null ? 'https://ui-avatars.com/api/?name=' + session.account.getFullname() + '&background=random' : 'https://ui-avatars.com/api/?name=User&background=random'}" alt = "User" class = "user-avatar" > < span class = "user-status" > < / span > < / div > < div class = "user-info d-none d-md-flex" > < span class = "user-name" th: text = "${session.account != null ? session.account.getFullname() : 'User Name'}" > User Name < / span > < span class = "user-role" th: text = "${session.account != null ? session.account.getDepartmentName() : 'Department'}" > Department < / span > < / div > < button class = "user-dropdown-btn" > < i class = "fas fa-chevron-down" > < / i > < / button > < / div > < ul class = "dropdown-menu dropdown-menu-end" > < li > < a class = "dropdown-item" href = "#" > < i class = "fas fa-user me-2" > < / i > My Profile < / a > < / li > < li > < a class = "dropdown-item" href = "#" > < i class = "fas fa-history me-2" > < / i > Activity Log < / a > < / li > < li > < hr class = "dropdown-divider" > < / li > < li > < a class = "dropdown-item" href = "#" onclick = "logout()" > < i class = "fas fa-sign-out-alt me-2" > < / i > Logout < / a > < / li > < / ul > < / div > < / div > < / div > < / div > min-height: 36 px; /* Giảm chiều cao tối thiểu */
             align-items: center;
             background-color: #fff;
             border-radius: 4px;
@@ -157,140 +151,346 @@
             background-repeat: no-repeat;
             background-position: right 10px center;
         }
-
-
-
     </style>
 </head>
 <body>
-<div class="container">
-    <h2>Candidate</h2>
-    <a href="#" class="back-link" onclick="confirmNavigation(event, 'list')">Candidate List</a> > <strong>Create Candidate</strong>
 
-    <form id="candidateForm" th:action="@{/candidates/add}" method="post" enctype="multipart/form-data">
-        <h3>I. Personal Information</h3>
-        <div class="row">
-            <div class="col-md-6">
-                <div class="form-group">
-                    <label>Full name *</label>
-                    <input type="text" name="fullName" id="fullName" class="form-control" placeholder="Type a name...">
-                    <small class="error-message text-danger"></small>
-                </div>
-                <div class="form-group">
-                    <label>D.O.B</label>
-                    <input type="date" name="dob" id="dob" class="form-control">
-                    <small class="error-message text-danger"></small>
-                </div>
-                <div class="form-group">
-                    <label>Phone number</label>
-                    <input type="text" name="phone" id="phone" class="form-control" placeholder="Type a number...">
+<!-- Toàn bộ thông tin chỉ hiển thị nếu người dùng có một trong các role -->
+<div class="d-flex">
+    <!-- Left sidebar -->
+    <div class="sidebar" th:replace="~{component/left-sidebar::leftSidebar}"></div>
+
+    <!-- Nội dung chính -->
+    <div class="content flex-grow-1">
+        <div class="main-content">
+            <div class="top-sidebar">
+                <div class="top-sidebar-container">
+                    <div class="breadcrumb-section">
+                        <nav aria-label="breadcrumb">
+                            <ol class="breadcrumb mb-0">
+                                <li class="breadcrumb-item">
+                                    <a href="/dashboard">
+                                        <i class="fas fa-home"></i>
+                                        <span th:text="${home_page}"></span>
+                                    </a>
+                                </li>
+                                <li class="breadcrumb-item">
+                                    <a th:href="@{/candidate/list}">
+                                        <span th:text="${candidate_list_title}"></span>
+                                    </a>
+                                </li>
+                                <li class="breadcrumb-item active" aria-current="page"
+                                    th:text="${create_candidate_title}"></li>
+                            </ol>
+                        </nav>
+                    </div>
+
+                    <div class="top-sidebar-actions">
+                        <!-- Notifications -->
+                        <div class="dropdown">
+                            <button class="btn action-btn" type="button" data-bs-toggle="dropdown"
+                                    aria-expanded="false">
+                                <i class="fas fa-bell"></i>
+                                <span class="notification-badge">3</span>
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end notification-menu">
+                                <li class="dropdown-header">
+                                    <h6 class="mb-0">Notifications</h6>
+                                    <span class="text-muted small">You have 3 unread messages</span>
+                                </li>
+                                <li>
+                                    <hr class="dropdown-divider">
+                                </li>
+                                <li><a class="dropdown-item notification-item unread" href="#">
+                                    <div class="notification-icon bg-primary">
+                                        <i class="fas fa-calendar-check text-white"></i>
+                                    </div>
+                                    <div class="notification-text">
+                                        <p class="mb-0">New interview scheduled</p>
+                                        <span class="text-muted small">15 minutes ago</span>
+                                    </div>
+                                </a></li>
+                                <li><a class="dropdown-item notification-item unread" href="#">
+                                    <div class="notification-icon bg-success">
+                                        <i class="fas fa-user-check text-white"></i>
+                                    </div>
+                                    <div class="notification-text">
+                                        <p class="mb-0">Candidate profile updated</p>
+                                        <span class="text-muted small">1 hour ago</span>
+                                    </div>
+                                </a></li>
+                                <li><a class="dropdown-item notification-item unread" href="#">
+                                    <div class="notification-icon bg-warning">
+                                        <i class="fas fa-clock text-white"></i>
+                                    </div>
+                                    <div class="notification-text">
+                                        <p class="mb-0">Interview reminder</p>
+                                        <span class="text-muted small">Tomorrow, 10:00 AM</span>
+                                    </div>
+                                </a></li>
+                                <li>
+                                    <hr class="dropdown-divider">
+                                </li>
+                                <li><a class="dropdown-item text-center small" href="#">View all notifications</a></li>
+                            </ul>
+                        </div>
+
+                        <!-- Settings -->
+                        <div class="dropdown">
+                            <button class="btn action-btn" type="button" data-bs-toggle="dropdown"
+                                    aria-expanded="false">
+                                <i class="fas fa-cog"></i>
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end">
+                                <li><a class="dropdown-item" href="#"><i class="fas fa-user-cog me-2"></i>Account
+                                    Settings</a></li>
+                                <li><a class="dropdown-item" href="#"><i class="fas fa-palette me-2"></i>Appearance</a>
+                                </li>
+                                <li><a class="dropdown-item" href="#"><i class="fas fa-bell me-2"></i>Notification
+                                    Settings</a></li>
+                                <li>
+                                    <hr class="dropdown-divider">
+                                </li>
+                                <li><a class="dropdown-item" href="#"><i class="fas fa-question-circle me-2"></i>Help
+                                    Center</a></li>
+                            </ul>
+                        </div>
+
+                        <!-- User Profile - REDESIGNED -->
+                        <div class="dropdown">
+                            <div class="user-profile" data-bs-toggle="dropdown">
+                                <div class="user-avatar-container">
+                                    <img th:src="${session.account != null ? 'https://ui-avatars.com/api/?name=' + session.account.getFullname() + '&background=random' : 'https://ui-avatars.com/api/?name=User&background=random'}"
+                                         alt="User" class="user-avatar">
+                                    <span class="user-status"></span>
+                                </div>
+                                <div class="user-info d-none d-md-flex">
+                                    <span class="user-name"
+                                          th:text="${session.account != null ? session.account.getFullname() : 'User Name'}">User
+                                        Name</span>
+                                    <span class="user-role"
+                                          th:text="${session.account != null ? session.account.getDepartmentName() : 'Department'}">Department</span>
+                                </div>
+                                <button class="user-dropdown-btn">
+                                    <i class="fas fa-chevron-down"></i>
+                                </button>
+                            </div>
+                            <ul class="dropdown-menu dropdown-menu-end">
+                                <li><a class="dropdown-item" href="#"><i class="fas fa-user me-2"></i>My Profile</a>
+                                </li>
+                                <li><a class="dropdown-item" href="#"><i class="fas fa-history me-2"></i>Activity
+                                    Log</a></li>
+                                <li>
+                                    <hr class="dropdown-divider">
+                                </li>
+                                <li><a class="dropdown-item" href="#" onclick="logout()"><i
+                                        class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
+                            </ul>
+                        </div>
+                    </div>
                 </div>
             </div>
-            <div class="col-md-6">
-                <div class="form-group">
-                    <label>Email *</label>
-                    <input type="text" name="email" id="email" class="form-control" placeholder="Type an email...">
-                    <small class="error-message text-danger"></small>
-                </div>
 
-                <div class="form-group">
-                    <label>Address</label>
-                    <input type="text" name="address" id="address" class="form-control" placeholder="Type an address...">
-                </div>
-                <div class="form-group">
-                    <label>Gender *</label>
-                    <select name="gender" id="gender" class="form-control">
-                        <option value="">Select a gender</option>
-                        <option value="0">Male</option>
-                        <option value="1">Female</option>
-                        <option value="2">Other</option>
-                    </select>
-                    <small class="error-message text-danger"></small>
+            <div class="stats-section">
+                <div class="stat-card">
+                    <i class="fas fa-user stat-card-bg-icon"></i>
+                    <div class="stat-card-title" th:text="${create_candidate_title}"></div>
                 </div>
             </div>
+
+
+
+            <form id="candidateForm" th:action="@{/candidate/add}" method="post" enctype="multipart/form-data">
+                <h3 th:text="${personal_information_title}"></h3>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>
+                                <span th:text="${full_name}"></span>
+                                <span style="color: red;">*</span>
+                            </label>
+                            <input type="text" name="fullName" id="fullName" class="form-control"
+                                   th:placeholder="${input_full_name}">
+                            <small class="error-message text-danger"></small>
+                        </div>
+
+                        <div class="form-group">
+                            <label>
+                                <span th:text="${dob}"></span>
+                                <span style="color: red;">*</span>
+                            </label>
+                            <input type="date" name="dob" id="dob" class="form-control" onchange="calculateAge()">
+                            <small id="dobError" class="error-message text-danger"></small>
+                        </div>
+
+                        <!-- Trường hiển thị tuổi (readonly) -->
+                        <div class="form-group">
+                            <label>Age: </label>
+                            <input type="number" id="age" class="form-control" readonly>
+                            <small id="ageError" class="error-message text-danger"></small>
+                        </div>
+
+                        <div class="form-group">
+                            <label>
+                                <span th:text="${phone}"></span>
+                                <span style="color: red;">*</span>
+                            </label>
+                            <input type="text" name="phone" id="phone" class="form-control"
+                                   th:placeholder="${input_phone}">
+                            <small id="phoneError" class="error-message text-danger"></small> <!-- Thêm dòng này -->
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>
+                                <span th:text="${email}"></span>
+                                <span style="color: red;">*</span>
+                            </label>
+                            <input type="text" name="email" id="email" class="form-control"
+                                   th:placeholder="${input_email}">
+                            <small class="error-message text-danger"></small>
+                        </div>
+
+                        <div class="form-group">
+                            <label>
+                                <span th:text="${address}"></span>
+                                <span style="color: red;">*</span>
+                            </label>
+                            <input type="text" name="address" id="address" class="form-control"
+                                   th:placeholder="${input_address}">
+                            <small class="error-message text-danger"></small>
+                        </div>
+
+
+                        <div class="form-group">
+                            <label>
+                                <span th:text="${gender}"></span>
+                                <span style="color: red;">*</span>
+                            </label>
+                            <select name="gender" id="gender" class="form-control">
+                                <option value="" th:text="${select_gender}"></option>
+                                <option value="0" th:text="${male}"></option>
+                                <option value="1" th:text="${female}"></option>
+                                <option value="2" th:text="${other_gender}"></option>
+                            </select>
+                            <small class="error-message text-danger"></small>
+                        </div>
+                    </div>
+                </div>
+
+                <h3 th:text="${professional_information_title}"></h3>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>
+                                <span th:text="${cv_attachment}"></span>
+                                <span style="color: red;">*</span>
+                            </label>
+                            <input type="file" name="cvFile" id="cvFile" class="form-control" onchange="validateCV()">
+                            <small id="cvError" class="error-message text-danger"></small>
+                        </div>
+
+                        <div class="form-group">
+                            <label>
+                                <span th:text="${positionTitle}"></span>
+                                <span style="color: red;">*</span>
+                            </label>
+                            <select name="positionId" id="position" class="form-control">
+                                <option value="" th:text="${select_position}"></option>
+                                <option th:each="p : ${positions}" th:value="${p.id}" th:text="${p.name}"></option>
+                            </select>
+                            <small class="error-message text-danger"></small>
+                        </div>
+
+                        <div class="form-group">
+                            <label>
+                                <span th:text="${skill}"></span>
+                                <span style="color: red;">*</span>
+                            </label>
+                            <div id="selectedSkills" class="skill-container"></div>
+                            <select id="skillSelect" class="form-control">
+                                <option value="" th:text="${select_skill}"></option>
+                                <option th:each="skill : ${skills}" th:value="${skill.name}"
+                                        th:text="${skill.name}"></option>
+                            </select>
+                            <small class="error-message text-danger"></small>
+                        </div>
+
+                        <div class="form-group">
+                            <label th:text="${recruiter}"></label>
+                            <select name="recruiterId" id="recruiter" class="form-control">
+                                <option value="" th:text="${assigned_to_me}"></option>
+                                <option th:each="r : ${recruiters}" th:value="${r.userID}"
+                                        th:text="${r.fullname}"></option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label th:text="${note}"></label>
+                            <input type="text" name="note" id="note" class="form-control" value="N/A">
+                        </div>
+
+                        <div class="form-group">
+                            <label>
+                                <span th:text="${statusTitle}"></span>
+                                <span style="color: red;">*</span>
+                            </label>
+                            <select name="status" id="status" class="form-control">
+                                <option value="Open" selected th:text="${open_title}"></option>
+                                <option value="Banned" th:text="${banned_title}"></option>
+                            </select>
+                            <small class="error-message text-danger"></small>
+                        </div>
+
+                        <div class="form-group">
+                            <label>
+                                <span th:text="${year_of_experience}"></span>
+                                <span style="color: red;">*</span>
+                            </label>
+                            <input type="number" name="experience" id="experience" class="form-control"
+                                   th:placeholder="${input_yoe}" oninput="validateExperience()">
+                            <small id="experienceError" class="error-message text-danger"></small>
+                        </div>
+
+                        <div class="form-group">
+                            <label>
+                                <span th:text="${highest_level_title}"></span>
+                                <span style="color: red;">*</span>
+                            </label>
+                            <select name="highestEducation" id="highestEducation" class="form-control">
+                                <option value="" th:text="${select_education}"></option>
+                                <option th:each="level : ${highestLevels}"
+                                        th:value="${level.id}"
+                                        th:text="${level.name}">
+                                </option>
+                            </select>
+                            <small class="error-message text-danger"></small>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn-submit" th:text="${submitBtn}"></button>
+                    <button type="button" class="btn-cancel" onclick="confirmNavigation(event, 'list')"
+                            th:text="${cancelBtn}"></button>
+                </div>
+            </form>
         </div>
-
-        <h3>II. Professional Information</h3>
-        <div class="row">
-            <div class="col-md-6">
-                <div class="form-group">
-                    <label>CV attachment *</label>
-                    <input type="file" name="cvFile" id="cvFile" class="form-control">
-                    <small class="error-message text-danger"></small>
-                </div>
-                <div class="form-group">
-                    <label>Position *</label>
-                    <select name="positionId" id="position" class="form-control">
-                        <option value="">Select a position...</option>
-                        <option value="1">Backend Developer</option>
-                        <option value="2">Business Analyst</option>
-                        <option value="3">Tester</option>
-                    </select>
-                    <small class="error-message text-danger"></small>
-                </div>
-                <div class="form-group">
-                    <label>Skills *</label>
-                    <div id="selectedSkills" class="skill-container"></div>
-                    <select id="skillSelect" class="form-control">
-                        <option value="">Select a skill...</option>
-                        <option value="Java">Java</option>
-                        <option value="Flutter">Flutter</option>
-                        <option value="Node.js">Node.js</option>
-                        <option value="System Design">System Design</option>
-                    </select>
-                    <small class="error-message text-danger"></small>
-                </div>
-                <div class="form-group">
-                    <label>Recruiter</label>
-                    <select name="recruiterId" id="recruiter" class="form-control">
-                        <option value="">Assign me</option>
-                        <option th:each="r : ${recruiters}" th:value="${r.id}" th:text="${r.name}"></option>
-                    </select>
-                </div>
-            </div>
-
-            <div class="col-md-6">
-                <div class="form-group">
-                    <label>Note</label>
-                    <input type="text" name="note" id="note" class="form-control" value="N/A">
-                </div>
-                <div class="form-group">
-                    <label>Status *</label>
-                    <select name="status" id="status" class="form-control">
-                        <option value="Open" selected>Open</option>
-                        <option value="Banned">Banned</option>
-                    </select>
-                    <small class="error-message text-danger"></small>
-                </div>
-                <div class="form-group">
-                    <label>Year of Experience *</label>
-                    <input type="number" name="experience" id="experience" class="form-control" placeholder="Type a number">
-                    <small class="error-message text-danger"></small>
-                </div>
-                <div class="form-group">
-                    <label>Highest level *</label>
-                    <select name="highestEducationId" id="highestEducation" class="form-control">
-                        <option value="">Select highest level...</option>
-                        <option value="1">High School</option>
-                        <option value="2">Bachelor’s Degree</option>
-                        <option value="3">Master’s Degree</option>
-                    </select>
-                    <small class="error-message text-danger"></small>
-                </div>
-            </div>
-        </div>
-
-        <div class="form-actions">
-            <button type="submit" class="btn-submit">Submit</button>
-            <button type="button" class="btn-cancel" onclick="confirmNavigation(event, 'cancel')">Cancel</button>
-        </div>
-    </form>
+    </div>
 </div>
 <script>
     document.addEventListener("DOMContentLoaded", function () {
         const skillSelect = document.getElementById("skillSelect");
         const selectedSkillsContainer = document.getElementById("selectedSkills");
-        const skillInput = document.getElementById("skillInput");
+
+        // 👉 Thêm input hidden để lưu danh sách kỹ năng
+        const skillInputHidden = document.createElement("input");
+        skillInputHidden.setAttribute("type", "hidden");
+        skillInputHidden.setAttribute("name", "skills");
+        selectedSkillsContainer.appendChild(skillInputHidden);
 
         let selectedSkills = [];
 
@@ -308,7 +508,7 @@
             selectedSkills.forEach(skill => {
                 const skillTag = document.createElement("div");
                 skillTag.classList.add("skill-tag");
-                skillTag.innerHTML = `${skill} <span class="remove-skill">✖</span>`;
+                skillTag.innerHTML = `${skill} <span class="remove-skill">✖</span> <input type="hidden" name="skills" value="${skill}"/>`;
                 skillTag.querySelector(".remove-skill").addEventListener("click", function () {
                     selectedSkills = selectedSkills.filter(s => s !== skill);
                     updateSkillDisplay();
@@ -316,12 +516,32 @@
                 selectedSkillsContainer.appendChild(skillTag);
             });
 
-            // Update hidden input field
-            skillInput.value = selectedSkills.join(",");
+            // 👉 Cập nhật input hidden với danh sách skills (quan trọng)
+            skillInputHidden.value = selectedSkills.join(",");
         }
     });
-</script>
-<script>
+
+    document.addEventListener("DOMContentLoaded", function () {
+        var input = document.getElementById("cvFile");
+        var errorMessage = input.nextElementSibling;
+        var maxSize = 2 * 1024 * 1024; // 2MB
+
+        input.addEventListener("change", function () {
+            if (input.files.length > 0) {
+                var fileSize = input.files[0].size;
+
+                if (fileSize > maxSize) {
+                    errorMessage.textContent = "CV file is too large. Please select a file smaller than 2MB.";
+                    errorMessage.style.display = "block";
+                    input.value = ""; // Xóa file khỏi input
+                } else {
+                    errorMessage.textContent = "";
+                    errorMessage.style.display = "none";
+                }
+            }
+        });
+    });
+
     document.addEventListener("DOMContentLoaded", function () {
         const modal = new bootstrap.Modal(document.getElementById("confirmationModal"));
         const modalMessage = document.getElementById("modalMessage");
@@ -337,51 +557,26 @@
             }
 
             confirmExit.onclick = function () {
-                window.location.href = "/candidates";
+                window.location.href = "/candidate/list";
             };
-
             modal.show(); // Hiển thị modal
         }
 
         window.confirmNavigation = confirmNavigation;
     });
-</script>
 
-<!-- Modal -->
-<div id="confirmationModal" class="modal fade" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Confirmation</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <p id="modalMessage"></p>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-danger" id="confirmExit">Yes</button>
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No</button>
-            </div>
-        </div>
-    </div>
-</div>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-<script>
     document.addEventListener("DOMContentLoaded", function () {
         const form = document.getElementById("candidateForm");
+        const confirmationModal = new bootstrap.Modal(document.getElementById("confirmationModalAdd"));
+        const confirmSubmitBtn = document.getElementById("confirmSubmit");
 
         form.addEventListener("submit", function (event) {
             let isValid = true;
 
             // Danh sách các trường cần kiểm tra
             const requiredFields = [
-                "fullName",       // Personal Information
-                "email",
-                "gender",
-                "position",       // Professional Information
-                "status",
-                "highestEducation",
-                "experience"
+                "fullName", "email", "gender", "position",
+                "status", "address", "highestEducation", "experience"
             ];
 
             requiredFields.forEach(fieldId => {
@@ -397,31 +592,6 @@
                 }
             });
 
-            // Kiểm tra file CV
-            const cvFile = document.getElementById("cvFile");
-            const cvError = cvFile.nextElementSibling;
-            if (!cvFile.files.length) {
-                cvError.textContent = "Please upload your CV.";
-                cvError.style.display = "block";
-                isValid = false;
-            } else {
-                cvError.style.display = "none";
-            }
-
-            if (!isValid) {
-                event.preventDefault(); // Ngăn gửi form nếu có lỗi
-            }
-        });
-    });
-
-</script>
-<script>
-    document.addEventListener("DOMContentLoaded", function () {
-        const form = document.getElementById("candidateForm");
-
-        form.addEventListener("submit", function (event) {
-            let isValid = true;
-
             // Kiểm tra định dạng email
             const emailField = document.getElementById("email");
             const emailErrorMessage = emailField.nextElementSibling;
@@ -434,12 +604,48 @@
                 emailErrorMessage.style.display = "none";
             }
 
-            // Kiểm tra ngày sinh
+            // Kiểm tra số điện thoại
+            const phoneField = document.getElementById("phone");
+            const phoneErrorMessage = document.getElementById("phoneError");
+            const phoneRegex = /^\d{10}$/;
+
+            if (!phoneRegex.test(phoneField.value.trim())) {
+                phoneErrorMessage.textContent = "Phone number must be exactly 10 digits.";
+                phoneErrorMessage.style.display = "block";
+                isValid = false;
+            } else {
+                phoneErrorMessage.textContent = "";
+                phoneErrorMessage.style.display = "none";
+            }
+
+            // Kiểm tra file CV
+            const cvFile = document.getElementById("cvFile");
+            const cvError = cvFile.nextElementSibling;
+            if (!cvFile.files.length) {
+                cvError.textContent = "Please upload your CV.";
+                cvError.style.display = "block";
+                isValid = false;
+            } else {
+                cvError.textContent = "";
+                cvError.style.display = "none";
+            }
+
+            // Kiểm tra ngày sinh & tuổi
             const dobField = document.getElementById("dob");
             const dobErrorMessage = dobField.nextElementSibling;
-            const dobValue = new Date(dobField.value);
-            const currentDate = new Date();
-            if (dobValue >= currentDate) {
+            const ageInput = document.getElementById("age");
+            const ageError = document.getElementById("ageError");
+
+            let today = new Date();
+            let dobValue = new Date(dobField.value);
+            let age = today.getFullYear() - dobValue.getFullYear();
+            let monthDiff = today.getMonth() - dobValue.getMonth();
+
+            if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < dobValue.getDate())) {
+                age--;
+            }
+
+            if (dobValue >= today) {
                 dobErrorMessage.textContent = "Date of Birth must be in the past.";
                 dobErrorMessage.style.display = "block";
                 isValid = false;
@@ -447,25 +653,143 @@
                 dobErrorMessage.style.display = "none";
             }
 
-            // Kiểm tra năm kinh nghiệm
-            const experienceField = document.getElementById("experience");
-            const experienceErrorMessage = experienceField.nextElementSibling;
-            if (isNaN(experienceField.value) || parseInt(experienceField.value) < 0) {
-                experienceErrorMessage.textContent = "Years of Experience must be greater than or equal to 0.";
-                experienceErrorMessage.style.display = "block";
+            ageInput.value = age;
+
+            if (age < 18 || age > 55) {
+                ageError.textContent = "Age must be between 18 and 55!";
+                ageError.style.display = "block";
                 isValid = false;
             } else {
-                experienceErrorMessage.style.display = "none";
+                ageError.style.display = "none";
             }
 
-            // Ngăn gửi form nếu có lỗi
+            // Kiểm tra số năm kinh nghiệm không được lớn hơn tuổi
+            const experienceField = document.getElementById("experience");
+            const experienceError = document.getElementById("experienceError");
+            let experience = parseInt(experienceField.value);
+
+            if (!isNaN(experience) && experience > age) {
+                experienceError.textContent = "The number of years of experience cannot be greater than your age!";
+                experienceError.style.display = "block";
+                isValid = false;
+            } else {
+                experienceError.style.display = "none";
+            }
+
+            // Nếu có lỗi, ngăn form gửi đi
             if (!isValid) {
                 event.preventDefault();
+                return;
             }
+
+            // Nếu hợp lệ, hiển thị modal xác nhận thay vì submit ngay lập tức
+            event.preventDefault(); // Ngăn form submit ngay lập tức
+            confirmationModal.show(); // Hiển thị modal xác nhận
+
+            // Khi người dùng nhấn "Yes", thực hiện gửi form
+            confirmSubmitBtn.onclick = function () {
+                form.submit();
+            };
         });
     });
-
 </script>
+
+<script>
+    function calculateAge() {
+        const dobField = document.getElementById("dob");
+        const ageField = document.getElementById("age");
+        const dobError = document.getElementById("dobError");
+        const ageError = document.getElementById("ageError");
+
+        if (!dobField.value) {
+            dobError.textContent = "Please select your date of birth.";
+            ageField.value = ""; // Xóa tuổi nếu không có ngày sinh
+            return;
+        }
+
+        const today = new Date();
+        const dob = new Date(dobField.value);
+        let age = today.getFullYear() - dob.getFullYear();
+        let monthDiff = today.getMonth() - dob.getMonth();
+
+        if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < dob.getDate())) {
+            age--;
+        }
+
+        if (dob >= today) {
+            dobError.textContent = "Date of Birth must be in the past.";
+            ageField.value = "";
+            return;
+        } else {
+            dobError.textContent = ""; // Xóa lỗi nếu hợp lệ
+        }
+
+        ageField.value = age; // Hiển thị tuổi trong ô input
+
+        // Kiểm tra điều kiện tuổi (18-55)
+        if (age < 18 || age > 55) {
+            ageError.textContent = "Age must be between 18 and 55!";
+        } else {
+            ageError.textContent = "";
+        }
+    }
+</script>
+
+<!-- Modal Cancel -->
+<div id="confirmationModal" class="modal fade" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" th:text="${confirm_btn}"></h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p id="modalMessage"></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" id="confirmExit" th:text="${yes_btn}"></button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" th:text="${no_btn}"></button>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<!-- Modal xác nhận -->
+<div class="modal fade" id="confirmationModalAdd" tabindex="-1" aria-labelledby="confirmationModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="confirmationModalLabel">Confirm Submission</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Are you sure you want to create this candidate's information?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No</button>
+                <button type="button" class="btn btn-primary" id="confirmSubmit">Yes</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const errorMessage = "[[${error}]]"; // Lấy thông báo lỗi từ Controller
+
+        if (errorMessage && errorMessage.trim() !== "" && errorMessage !== "null") {
+            Swal.fire({
+                icon: 'error',
+                title: 'Add new candidate failed!',
+                text: errorMessage,
+                confirmButtonText: 'OK'
+            });
+        }
+    });
+</script>
+<!-- SweetAlert2 Delete & Ban & Create Candidate -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
 
 </body>
 </html>

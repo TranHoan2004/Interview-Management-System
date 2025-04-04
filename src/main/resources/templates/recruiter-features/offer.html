@@ -3,245 +3,145 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Offer List</title>
+    <title th:text="${offer_list}"></title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
-
+    <link rel="stylesheet" th:href="@{/css/offer.css}">
     <style>
-        /* Tổng thể */
-        body {
-            background-color: #eef1f6;
-            font-family: 'Arial', sans-serif;
-        }
-
-        .logo {
-            font-weight: bold;
-            background: #fff;
-            color: #16a085;
-            padding: 2px 8px;
-            border-radius: 4px;
-        }
-
-        /* Sidebar */
-        .sidebar {
-            width: 240px;
-            background: #2c3e50;
-            height: 100vh;
-            position: fixed;
-            padding: 20px;
-            color: white;
-        }
-
-        .sidebar h4 {
-            font-weight: bold;
-            text-align: center;
-            margin-bottom: 20px;
-        }
-
-        .sidebar a {
-            display: flex;
-            align-items: center;
-            padding: 12px;
-            color: white;
-            text-decoration: none;
-            border-radius: 5px;
-            transition: background 0.3s;
-        }
-
-        .sidebar a.fw-bold {
-            background: #34495e;
-        }
-
-        .sidebar a:hover {
-            background: #1abc9c;
-        }
-
-        .sidebar i {
-            margin-right: 10px;
-        }
-
-        /* Nội dung chính */
-        .content {
-            margin-left: 260px;
-            padding: 30px;
-        }
-
-        /* Thanh tìm kiếm và bộ lọc */
-        .filter-bar {
-            display: flex;
-            gap: 10px;
-            align-items: center;
-        }
-
-        .filter-bar .form-control, .filter-bar .form-select {
-            max-width: 220px;
-        }
-
-        /* Bảng dữ liệu */
-        .table-container {
-            background: white;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
-        }
-
-        .table th {
-            background-color: #2c3e50;
-            color: white;
-            text-align: center;
-        }
-
-        .table td {
-            vertical-align: middle;
-        }
-
-        .table a {
-            color: #2c3e50;
-            transition: color 0.3s;
-        }
-
-        .table a:hover {
-            color: #1abc9c;
-        }
-
-        /* Tiêu đề */
-        .page-title {
-            font-size: 35px;
-            font-weight: bold;
-            color: #2c3e50;
-            margin-top: 0px;
-        }
-
-        /* Nút bấm */
-        .btn-primary {
-            background-color: #1abc9c;
-            border: none;
-        }
-
-        .btn-primary:hover {
-            background-color: #16a085;
-        }
-
-        .btn-secondary {
-            background-color: #34495e;
-            border: none;
-        }
-
-        .btn-secondary:hover {
-            background-color: #2c3e50;
-        }
-
-        .search {
-            width: 20% !important;
-        }
-
-        .status {
-            margin-right: 2em;
-        }
-
-        .title {
-            margin-bottom: -10px;
-        }
-
-        /* Popup container */
-        .custom-popup {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: rgba(255, 255, 255, 0.95);
-            padding: 15px 20px;
-            border-radius: 8px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        /* Mobile Header Styles */
+        .mobile-header {
             display: none;
-            z-index: 1050;
-            min-width: 250px;
-            max-width: 300px;
-            animation: fadeInSlideDown 0.5s ease-out;
+            background-color: #f8f9fa;
+            padding: 10px 15px;
+            border-bottom: 1px solid #dee2e6;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
         }
 
-        /* Nội dung popup */
-        .popup-content {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-size: 16px;
-            color: #333;
+        .mobile-header .logo {
+            font-weight: bold;
+            font-size: 1.2rem;
         }
 
-        /* Nút đóng */
-        .btn-close {
-            background: none;
-            border: none;
-            font-size: 16px;
+        .mobile-header .menu-toggle {
+            font-size: 1.5rem;
             cursor: pointer;
-            margin-left: auto;
         }
 
-        /* Hiệu ứng xuất hiện */
-        @keyframes fadeInSlideDown {
-            from {
-                opacity: 0;
-                transform: translateY(-20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        /* Nút đóng popup đẹp hơn */
-        .btn-close-custom {
-            background: #ff5e57; /* Màu đỏ nổi bật */
-            border: none;
-            width: 30px;
-            height: 30px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 50%;
+        /* Sidebar adjustments */
+        .sidebar {
             transition: all 0.3s ease;
         }
 
-        .btn-close-custom:hover {
-            background: #e74c3c; /* Màu đậm hơn khi hover */
-            transform: scale(1.1);
+        /* Content adjustments */
+        .content {
+            transition: margin-left 0.3s ease;
         }
 
-        .btn-close-custom i {
-            color: white;
-            font-size: 16px;
+        /* Mobile menu styles */
+        .mobile-menu {
+            display: none;
+            position: fixed;
+            top: 60px;
+            left: 0;
+            right: 0;
+            background-color: white;
+            z-index: 999;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            max-height: calc(100vh - 60px);
+            overflow-y: auto;
         }
 
-        .table-container{
-            padding: 10px !important;
+        .mobile-menu.show {
+            display: block;
         }
 
-        .chat-button {
-            background: linear-gradient(45deg, #0084FF, #00C6FF);
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            font-size: 16px;
-            border-radius: 25px;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            cursor: pointer;
-            transition: 0.3s;
+        /* Responsive adjustments */
+        @media (max-width: 992px) {
+            .mobile-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+            }
+
+            .sidebar {
+                position: fixed;
+                top: 60px;
+                left: -300px;
+                bottom: 0;
+                width: 250px;
+                z-index: 998;
+            }
+
+            .sidebar.show {
+                left: 0;
+            }
+
+            .content {
+                margin-left: 0;
+                padding-top: 72px !important;
+                padding-left: 15px !important;
+            }
+
+            .filter-bar {
+                flex-direction: column;
+            }
+
+            .filter-bar .search,
+            .filter-bar .select-container,
+            .filter-bar .button-group {
+                width: 100% !important;
+                margin-bottom: 10px;
+            }
+
+            .select-container {
+                flex-direction: column;
+            }
+
+            .select-container select {
+                margin-bottom: 10px;
+                margin-right: 0 !important;
+            }
         }
 
-        .chat-button:hover {
-            background: linear-gradient(45deg, #0078FF, #00B8FF);
+        @media (min-width: 993px) {
+            .content {
+                margin-left: 250px;
+            }
         }
-
-        .chat-button i {
-            font-size: 20px;
-        }
-
-
     </style>
 </head>
 <body>
+<!-- Mobile Header -->
+<div class="mobile-header">
+    <div class="logo">Your Logo</div>
+    <div class="menu-toggle" onclick="toggleMobileMenu()">
+        <i class="fas fa-bars"></i>
+    </div>
+</div>
+
+<!-- Mobile Menu -->
+<div id="mobileMenu" class="mobile-menu">
+    <!-- This will be replaced with your sidebar content -->
+    <div class="sidebar-content">
+        <nav class="nav flex-column">
+            <a class="nav-link active" href="#">
+                <i class="fas fa-home me-2"></i> Trang chủ
+            </a>
+            <a class="nav-link" href="#">
+                <i class="fas fa-user me-2"></i> Hồ sơ
+            </a>
+            <a class="nav-link" href="#">
+                <i class="fas fa-envelope me-2"></i> Tin nhắn
+            </a>
+            <!-- Thêm các mục menu khác tại đây -->
+        </nav>
+    </div>
+</div>
+
 <div id="notification" class="custom-popup">
     <div class="popup-content">
         <i class="fa-solid fa-circle-check text-success fa-2x"></i>
@@ -251,69 +151,147 @@
         </button>
     </div>
 </div>
+
+<!-- Chat Container -->
+<div class="chat-container">
+    <!-- Chat List (shown when clicking chat button) -->
+    <div id="chatList" class="chat-list">
+        <div class="chat-list-header">
+            <h5>Chats</h5>
+            <button class="chat-list-close" onclick="toggleChatList()">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="chat-search">
+            <input type="text" placeholder="Search messages...">
+        </div>
+        <div class="chat-list-body" id="chatListBody">
+            <!-- Sample chat list items -->
+            <th:block th:each="liC1 : ${listC1}">
+                <th:block th:each="liU : ${listU}" th:if="${liC1.getManagerId() == liU.getId()}">
+                    <div class="chat-person" th:onclick="openChatWindow('${liU.getFullname()}', ${session.account.getUserId()}, ${liC1.getManagerId()}, ${liC1.getChatId()}, 'ROLE_RECRUITER')">
+                        <div class="chat-person-avatar">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <div class="chat-person-info">
+                            <div class="chat-person-name">
+                                <span th:text="${liU.getFullname()}"></span>
+                                <span class="chat-person-time" th:each="listLast : ${listLast}" th:if="${listLast.getChatID() == liC1.getChatId()}" th:text="${#strings.substring(listLast.timestamp, 8, 10) + '-' + #strings.substring(listLast.timestamp, 5, 7) + '-' + #strings.substring(listLast.timestamp, 0, 4) + ' ' + #strings.substring(listLast.timestamp, 11, 13) + ':' + #strings.substring(listLast.timestamp, 14, 16)}"></span>
+                            </div>
+                            <div class="chat-person-lastmsg">
+                                <th:block th:each="liL : ${listLast}">
+                                    <th:block th:if="${liC1.chatId eq liL.chatID}">
+                                        <th:block th:if="${liL.sender eq 'ROLE_RECRUITER'}">
+                                            Bạn: <span th:text="${liL.message}"></span>
+                                        </th:block>
+                                        <th:block th:if="${liL.sender eq 'ROLE_MANAGER'}">
+                                            <span th:text="${liL.message}"></span>
+                                        </th:block>
+                                    </th:block>
+                                </th:block>
+                            </div>
+                        </div>
+                    </div>
+                </th:block>
+            </th:block>
+        </div>
+    </div>
+
+    <!-- Chat Window -->
+    <div id="chatWindow" class="chat-window">
+        <div class="chat-header">
+            <div class="chat-header-info">
+                <div class="chat-header-avatar">
+                    <i class="fas fa-user"></i>
+                </div>
+                <div class="chat-header-name" id="chatWithName">Chat</div>
+            </div>
+            <div class="chat-header-actions">
+                <button class="chat-close" onclick="toggleChatWindow()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+        </div>
+        <div class="chat-body" id="chatBody">
+            <!-- Messages will be displayed here -->
+            <div class="chat-message message-received">
+                <div class="message-content received">Hello! How can I help you today?</div>
+                <div class="message-time">10:00 AM</div>
+            </div>
+            <div class="chat-message message-sent">
+                <div class="message-content sent">I have a question about my offer</div>
+                <div class="message-time">10:02 AM</div>
+            </div>
+        </div>
+        <div class="chat-footer">
+            <input type="text" class="chat-input" placeholder="Type your message..." id="chatInput">
+            <button class="chat-send" onclick="sendMessage()">
+                <i class="fas fa-paper-plane"></i>
+            </button>
+        </div>
+    </div>
+</div>
+
 <!-- Sidebar -->
-<div class="sidebar" th:replace="~{component/left-sidebar::leftSidebar}"></div>
+<div id="sidebar" class="sidebar" th:replace="~{component/left-sidebar::leftSidebar}"></div>
 
 <!-- Nội dung -->
-<div class="content" style="padding-top: 12px;">
+<div class="content" style="padding-top: 12px;  padding-left: 50px">
     <div class="d-flex justify-content-between align-items-center mb-0">
         <div class="container py-2 flex-grow-1" style="flex-basis: 68%;">
             <h3 class="page-title fw-bold text-dark">
-                <i class="fa-solid fa-clipboard-list text-primary"></i> Offer List
+                <i class="fa-solid fa-clipboard-list text-primary"></i>
+                <span th:text="${offer_list}"></span>
             </h3>
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb bg-white shadow-sm p-2 rounded">
                     <li class="breadcrumb-item">
-                        <a th:href="@{/offer/offer/{rid}(rid=${rid})}" class="text-decoration-none text-primary fw-bold">Offer
-                            List</a>
+                        <a th:href="@{/offer/offer/{rid}(rid=${T(com.ims_team4.controller.utils.UrlIdEncoder).encodeId(session.account.userID)})}"
+                           class="text-decoration-none text-primary fw-bold" th:text="${offer_list}"></a>
                     </li>
                 </ol>
             </nav>
         </div>
         <div th:replace="~{component/top-sidebar::topSidebar}"></div>
-<!--        <div class="mb-1 p-3 bg-white rounded shadow-sm flex-grow-1 d-flex align-items-center" style="flex-basis: 35%;">-->
-<!--            <div class="d-flex align-items-center">-->
-<!--                <img src="https://anhanime.me/wp-content/uploads/2024/03/anh-conan_5.jpg" alt="Avatar"-->
-<!--                     class="rounded-circle border border-2" width="45" height="45">-->
-<!--                <div class="ms-2">-->
-<!--                    <span class="fw-bold text-dark d-block">longpd</span>-->
-<!--                    <small class="text-muted">HR Department</small>-->
-<!--                </div>-->
-<!--            </div>-->
-<!--            <a href="#" class="ms-auto btn btn-outline-danger btn-sm d-flex align-items-center px-3">-->
-<!--                <i class="fa-solid fa-sign-out-alt me-2"></i> Logout-->
-<!--            </a>-->
-<!--        </div>-->
     </div>
 
     <!-- Thanh tìm kiếm và bộ lọc -->
     <form th:action="@{/offer/search}" method="get">
         <div class="filter-bar mb-3">
-            <input type="hidden" name="rid" th:value="${rid}"/>
+            <input type="hidden" name="rid"
+                   th:value="${T(com.ims_team4.controller.utils.UrlIdEncoder).encodeId(session.account.userID)}"/>
+
             <div class="search input-group">
                 <span class="input-group-text"><i class="fa-solid fa-search"></i></span>
-                <input type="text" name="text" class="form-control" placeholder="Search">
+                <input type="text" name="text" class="form-control" th:placeholder="${search}">
             </div>
-            <select class="form-select" name="dep">
-                <option value="0">Department</option>
-                <option th:each="department : ${listD}" th:value="${department.getId()}"
-                        th:text="${department.getName()}"></option>
-            </select>
-            <select class="form-select status" name="status">
-                <option value="0">Status</option>
-                <option th:each="statusOffer : ${listS}" th:value="${statusOffer.getId()}"
-                        th:text="${statusOffer.getStatusName()}"></option>
-            </select>
-            <button type="submit" class="btn btn-secondary">Search</button>
-            <a th:href="@{/chat(rid=${session.account.userID}, mid=${session.mid}, role=${session.account.role})}"
-               class="chat-button fw-bold text-decoration-none">
-                <i class="fa-brands fa-facebook-messenger"></i> Chat
-            </a>
-            <a th:href="@{/offer/createoffer/{rid}(rid=${rid})}" class="btn btn-primary">Add new</a>
-            <button type="button" class="btn btn-outline-secondary" data-bs-toggle="modal"
-                    data-bs-target="#exportModal">
-                Export
-            </button>
+
+            <div class="select-container d-flex " style="width: 44%">
+                <select class="form-select me-2" name="dep">
+                    <option value="0" th:text="${departmentTitle}"></option>
+                    <option th:each="department : ${listD}" th:value="${department.getId()}"
+                            th:text="${department.getName()}"></option>
+                </select>
+
+                <select class="form-select status" name="status">
+                    <option value="0" th:text="${statusTitle}"></option>
+                    <option th:each="statusOffer : ${listS}" th:value="${statusOffer.getId()}"
+                            th:text="${statusOffer.getStatusName()}"></option>
+                </select>
+            </div>
+
+            <div class="button-group d-flex align-items-center ms-auto">
+                <button type="submit" class="btn btn-secondary me-2" th:text="${search}"></button>
+                <button type="button" class="chat-button fw-bold text-decoration-none me-2" onclick="toggleChatList()">
+                    <i class="fa-brands fa-facebook-messenger"></i>
+                    <span th:text="${chat_title}"></span>
+                </button>
+                <a th:href="@{/offer/createoffer/{rid}(rid=${T(com.ims_team4.controller.utils.UrlIdEncoder).encodeId(rid)})}"
+                   class="btn btn-primary me-2"
+                   th:text="${add_new}"></a>
+                <button type="button" class="btn btn-outline-secondary" data-bs-toggle="modal"
+                        data-bs-target="#exportModal" th:text="${exportBtn}"></button>
+            </div>
         </div>
     </form>
 
@@ -321,24 +299,27 @@
         <div class="modal-dialog">
             <form th:action="@{/offer/export}" class="modal-content rounded-3 shadow-lg p-3">
                 <div class="modal-header bg-primary-subtle text-dark position-relative">
-                    <h5 class="modal-title" id="exportModalLabel">Export Offer</h5>
-                    <button type="button" class="btn btn-danger btn-close position-absolute top-0 end-0 m-2 p-2" data-bs-dismiss="modal" aria-label="Close"></button>                </div>
+                    <h5 class="modal-title" id="exportModalLabel" th:text="${export_offer_btn}"></h5>
+                    <button type="button" class="btn btn-danger btn-close position-absolute top-0 end-0 m-2 p-2"
+                            data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
                 <div class="modal-body">
                     <input type="hidden" name="rid" th:value="${rid}">
 
                     <div class="mb-3">
-                        <label for="from" class="form-label fw-bold">From:</label>
+                        <label for="from" class="form-label fw-bold" th:text="${from_label} + ':'"></label>
                         <input type="date" id="from" name="from" class="form-control" required>
                     </div>
 
                     <div class="mb-3">
-                        <label for="to" class="form-label fw-bold">To:</label>
+                        <label for="to" class="form-label fw-bold" th:text="${to_label} + ':'"></label>
                         <input type="date" id="to" name="to" class="form-control" required>
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="submit" class="btn btn-primary">Submit</button>
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary" th:text="${submitBtn}"></button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"
+                            th:text="${cancelBtn}"></button>
                 </div>
             </form>
         </div>
@@ -349,13 +330,13 @@
         <table class="table table-bordered table-hover">
             <thead>
             <tr>
-                <th>Candidate Name</th>
-                <th>Email</th>
-                <th>Approver</th>
-                <th>Department</th>
-                <th>Notes</th>
-                <th>Status</th>
-                <th>Action</th>
+                <th th:text="${candidate_name}"></th>
+                <th th:text="${email}"></th>
+                <th th:text="${approver_title}"></th>
+                <th th:text="${departmentTitle}"></th>
+                <th th:text="${note}"></th>
+                <th th:text="${statusTitle}"></th>
+                <th th:text="${action}"></th>
             </tr>
             </thead>
             <tbody>
@@ -368,18 +349,21 @@
                             <td th:each="emp : ${listU}" th:if="${emp.getId() == offer.getEmployeeId()}"
                                 th:text="${emp.getFullname()}"></td>
                             <td th:text="${offer.getDepartmentName()}"></td>
-                            <td th:text="${offer.note} ?: 'N/A'"></td>
+                            <td th:text="${offer.note} ?: 'N/A'"
+                                style="max-width: 150px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"
+                                th:title="${offer.note}"></td>
                             <td>
                                 <span th:text="${offer.getStatusOfferName()}"></span>
                             </td>
                             <td>
-                                <a th:href="@{/offer/offerdetail/{id}(id=${offer.getId()}, rid=${offer.getRecruiterOwner()})}"
+                                <a th:href="@{/offer/offerdetail/{id}(id=${T(com.ims_team4.controller.utils.UrlIdEncoder).encodeId(offer.getId())}, rid=${T(com.ims_team4.controller.utils.UrlIdEncoder).encodeId(offer.getRecruiterOwner())})}"
                                    class="me-2"><i
                                         class="fa-solid fa-eye"></i></a>
-                                <a th:data-status="${offer.getStatusOfferId()}"
+                                <a th:data-status="${offer.statusOfferId}"
                                    th:data-id="${offer.getId()}"
                                    th:data-eid="${offer.getRecruiterOwner()}"
-                                   onclick="checkStatusToEdit(this.getAttribute('data-id'), this.getAttribute('data-status'), this.getAttribute('data-eid'))"
+                                   th:data-edit-url="@{/offer/editoffer/{id}(id=${T(com.ims_team4.controller.utils.UrlIdEncoder).encodeId(offer.id)}, rid=${T(com.ims_team4.controller.utils.UrlIdEncoder).encodeId(offer.recruiterOwner)})}"
+                                   onclick="checkStatusToEdit(this)"
                                    href="#">
                                     <i class="fa-solid fa-edit"></i>
                                 </a>
@@ -393,27 +377,43 @@
         <nav aria-label="Page navigation">
             <ul class="pagination justify-content-center">
                 <li class="page-item" th:classappend="${currentPage == 1} ? 'disabled'">
-                    <a class="page-link" th:href="@{/offer/offer/{id}(id=${id}, page=${currentPage - 1})}"
+                    <a class="page-link"
+                       th:href="@{/offer/offer/{encodedId}(encodedId=${T(com.ims_team4.controller.utils.UrlIdEncoder).encodeId(session.account.userID)}, page=${currentPage - 1})}"
                        aria-label="Previous">
                         <span aria-hidden="true">&laquo;</span>
                     </a>
                 </li>
                 <li class="page-item" th:each="page : ${#numbers.sequence(1, totalPages)}"
                     th:classappend="${page == currentPage} ? 'active'">
-                    <a class="page-link" th:href="@{/offer/offer/{id}(id=${id}, page=${page})}" th:text="${page}"></a>
+                    <a class="page-link"
+                       th:href="@{/offer/offer/{encodedId}(encodedId=${T(com.ims_team4.controller.utils.UrlIdEncoder).encodeId(session.account.userID)}, page=${page})}"
+                       th:text="${page}"></a>
                 </li>
                 <li class="page-item" th:classappend="${currentPage == totalPages} ? 'disabled'">
-                    <a class="page-link" th:href="@{/offer/offer/{id}(id=${id}, page=${currentPage + 1})}" aria-label="Next">
+                    <a class="page-link"
+                       th:href="@{/offer/offer/{encodedId}(encodedId=${T(com.ims_team4.controller.utils.UrlIdEncoder).encodeId(session.account.userID)}, page=${currentPage + 1})}"
+                       aria-label="Next">
                         <span aria-hidden="true">&raquo;</span>
                     </a>
                 </li>
             </ul>
         </nav>
+        <div id="chatbot-icon" onclick="toggleChatBot()">
+            <img src="https://cdn-icons-png.flaticon.com/512/4712/4712035.png" alt="Chatbot">
+        </div>
 
+        <!-- Cửa sổ chat -->
+        <div id="chat-window" style="position: relative">
+            <iframe
+                    src="https://www.coze.com/store/agent/7488646243938762753?bot_id=true"
+                    allow="microphone"
+                    id="coze-bot"
+                    style="height: 80%; border: none;">
+            </iframe>
+        </div>
     </div>
 </div>
 </body>
-
 <script>
     document.addEventListener("DOMContentLoaded", function () {
         var msg = `[[${msg}]]`;
@@ -439,37 +439,34 @@
         notification.style.display = "none";
     }
 
-    function checkStatusToEdit(offerId, status, eid) {
-        if (status == "1") {
-            window.location.href = `/offer/editoffer/${offerId}?rid=${eid}`;
+    // Mobile menu toggle function
+    function toggleMobileMenu() {
+        const mobileMenu = document.getElementById('mobileMenu');
+        mobileMenu.classList.toggle('show');
+
+        // Thêm hiệu ứng toggle icon
+        const menuIcon = document.querySelector('.menu-toggle i');
+        if (mobileMenu.classList.contains('show')) {
+            menuIcon.classList.remove('fa-bars');
+            menuIcon.classList.add('fa-times');
         } else {
-            alert("Editing is not allowed because the status is invalid.");
+            menuIcon.classList.remove('fa-times');
+            menuIcon.classList.add('fa-bars');
         }
     }
 
-    function logout() {
-        window.location.href = "/logout";
-    }
+    // Đóng menu khi click bên ngoài
+    document.addEventListener('click', function(event) {
+        const mobileMenu = document.getElementById('mobileMenu');
+        const menuToggle = document.querySelector('.menu-toggle');
 
-</script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-
-<script src="https://sf-cdn.coze.com/obj/unpkg-va/flow-platform/chat-app-sdk/1.2.0-beta.5/libs/oversea/index.js"></script>
-<script>
-    new CozeWebSDK.WebChatClient({
-        config: {
-            bot_id: '7483458042768474113',
-        },
-        componentProps: {
-            title: 'Coze',
-        },
-        auth: {
-            type: 'token',
-            token: 'pat_********',
-            onRefreshToken: function () {
-                return 'pat_********'
-            }
+        if (!menuToggle.contains(event.target) &&
+            !mobileMenu.contains(event.target) &&
+            mobileMenu.classList.contains('show')) {
+            toggleMobileMenu();
         }
     });
 </script>
+<script src="/js/recruiter-offer.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </html>

@@ -1,192 +1,206 @@
 <!DOCTYPE html>
 <html lang="vi" xmlns:th="http://www.thymeleaf.org">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Job For Admin</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-  <link rel="stylesheet" href="/css/jobs.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${jobs_admin_title}"></title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" th:href="@{/css/jobs.css}">
 </head>
 <body>
 <div class="d-flex">
-  <!-- Left sidebar -->
-  <div class="sidebar" th:replace="~{component/left-sidebar::leftSidebar}"></div>
+    <!-- Left sidebar -->
+    <div class="sidebar" th:replace="~{component/left-sidebar::leftSidebar}"></div>
 
+    <!-- Content -->
+    <div class="content flex-grow-1">
+        <div class="d-flex justify-content-between align-items-center mb-0">
+            <div class="container py-2 flex-grow-1" style="flex-basis: 68%;">
+                <h3 class="page-title fw-bold text-dark">
+                    <i class="fa fa-briefcase text-primary"></i>
+                    <span th:text="${job_title}"></span>
+                </h3>
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb bg-white shadow-sm p-2 rounded">
+                        <li class="breadcrumb-item">
+                            <a th:href="@{/jobs/admin/listAllJob}" class="text-decoration-none text-primary fw-bold"
+                               th:text="${job_list}"></a>
+                        </li>
+                    </ol>
+                </nav>
+            </div>
+            <div th:replace="~{component/top-sidebar::topSidebar}"></div>
+        </div>
 
-  <!-- Content -->
-  <div class="content flex-grow-1">
-    <div class="d-flex justify-content-between align-items-center mb-0">
-      <div class="container py-2 flex-grow-1" style="flex-basis: 68%;">
-        <h3 class="page-title fw-bold text-dark">
-          <i class="fa fa-briefcase text-primary"></i> Job
-        </h3>
-        <nav aria-label="breadcrumb">
-          <ol class="breadcrumb bg-white shadow-sm p-2 rounded">
-            <li class="breadcrumb-item">
-              <a th:href="@{/jobs/admin/listAllJob}" class="text-decoration-none text-primary fw-bold">Job List</a>
-            </li>
-          </ol>
-        </nav>
-      </div>
-      <div th:replace="~{component/top-sidebar::topSidebar}"></div>
-    </div>
-
-    <div class="bg-info bg-opacity-10 p-4 rounded">
-      <!-- Search and Filter -->
-      <form th:action="@{/jobs/admin/listAllJob}" method="get" class="d-flex mb-3 ps-2">
-        <input type="text" class="form-control me-2" name="title" placeholder="Search by title"
-               th:value="${title}">
-        <select class="form-select me-2" style="max-width: 150px;" name="status">
-          <option value="">All</option>
-          <option value="true" th:selected="${status == 'true'}">Open</option>
-          <option value="false" th:selected="${status == 'false'}">Closed</option>
-        </select>
-        <button type="submit" class="btn btn-primary">Search</button>
-      </form>
-
-      <!-- Button Add New and Import -->
-      <div class="d-flex justify-content-end mb-3">
-        <a th:href="@{/jobs/create-job}" class="btn btn-success btn-sm me-2">
-          <i class="bi bi-plus-lg"></i> Add New
-        </a>
-        <a th:href="@{/jobs/import}" class="btn btn-info btn-sm">
-          <i class="bi bi-upload"></i> Import
-        </a>
-      </div>
-
-      <!-- Job List Table -->
-      <table class="table table-bordered">
-        <thead>
-        <tr>
-          <th>Job Title</th>
-          <th>Required Skills</th>
-          <th>Start Date</th>
-          <th>End Date</th>
-          <th>Level</th>
-          <th>Status</th>
-          <th>Action</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr th:if="${jobPage.isEmpty()}">
-          <td colspan="7" class="text-center">Không có kết quả nào</td>
-        </tr>
-        <tr th:each="job : ${jobPage.content}">
-          <td th:text="${job.title}"></td>
-          <td th:text="${#strings.arrayJoin(job.skillNames, ', ')}"></td>
-          <td th:text="${job.startDate}"></td>
-          <td th:text="${job.endDate}"></td>
-          <td th:text="${#strings.arrayJoin(job.levelNames, ', ')}"></td>
-          <td th:text="${job.status} ? 'Open' : 'Closed'"></td>
-          <td>
-            <a th:href="@{/jobs/admin/job-detail/{id}(id=${job.id})}"
-               class="btn btn-sm btn-outline-secondary me-1">
-              <i class="bi bi-eye"></i>
-            </a>
-            <a th:href="@{/jobs/edit-job/{id}(id=${job.id})}" class="btn btn-sm btn-outline-primary me-1"><i class="bi bi-pencil"></i></a>
-            <form class="delete-form" th:action="@{/jobs/delete/{id}(id=${job.id})}" method="post" style="display:inline;">
-              <button type="button" class="btn btn-sm btn-outline-danger delete-job-btn" data-id="${job.id}">
-                <i class="bi bi-trash"></i>
-              </button>
+        <div class="bg-info bg-opacity-10 p-4 rounded">
+            <!-- Search and Filter -->
+            <form th:action="@{/jobs/admin/listAllJob}" th:method="get" class="d-flex mb-3 ps-2">
+                <input type="text" class="form-control me-2" name="title" th:placeholder="${search_by_title}"
+                       th:value="${title}">
+                <select class="form-select me-2" style="max-width: 150px;" name="status">
+                    <option value="" th:text="${all_option}"></option>
+                    <option value="true" th:selected="${status == 'true'}" th:text="${open_option}"></option>
+                    <option value="false" th:selected="${status == 'false'}" th:text="${closed_option}"></option>
+                </select>
+                <button type="submit" class="btn btn-primary" th:text="${search}" style="white-space: nowrap;"></button>
             </form>
-          </td>
-        </tr>
-        </tbody>
-      </table>
 
-      <!-- Pagination -->
-      <nav>
-        <ul class="pagination">
-          <li th:classappend="${jobPage.first} ? 'disabled' : ''" class="page-item">
-            <a class="page-link"
-               th:href="@{/jobs/admin/listAllJob(page=${jobPage.number - 1}, title=${title}, status=${status})}">Previous</a>
-          </li>
+            <!-- Button Add New and Import -->
+            <div class="d-flex justify-content-end mb-3">
+                <a th:href="@{/jobs/create-job}" class="btn btn-success btn-sm me-2">
+                    <i class="bi bi-plus-lg"></i>
+                    <span th:text="${add_new}"></span>
+                </a>
 
-          <li th:each="i : ${#numbers.sequence(0, jobPage.totalPages - 1)}"
-              th:classappend="${i == jobPage.number} ? 'active' : ''"
-              class="page-item">
-            <a class="page-link" th:href="@{/jobs/admin/listAllJob(page=${i}, title=${title}, status=${status})}"
-               th:text="${i + 1}"></a>
-          </li>
+                <a th:href="@{/jobs/import}" class="btn btn-info btn-sm">
+                    <i class="bi bi-upload"></i>
+                    <span th:text="${import_btn}"></span>
+                </a>
+            </div>
 
-          <li th:classappend="${jobPage.last} ? 'disabled' : ''" class="page-item">
-            <a class="page-link"
-               th:href="@{/jobs/admin/listAllJob(page=${jobPage.number + 1}, title=${title}, status=${status})}">Next</a>
-          </li>
-        </ul>
-      </nav>
+            <!-- Job List Table -->
+            <table class="table table-bordered">
+                <thead>
+                <tr>
+                    <th th:text="${job_title}"></th>
+                    <th th:text="${required_skill_title}"></th>
+                    <th th:text="${start_date_title}"></th>
+                    <th th:text="${end_date_title}"></th>
+                    <th th:text="${level_title}"></th>
+                    <th th:text="${statusTitle}"></th>
+                    <th th:text="${action}"></th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:if="${jobPage.isEmpty()}">
+                    <td colspan="7" class="text-center" th:text="${no_job_found}"></td>
+                </tr>
+                <tr th:each="job : ${jobPage.content}">
+                    <td th:text="${job.title}"></td>
+                    <td th:text="${#strings.arrayJoin(job.skillNames, ', ')}"></td>
+                    <td th:text="${job.startDate}"></td>
+                    <td th:text="${job.endDate}"></td>
+                    <td th:text="${#strings.arrayJoin(job.levelNames, ', ')}"></td>
+                    <td th:text="${job.status} ? ${open_option} : ${closed_option}"></td>
+                    <td>
+                        <a th:href="@{/jobs/admin/job-detail/{id}(id=${job.id})}"
+                           class="btn btn-sm btn-outline-secondary me-1">
+                            <i class="bi bi-eye"></i>
+                        </a>
+
+                        <a th:href="@{/jobs/edit-job/{id}(id=${job.id})}" class="btn btn-sm btn-outline-primary me-1">
+                            <i class="bi bi-pencil"></i>
+                        </a>
+
+                        <form class="delete-form" th:action="@{/jobs/delete/{id}(id=${job.id})}" th:method="post"
+                              style="display:inline;">
+                            <button type="button" class="btn btn-sm btn-outline-danger delete-job-btn"
+                                    data-id="${job.id}">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+
+            <!-- Pagination -->
+            <nav>
+                <ul class="pagination">
+                    <li th:classappend="${jobPage.first} ? 'disabled' : ''" class="page-item">
+                        <a class="page-link"
+                           th:href="@{/jobs/admin/listAllJob(page=${jobPage.number - 1}, title=${title}, status=${status})}"
+                           th:text="${previous_title}"></a>
+                    </li>
+
+                    <li th:each="i : ${#numbers.sequence(0, jobPage.totalPages - 1)}"
+                        th:classappend="${i == jobPage.number} ? 'active' : ''"
+                        class="page-item">
+                        <a class="page-link"
+                           th:href="@{/jobs/admin/listAllJob(page=${i}, title=${title}, status=${status})}"
+                           th:text="${i + 1}"></a>
+                    </li>
+
+                    <li th:classappend="${jobPage.last} ? 'disabled' : ''" class="page-item">
+                        <a class="page-link"
+                           th:href="@{/jobs/admin/listAllJob(page=${jobPage.number + 1}, title=${title}, status=${status})}"
+                           th:text="${next_title}"></a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
     </div>
-  </div>
 </div>
 </body>
+
 <!-- Modal Xác Nhận Xóa -->
 <div class="modal fade" id="confirmDeleteModal" tabindex="-1" aria-labelledby="confirmDeleteLabel" aria-hidden="true">
-  <div class="modal-dialog modal-sm"> <!-- modal-sm: modal nhỏ -->
-    <div class="modal-content">
-      <div class="modal-header bg-danger text-white">
-        <h5 class="modal-title" id="confirmDeleteLabel">Xác nhận xóa</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body">
-        ⚠️ Bạn có chắc chắn muốn xóa công việc này không?
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Hủy</button>
-        <button type="button" class="btn btn-danger btn-sm" id="confirmDeleteBtn">Có, Xóa</button>
-      </div>
+    <div class="modal-dialog modal-sm"> <!-- modal-sm: modal nhỏ -->
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title" id="confirmDeleteLabel" th:text="${confirm_delete}"></h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+            <div class="modal-body" th:text="'⚠️ ' + ${confirm_delete_alert}"></div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal" th:text="${cancelBtn}"></button>
+                <button type="button" class="btn btn-danger btn-sm" id="confirmDeleteBtn" th:text="${confirm_yes_and_delete}"></button>
+            </div>
+        </div>
     </div>
-  </div>
 </div>
 
 <!-- Toast thông báo -->
 <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
-  <div id="deleteToast" class="toast align-items-center text-bg-success border-0" role="alert" aria-live="assertive" aria-atomic="true">
-    <div class="d-flex">
-      <div class="toast-body">
-        ✅ Xóa thành công!
-      </div>
-      <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+    <div id="deleteToast" class="toast align-items-center text-bg-success border-0" role="alert" aria-live="assertive"
+         aria-atomic="true">
+        <div class="d-flex">
+            <div class="toast-body" th:text="'✅ ' + ${delete_successfully}"></div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"
+                    aria-label="Close"></button>
+        </div>
     </div>
-  </div>
 </div>
 
 <script>
-  document.addEventListener("DOMContentLoaded", function () {
-    let selectedForm = null; // Lưu form cần xóa
+    document.addEventListener("DOMContentLoaded", function () {
+        let selectedForm = null; // Lưu form cần xóa
 
-    // Khi bấm vào nút xóa, lưu form và mở modal
-    document.querySelectorAll(".delete-job-btn").forEach(button => {
-      button.addEventListener("click", function () {
-        selectedForm = this.closest(".delete-form"); // Lấy form chứa nút xóa
-        let modal = new bootstrap.Modal(document.getElementById('confirmDeleteModal'));
-        modal.show();
-      });
-    });
-
-    // Khi bấm "Có, Xóa", gửi yêu cầu xóa
-    document.getElementById("confirmDeleteBtn").addEventListener("click", function () {
-      if (selectedForm) {
-        fetch(selectedForm.action, {
-          method: "POST"
-        }).then(response => {
-          if (response.ok) {
-            let toast = new bootstrap.Toast(document.getElementById('deleteToast'));
-            toast.show(); // Hiển thị thông báo
-            setTimeout(() => location.reload(), 2000); // Reload sau 2 giây
-          } else {
-            alert("❌ Xóa thất bại, vui lòng thử lại!");
-          }
-        }).catch(error => {
-          alert("⚠️ Có lỗi xảy ra: " + error.message);
+        // Khi bấm vào nút xóa, lưu form và mở modal
+        document.querySelectorAll(".delete-job-btn").forEach(button => {
+            button.addEventListener("click", function () {
+                selectedForm = this.closest(".delete-form"); // Lấy form chứa nút xóa
+                let modal = new bootstrap.Modal(document.getElementById('confirmDeleteModal'));
+                modal.show();
+            });
         });
 
-        let modal = bootstrap.Modal.getInstance(document.getElementById('confirmDeleteModal'));
-        modal.hide(); // Đóng modal
-      }
+        // Khi bấm "Có, Xóa", gửi yêu cầu xóa
+        document.getElementById("confirmDeleteBtn").addEventListener("click", function () {
+            if (selectedForm) {
+                fetch(selectedForm.action, {
+                    method: "POST"
+                }).then(response => {
+                    if (response.ok) {
+                        let toast = new bootstrap.Toast(document.getElementById('deleteToast'));
+                        toast.show(); // Hiển thị thông báo
+                        setTimeout(() => location.reload(), 2000); // Reload sau 2 giây
+                    } else {
+                        alert("❌ Xóa thất bại, vui lòng thử lại!");
+                    }
+                }).catch(error => {
+                    alert("⚠️ Có lỗi xảy ra: " + error.message);
+                });
+
+                let modal = bootstrap.Modal.getInstance(document.getElementById('confirmDeleteModal'));
+                modal.hide(); // Đóng modal
+            }
+        });
     });
-  });
 </script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 

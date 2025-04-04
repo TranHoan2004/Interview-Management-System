@@ -21,12 +21,21 @@ public interface InterviewRepository extends JpaRepository<Interview, Long> {
         SELECT DISTINCT i
         FROM Interview i
           LEFT JOIN i.employees e
+          LEFT JOIN e.user eu
+          LEFT JOIN i.candidate c
+          LEFT JOIN c.user cu
+          LEFT JOIN i.job j
         WHERE
-            (:search IS NULL
-               OR LOWER(i.title)    LIKE LOWER(CONCAT('%', :search, '%'))
-               OR LOWER(i.note)     LIKE LOWER(CONCAT('%', :search, '%'))
-               OR LOWER(i.result)   LIKE LOWER(CONCAT('%', :search, '%'))
-               OR LOWER(i.locations)LIKE LOWER(CONCAT('%', :search, '%')))
+            (
+              :search IS NULL
+              OR LOWER(i.title)         LIKE LOWER(CONCAT('%', :search, '%'))
+              OR LOWER(i.note)          LIKE LOWER(CONCAT('%', :search, '%'))
+              OR LOWER(i.result)        LIKE LOWER(CONCAT('%', :search, '%'))
+              OR LOWER(i.locations)     LIKE LOWER(CONCAT('%', :search, '%'))
+              OR LOWER(cu.fullname)     LIKE LOWER(CONCAT('%', :search, '%'))
+              OR LOWER(j.title)         LIKE LOWER(CONCAT('%', :search, '%'))
+              OR LOWER(eu.fullname)     LIKE LOWER(CONCAT('%', :search, '%'))
+            )
           AND (:status IS NULL OR i.status = :status)
           AND (:employeeId IS NULL OR e.id = :employeeId)
     """)

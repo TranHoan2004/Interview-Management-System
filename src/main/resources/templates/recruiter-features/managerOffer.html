@@ -1,241 +1,20 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/html">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Manager Offer</title>
+    <title th:text="${manager_offer_title}"></title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
-
-    <style>
-        /* Tổng thể */
-        body {
-            background-color: #eef1f6;
-            font-family: 'Arial', sans-serif;
-        }
-
-        .logo {
-            font-weight: bold;
-            background: #fff;
-            color: #16a085;
-            padding: 2px 8px;
-            border-radius: 4px;
-        }
-
-        /* Sidebar */
-        .sidebar {
-            width: 240px;
-            background: #2c3e50;
-            height: 100vh;
-            position: fixed;
-            padding: 20px;
-            color: white;
-        }
-
-        .sidebar h4 {
-            font-weight: bold;
-            text-align: center;
-            margin-bottom: 20px;
-        }
-
-        .sidebar a {
-            display: flex;
-            align-items: center;
-            padding: 12px;
-            color: white;
-            text-decoration: none;
-            border-radius: 5px;
-            transition: background 0.3s;
-        }
-
-        .sidebar a.fw-bold {
-            background: #34495e;
-        }
-
-        .sidebar a:hover{
-            background: #1abc9c;
-        }
-
-        .sidebar i {
-            margin-right: 10px;
-        }
-
-        /* Nội dung chính */
-        .content {
-            margin-left: 260px;
-            padding: 30px;
-        }
-
-        /* Thanh tìm kiếm và bộ lọc */
-        .filter-bar {
-            display: flex;
-            gap: 10px;
-            align-items: center;
-        }
-
-        .filter-bar .form-control, .filter-bar .form-select {
-            max-width: 220px;
-        }
-
-        /* Bảng dữ liệu */
-        .table-container {
-            background: white;
-            padding: 10px;
-            border-radius: 8px;
-            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
-        }
-
-        .table th {
-            background-color: #2c3e50;
-            color: white;
-            text-align: center;
-        }
-
-        .table td {
-            vertical-align: middle;
-        }
-
-        .table a {
-            color: #2c3e50;
-            transition: color 0.3s;
-        }
-
-        .table a:hover {
-            color: #1abc9c;
-        }
-
-        /* Tiêu đề */
-        .page-title {
-            font-size: 35px;
-            font-weight: bold;
-            color: #2c3e50;
-        }
-
-        /* Nút bấm */
-        .btn-primary {
-            background-color: #1abc9c;
-            border: none;
-        }
-
-        .btn-primary:hover {
-            background-color: #16a085;
-        }
-
-        .btn-secondary {
-            background-color: #34495e;
-            border: none;
-        }
-
-        .btn-secondary:hover {
-            background-color: #2c3e50;
-        }
-
-        .search {
-            width: 24% !important;
-        }
-
-        .status {
-            margin-right: 6rem;
-        }
-
-        .title {
-            margin-bottom: -10px;
-        }
-
-        /* Popup container */
-        .custom-popup {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: rgba(255, 255, 255, 0.95);
-            padding: 15px 20px;
-            border-radius: 8px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-            display: none;
-            z-index: 1050;
-            min-width: 250px;
-            max-width: 300px;
-            animation: fadeInSlideDown 0.5s ease-out;
-        }
-
-        /* Nội dung popup */
-        .popup-content {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-size: 16px;
-            color: #333;
-        }
-
-        /* Nút đóng */
-        .btn-close {
-            background: none;
-            border: none;
-            font-size: 16px;
-            cursor: pointer;
-            margin-left: auto;
-        }
-
-        /* Hiệu ứng xuất hiện */
-        @keyframes fadeInSlideDown {
-            from {
-                opacity: 0;
-                transform: translateY(-20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        /* Nút đóng popup đẹp hơn */
-        .btn-close-custom {
-            background: #ff5e57; /* Màu đỏ nổi bật */
-            border: none;
-            width: 30px;
-            height: 30px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 50%;
-            transition: all 0.3s ease;
-        }
-
-        .btn-close-custom:hover {
-            background: #e74c3c; /* Màu đậm hơn khi hover */
-            transform: scale(1.1);
-        }
-
-        .btn-close-custom i {
-            color: white;
-            font-size: 16px;
-        }
-
-        .chat-button {
-            background: linear-gradient(45deg, #0084FF, #00C6FF);
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            font-size: 16px;
-            border-radius: 25px;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            cursor: pointer;
-            transition: 0.3s;
-        }
-
-        .chat-button:hover {
-            background: linear-gradient(45deg, #0078FF, #00B8FF);
-        }
-
-        .chat-button i {
-            font-size: 20px;
-        }
-
-    </style>
+    <link rel="stylesheet" th:href="@{/css/offer.css}">
 </head>
 <body>
+<div class="navbar">
+    <div class="logo">DEV IMS</div>
+    <div class="menu-icon" onclick="toggleSidebar()">
+        <i class="fa-solid fa-bars"></i>
+    </div>
+</div>
 <div id="notification" class="custom-popup">
     <div class="popup-content">
         <i class="fa-solid fa-circle-check text-success fa-2x"></i>
@@ -249,16 +28,18 @@
 <div class="sidebar" th:replace="~{component/left-sidebar::leftSidebar}"></div>
 
 <!-- Nội dung -->
-<div class="content" style="padding-top: 12px;">
+<div class="content" style="padding-top: 12px; padding-left: 50px">
     <div class="d-flex justify-content-between align-items-center mb-0">
         <div class="container py-2 flex-grow-1" style="flex-basis: 68%;">
             <h3 class="page-title fw-bold text-dark">
-                <i class="fa-solid fa-clipboard-list text-primary"></i> Offer List
+                <i class="fa-solid fa-clipboard-list text-primary"></i>
+                <span th:text="${offer_list}"></span>
             </h3>
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb bg-white shadow-sm p-2 rounded">
                     <li class="breadcrumb-item">
-                        <a th:href="@{/offer/managerOffer/{rid}(rid=${rid})}" class="text-decoration-none text-primary fw-bold">Offer List</a>
+                        <a th:href="@{/offer/managerOffer/{rid}(rid=${T(com.ims_team4.controller.utils.UrlIdEncoder).encodeId(session.account.userID)})}"
+                           class="text-decoration-none text-primary fw-bold" th:text="${offer_list}"></a>
                     </li>
                 </ol>
             </nav>
@@ -269,29 +50,35 @@
     <!-- Thanh tìm kiếm và bộ lọc -->
     <form th:action="@{/offer/search}" method="get">
         <div class="filter-bar mb-3">
-            <input type="hidden" name="rid" th:value="${rid}"/>
+            <input type="hidden" name="rid" th:value="${T(com.ims_team4.controller.utils.UrlIdEncoder).encodeId(session.account.userID)}"/>
             <div class="search input-group">
                 <span class="input-group-text"><i class="fa-solid fa-search"></i></span>
-                <input type="text" name="text" class="form-control" placeholder="Search">
+                <input type="text" name="text" class="form-control" th:placeholder="${search}">
             </div>
-            <select class="form-select" name="dep">
-                <option value="0">Department</option>
-                <option th:each="department : ${listD}" th:value="${department.getId()}"
-                        th:text="${department.getName()}"></option>
-            </select>
-            <select class="form-select status" name="status">
-                <option value="0">Status</option>
-                <option th:each="statusOffer : ${listS}" th:value="${statusOffer.getId()}"
-                        th:text="${statusOffer.getStatusName()}"></option>
-            </select>
-            <button type="submit" class="btn btn-secondary">Search</button>
-            <a th:href="@{/chat(mid=${session.account.userID}, rid=${session.rid}, role=${session.account.role})}"
-               class="chat-button fw-bold text-decoration-none">
-                <i class="fa-brands fa-facebook-messenger"></i> Chat
-            </a>
-            <button type="button" class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#exportModal">
-                Export
-            </button>
+            <div class="select-container d-flex " style="width: 45%">
+                    <select class="form-select me-2" name="dep">
+                        <option value="0" th:text="${departmentTitle}"></option>
+                        <option th:each="department : ${listD}" th:value="${department.getId()}"
+                                th:text="${department.getName()}"></option>
+                    </select>
+                    <select class="form-select status" name="status">
+                        <option value="0" th:text="${status}"></option>
+                        <option th:each="statusOffer : ${listS}" th:value="${statusOffer.getId()}"
+                                th:text="${statusOffer.getStatusName()}"></option>
+                    </select>
+            </div>
+            <div class="button-group d-flex align-items-center ms-auto">
+                <button type="submit" class="btn btn-secondary me-2" th:text="${search}"></button>
+                <th:block th:if="${session.account.getRole().name().equals('ROLE_MANAGER')}">
+                    <a th:href="@{/chat(mid=${T(com.ims_team4.controller.utils.UrlIdEncoder).encodeId(session.account.getUserID())}, rid=${T(com.ims_team4.controller.utils.UrlIdEncoder).encodeId(session.rid)}, role=${session.account.role})}"
+                       class="chat-button fw-bold text-decoration-none me-2">
+                        <i class="fa-brands fa-facebook-messenger"></i>
+                        <span th:text="${chat_title}"></span>
+                    </a>
+                </th:block>
+                <button type="button" class="btn btn-outline-secondary" data-bs-toggle="modal"
+                        data-bs-target="#exportModal" th:text="${exportBtn}"></button>
+            </div>
         </div>
     </form>
 
@@ -299,24 +86,26 @@
         <div class="modal-dialog">
             <form th:action="@{/offer/export}" class="modal-content rounded-3 shadow-lg p-3">
                 <div class="modal-header bg-primary-subtle text-dark position-relative">
-                    <h5 class="modal-title" id="exportModalLabel">Export Offer</h5>
-                    <button type="button" class="btn btn-danger btn-close position-absolute top-0 end-0 m-2 p-2" data-bs-dismiss="modal" aria-label="Close"></button>                </div>
+                    <h5 class="modal-title" id="exportModalLabel" th:text="${export_offer_btn}"></h5>
+                    <button type="button" class="btn btn-danger btn-close position-absolute top-0 end-0 m-2 p-2"
+                            data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
                 <div class="modal-body">
                     <input type="hidden" name="rid" th:value="${rid}">
 
                     <div class="mb-3">
-                        <label for="from" class="form-label fw-bold">From:</label>
+                        <label for="from" class="form-label fw-bold" th:text="${from_label} + ':'"></label>
                         <input type="date" id="from" name="from" class="form-control" required>
                     </div>
 
                     <div class="mb-3">
-                        <label for="to" class="form-label fw-bold">To:</label>
+                        <label for="to" class="form-label fw-bold" th:text="${to_label} + ':'"></label>
                         <input type="date" id="to" name="to" class="form-control" required>
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="submit" class="btn btn-primary">Submit</button>
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary" th:text="${submitBtn}"></button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" th:text="${cancelBtn}"></button>
                 </div>
             </form>
         </div>
@@ -327,13 +116,13 @@
         <table class="table table-bordered table-hover">
             <thead>
             <tr>
-                <th>Candidate Name</th>
-                <th>Email</th>
-                <th>Approver</th>
-                <th>Department</th>
-                <th>Notes</th>
-                <th>Status</th>
-                <th>Action</th>
+                <th th:text="${candidate_name}"></th>
+                <th th:text="${email}"></th>
+                <th th:text="${approver_title}"></th>
+                <th th:text="${departmentTitle}"></th>
+                <th th:text="${note}"></th>
+                <th th:text="${status}"></th>
+                <th th:text="${action}"></th>
             </tr>
             </thead>
             <tbody>
@@ -346,17 +135,21 @@
                             <td th:each="emp : ${listU}" th:if="${emp.getId() == offer.getEmployeeId()}"
                                 th:text="${emp.getFullname()}"></td>
                             <td th:text="${offer.getDepartmentName()}"></td>
-                            <td th:text="${offer.note} ?: 'N/A'"></td>
+                            <td th:text="${offer.note} ?: 'N/A'"
+                                style="max-width: 150px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"
+                                th:title="${offer.note}"></td>
                             <td>
                                 <span th:text="${offer.getStatusOfferName()}"></span>
                             </td>
                             <td>
-                                <a th:href="@{/offer/offerdetail/{id}(id=${offer.getId()}, rid=${offer.getEmployeeId()})}" class="me-2"><i
+                                <a th:href="@{/offer/offerdetail/{id}(id=${T(com.ims_team4.controller.utils.UrlIdEncoder).encodeId(offer.getId())}, rid=${T(com.ims_team4.controller.utils.UrlIdEncoder).encodeId(offer.getEmployeeId())})}"
+                                   class="me-2"><i
                                         class="fa-solid fa-eye"></i></a>
-                                <a th:data-status="${offer.getStatusOfferId()}"
-                                   th:data-id="${offer.getId()}"
+                                <a th:data-status="${offer.statusOfferId}"
+                                   th:data-id="${offer.id}"
                                    th:data-eid="${offer.getEmployeeId()}"
-                                   onclick="checkStatusToEdit(this.getAttribute('data-id'), this.getAttribute('data-status'), this.getAttribute('data-eid'))"
+                                   th:data-edit-url="@{/offer/editoffer/{id}(id=${T(com.ims_team4.controller.utils.UrlIdEncoder).encodeId(offer.id)}, rid=${T(com.ims_team4.controller.utils.UrlIdEncoder).encodeId(offer.getEmployeeId())})}"
+                                   onclick="checkStatusToEdit(this)"
                                    href="#">
                                     <i class="fa-solid fa-edit"></i>
                                 </a>
@@ -370,35 +163,51 @@
         <nav aria-label="Page navigation">
             <ul class="pagination justify-content-center">
                 <li class="page-item" th:classappend="${currentPage == 1} ? 'disabled'">
-                    <a class="page-link" th:href="@{/offer/managerOffer/{id}(id=${id}, page=${currentPage - 1})}" aria-label="Previous">
+                    <a class="page-link" th:href="@{/offer/managerOffer/{encodedId}(encodedId=${T(com.ims_team4.controller.utils.UrlIdEncoder).encodeId(session.account.userID)}, page=${currentPage - 1})}"
+                       aria-label="Previous">
                         <span aria-hidden="true">&laquo;</span>
                     </a>
                 </li>
-                <li class="page-item" th:each="page : ${#numbers.sequence(1, totalPages)}" th:classappend="${page == currentPage} ? 'active'">
-                    <a class="page-link" th:href="@{/offer/managerOffer/{id}(id=${id}, page=${page})}" th:text="${page}"></a>
+                <li class="page-item" th:each="page : ${#numbers.sequence(1, totalPages)}"
+                    th:classappend="${page == currentPage} ? 'active'">
+                    <a class="page-link" th:href="@{/offer/managerOffer/{encodedId}(encodedId=${T(com.ims_team4.controller.utils.UrlIdEncoder).encodeId(session.account.userID)}, page=${page})}"
+                       th:text="${page}"></a>
                 </li>
                 <li class="page-item" th:classappend="${currentPage == totalPages} ? 'disabled'">
-                    <a class="page-link" th:href="@{/offer/managerOffer/{id}(id=${id}, page=${currentPage + 1})}" aria-label="Next">
+                    <a class="page-link" th:href="@{/offer/managerOffer/{encodedId}(encodedId=${T(com.ims_team4.controller.utils.UrlIdEncoder).encodeId(session.account.userID)}, page=${currentPage + 1})}"
+                       aria-label="Next">
                         <span aria-hidden="true">&raquo;</span>
                     </a>
                 </li>
             </ul>
         </nav>
+        <div id="chatbot-icon" onclick="toggleChatBot()">
+            <img src="https://cdn-icons-png.flaticon.com/512/4712/4712035.png" alt="Chatbot">
+        </div>
 
+        <!-- Cửa sổ chat -->
+        <div id="chat-window" style="position: relative;">
+            <iframe
+                    src="https://www.coze.com/store/agent/7488646243938762753?bot_id=true"
+                    allow="microphone"
+                    id="coze-bot">
+            </iframe>
+        </div>
     </div>
 </div>
 </body>
 
 <script>
-    document.addEventListener("DOMContentLoaded", function() {
-        var msg = `[[${msg}]]`;  // Thymeleaf lấy msg từ session
+    document.addEventListener("DOMContentLoaded", function () {
+        let msg = `[[${msg}]]`;
         if (msg && msg !== "null") {
             showNotification(msg);
         }
     });
+
     function showNotification(message) {
-        var notification = document.getElementById("notification");
-        var notificationText = document.getElementById("notification-text");
+        let notification = document.getElementById("notification");
+        let notificationText = document.getElementById("notification-text");
         notificationText.innerText = message;
         notification.style.display = "block";
 
@@ -409,21 +218,10 @@
     }
 
     function closeNotification() {
-        var notification = document.getElementById("notification");
+        let notification = document.getElementById("notification");
         notification.style.display = "none";
     }
-
-    function checkStatusToEdit(offerId, status, eid) {
-        if (status == "1") {
-            window.location.href = `/offer/editoffer/${offerId}?rid=${eid}`;
-        } else {
-            alert("Editing is not allowed because the status is invalid.");
-        }
-    }
-
-    function logout() {
-        window.location.href = "/logout";
-    }
 </script>
+<script src="/js/recruiter-offer.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </html>

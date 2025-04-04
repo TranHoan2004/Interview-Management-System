@@ -4,6 +4,7 @@ import com.ims_team4.dto.UserDTO;
 import com.ims_team4.model.Users;
 import com.ims_team4.repository.UserRepository;
 import com.ims_team4.service.UserService;
+import jakarta.transaction.Transactional;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;
 
@@ -80,19 +81,11 @@ public class UserServiceImpl implements UserService {
         return user != null ? Optional.of(convertToDTO(user)) : Optional.empty();
     }
 
+
     @NotNull
     private Users convertToEntity(@NotNull UserDTO userDTO) {
-        Users user;
-
-        if (userDTO.getId() != null) {
-            // Lấy entity từ database nếu có ID
-            user = userRepository.findById(userDTO.getId())
-                    .orElseThrow(() -> new RuntimeException("User not found"));
-        } else {
-            // Tạo mới nếu không có ID
-            user = new Users();
-        }
-
+        Users user = new Users();
+        user.setId(userDTO.getId());
         user.setDob(userDTO.getDob());
         user.setGender(userDTO.getGender());
         user.setEmail(userDTO.getEmail());
@@ -102,9 +95,14 @@ public class UserServiceImpl implements UserService {
         user.setPhone(userDTO.getPhone());
         user.setStatus(userDTO.isStatus());
         user.setNote(userDTO.getNote());
+        //user.setRole(userDTO.getRole());
+
+        // Nếu có thông tin notification, xử lý thêm ở đây
+        // Ví dụ: user.setNotification(someNotification);
 
         return user;
     }
+
 
     private UserDTO convertToDTO(@NotNull Users user) {
         Logger log = Logger.getLogger(this.getClass().getName());
@@ -124,4 +122,57 @@ public class UserServiceImpl implements UserService {
                 .role(user.getEmployee() == null ? null : user.getEmployee().getRole())
                 .build();
     }
+
+    @Override
+    @Transactional
+    public Users createUser(UserDTO userDTO) {
+        // ✅ Kiểm tra email đã tồn tại chưa
+        Optional<Users> existingUser = userRepository.findByEmail(userDTO.getEmail());
+        if (existingUser.isPresent()) {
+            throw new RuntimeException("❌ Email already exists: " + userDTO.getEmail());
+        }
+
+        // ✅ Tạo User mới
+        Users user = new Users();
+        user.setFullname(userDTO.getFullname());
+        user.setEmail(userDTO.getEmail());
+        user.setPhone(userDTO.getPhone());
+        user.setDob(userDTO.getDob());
+        user.setAddress(userDTO.getAddress());
+        user.setGender(userDTO.getGender());
+        user.setStatus(true);
+        user.setNote(userDTO.getNote());
+
+        // ✅ Lưu vào DB
+//        System.out.println("✅ User created: " + user.getId());
+        return userRepository.save(user);
+    }
+
+    @Override
+    public boolean existsByEmail(String email) {
+        return userRepository.existsByEmail(email);
+    }
+
+    @Override
+    public boolean existsByPhone(String phone) {
+        return userRepository.existsByPhone(phone);
+    }
+
+
+    @Override
+    @Transactional
+    public void deleteUserById(Long userId) {
+//        System.out.println("🔍 Checking user before delete: " + userId);
+        if (userRepository.checkExistsById(userId)) {
+            userRepository.removeById(userId);
+//            System.out.println("🗑️ User deleted!");
+        }
+//        else {
+//            System.out.println("⚠️ User not found, skipping deletion.");
+//        }
+    }
+
+
+
+
 }

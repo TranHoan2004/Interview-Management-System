@@ -24,4 +24,8 @@ public class StatusOffer {
 
     @OneToMany(mappedBy = "statusOffer", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Set<Offer> offers;
+
+    public StatusOffer(String statusName) {
+        this.statusName = statusName;
+    }
 }

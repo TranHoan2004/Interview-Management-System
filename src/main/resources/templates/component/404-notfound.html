@@ -1,11 +1,17 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>404 page</title>
+    <title th:text="${error_404_title}"></title>
     <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css'>
     <link rel='stylesheet' href='https://fonts.googleapis.com/css?family=Arvo'>
     <style>
+        .four_zero_four_bg {
+            background-image: url(/images/dribbble_1.gif);
+            height: 400px;
+            background-position: center;
+        }
+
         .page_404 {
             padding: 40px 0;
             background: #fff;
@@ -14,12 +20,6 @@
 
         .page_404 img {
             width: 100%;
-        }
-
-        .four_zero_four_bg {
-            background-image: url(/images/dribbble_1.gif);
-            height: 400px;
-            background-position: center;
         }
 
         .four_zero_four_bg h1 {
@@ -50,14 +50,12 @@
             <div class="col-sm-12 ">
                 <div class="col-sm-10 col-sm-offset-1 text-center">
                     <div class="four_zero_four_bg">
-                        <h1 class="text-center ">404</h1>
+                        <h1 class="text-center" th:text="${error_404_h1}"></h1>
                     </div>
                     <div class="contant_box_404">
-                        <h3 class="h2">
-                            Look like you're lost
-                        </h3>
-                        <p>the page you are looking for not avaible!</p>
-                        <a href="/dashboard" class="link_404">Go to Home</a>
+                        <h3 class="h2" th:text="${error_404_h2}"></h3>
+                        <p th:text="${error_404_p}"></p>
+                        <a th:href="@{/dashboard}" class="link_404" th:text="${error_404_a}"></a>
                     </div>
                 </div>
             </div>

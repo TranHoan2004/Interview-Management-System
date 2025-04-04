@@ -8,6 +8,7 @@ import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -36,4 +37,18 @@ public class PositionServiceImpl implements PositionService {
                 .name(position.getName())
                 .build();
     }
+
+    @Override
+    public Position getPositionById(Long id) {
+        return positionRepository.getPosById(id);
+    }
+
+    @Override
+    public List<Position> getAllPositions() {
+        return positionRepository.getAllPosition();  // ✅ Dùng lại phương thức có sẵn
+
+    }
+
+
+
 }

@@ -10,4 +10,6 @@ public interface SkillService {
     List<SkillDTO> getAllSkill();
 
     Set<Skill> getSkillsByName(List<String> skillsName);
+
+    Set<Skill> getSkillsByIds(List<Long> skillIds);
 }

@@ -30,4 +30,7 @@ public class InterviewDTO {
     private Long jobId;
     private Boolean notificationSent;
     private Set<Long> employeeIds;
+    private String candidateName;
+    private String jobTitle;
+    private String interviewerNames;
 }

@@ -1,109 +1,124 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Job</title>
+    <title th:text="${jobTitle}"></title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-    <link rel="stylesheet" href="/css/jobs.css">
+    <link rel="stylesheet" th:href="@{/css/jobs.css}">
     <!-- Tom Select CSS -->
     <link rel="stylesheet"
-          href="https://cdnjs.cloudflare.com/ajax/libs/tom-select/2.2.2/css/tom-select.bootstrap5.min.css">
-
+        href="https://cdnjs.cloudflare.com/ajax/libs/tom-select/2.2.2/css/tom-select.bootstrap5.min.css">
 </head>
+
 <body>
-<div>
-    <!-- Left sidebar -->
-    <div class="sidebar" th:replace="~{component/left-sidebar::leftSidebar}"></div>
+    <div class="d-flex">
+        <!-- Left sidebar -->
+        <div class="sidebar" th:replace="~{component/left-sidebar::leftSidebar}"></div>
 
-    <div class="content">
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <h2 class="page-title">Job</h2>
-            <div class="d-flex align-items-center gap-3">
-                <div class="d-flex flex-column align-items-end me-3">
-                    <span class="me-3 fw-bold">PhongNN</span>
-                    <span class="me-3">HR Department</span>
+        <!-- Main Content -->
+        <div class="content flex-grow-1">
+            <div class="d-flex justify-content-between align-items-center mb-0">
+                <div class="container py-2 flex-grow-1" style="flex-basis: 68%;">
+                    <h3 class="page-title fw-bold text-dark">
+                        <i class="fa fa-briefcase text-primary"></i>
+                        <span th:text="${jobTitle}"></span>
+                    </h3>
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb bg-white shadow-sm p-2 rounded">
+                            <li class="breadcrumb-item">
+                                <a th:href="@{/jobs/manager/list/{id}(id=${session.account.getUserID()})}"
+                                    class="text-decoration-none text-primary fw-bold" th:text="${job_list}"></a>
+                            </li>
+
+                            <li class="breadcrumb-item active text-secondary" aria-current="page"
+                                th:text="${job_create_title}"></li>
+                        </ol>
+                    </nav>
                 </div>
-                <a href="#" class="ms-3 text-danger text-decoration-none"><i class="fa-solid fa-sign-out-alt"></i>
-                    Logout</a>
+                <div th:replace="~{component/top-sidebar::topSidebar}"></div>
             </div>
-        </div>
 
-        <h2>Create Job</h2>
-        <div class="bg-info bg-opacity-10 p-4 rounded">
-            <!-- Form -->
-            <form th:action="@{/jobs/manager/create-job/{managerId}(managerId=${managerId})}" method="post" th:object="${jobDTO}">
-                <div class="row g-4">
-                    <div class="col-md-6">
-                        <label class="form-label">Job title <span class="text-danger">*</span></label>
-                        <input class="form-control" type="text" th:field="*{title}">
-                    </div>
+            <div class="bg-info bg-opacity-10 p-4 rounded">
+                <!-- Form -->
+                <form th:action="@{/jobs/manager/create-job/{managerId}(managerId=${managerId})}" th:method="post"
+                    th:object="${jobDTO}">
+                    <div class="row g-4">
+                        <div class="col-md-6">
+                            <label class="form-label" th:text="${job_title}"></label>
+                            <span class="text-danger">*</span>
+                            <input class="form-control" type="text" th:field="*{title}">
+                        </div>
 
-                    <div class="col-md-6">
-                        <label class="form-label">Skills <span class="text-danger">*</span></label>
-                        <select id="skills" class="form-control" multiple th:field="*{skillNames}">
-                            <option th:each="skill : ${skills}" th:value="${skill.id}" th:text="${skill.name}"></option>
-                        </select>
-                    </div>
+                        <div class="col-md-6">
+                            <label class="form-label" th:text="${skillTitle}"></label>
+                            <span class="text-danger">*</span>
+                            <select id="skills" class="form-control" multiple th:field="*{skillNames}">
+                                <option th:each="skill : ${skills}" th:value="${skill.id}" th:text="${skill.name}">
+                                </option>
+                            </select>
+                        </div>
 
-                    <div class="col-md-6">
-                        <label class="form-label">Start Date <span class="text-danger">*</span></label>
-                        <input class="form-control" type="date" th:field="*{startDate}">
-                    </div>
+                        <div class="col-md-6">
+                            <label class="form-label" th:text="${start_date_title}"></label>
+                            <span class="text-danger">*</span>
+                            <input class="form-control" type="date" th:field="*{startDate}">
+                        </div>
 
-                    <div class="col-md-6">
-                        <label class="form-label">End Date <span class="text-danger">*</span></label>
-                        <input class="form-control" type="date" th:field="*{endDate}">
-                    </div>
+                        <div class="col-md-6">
+                            <label class="form-label" th:text="${end_date_title}"></label>
+                            <span class="text-danger">*</span>
+                            <input class="form-control" type="date" th:field="*{endDate}">
+                        </div>
 
-                    <div class="col-md-6">
-                        <label class="form-label">Salary Range</label>
-                        <div class="d-flex gap-3">
-                            <input class="form-control" type="number" th:field="*{salaryFrom}">
-                            <input class="form-control" type="number" th:field="*{salaryTo}">
+                        <div class="col-md-6">
+                            <label class="form-label" th:text="${salary_range_title}"></label>
+                            <div class="d-flex gap-3">
+                                <input class="form-control" type="number" th:field="*{salaryFrom}">
+                                <input class="form-control" type="number" th:field="*{salaryTo}">
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label" th:text="${benefits_label}"></label>
+                            <select id="benefits" class="form-control" multiple th:field="*{benefitNames}">
+                                <option th:each="benefit : ${benefits}" th:value="${benefit.id}"
+                                    th:text="${benefit.name}">
+                                </option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label" th:text="${working_address_title}"></label>
+                            <input class="form-control" type="text" th:field="*{location}">
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label" th:text="${level_title}"></label>
+                            <select id="levels" class="form-control" multiple th:field="*{levelNames}">
+                                <option th:each="level : ${levels}" th:value="${level.id}" th:text="${level.name}">
+                                </option>
+                            </select>
+                        </div>
+
+                        <div class="col-12">
+                            <label class="form-label" th:text="${description_title}"></label>
+                            <textarea class="form-control" rows="4" th:field="*{description}"></textarea>
                         </div>
                     </div>
 
-                    <div class="col-md-6">
-                        <label class="form-label">Benefits</label>
-                        <select id="benefits" class="form-control" multiple th:field="*{benefitNames}">
-                            <option th:each="benefit : ${benefits}" th:value="${benefit.id}"
-                                    th:text="${benefit.name}">
-                            </option>
-                        </select>
+                    <div class="d-flex justify-content-end gap-3 mt-5">
+                        <button class="btn btn-secondary" type="submit" th:text="${submitBtn}"></button>
+                        <a th:href="@{/jobs/manager/list/{id}(id=${session.account.getUserID()})}"
+                            class="btn btn-secondary" type="button" th:text="${cancelBtn}"></a>
                     </div>
-
-                    <div class="col-md-6">
-                        <label class="form-label">Working address</label>
-                        <input class="form-control" type="text" th:field="*{location}">
-                    </div>
-
-                    <div class="col-md-6">
-                        <label class="form-label">Level</label>
-                        <select id="levels" class="form-control" multiple th:field="*{levelNames}">
-                            <option th:each="level : ${levels}" th:value="${level.id}" th:text="${level.name}"></option>
-                        </select>
-                    </div>
-
-                    <div class="col-12">
-                        <label class="form-label">Description</label>
-                        <textarea class="form-control" rows="4" th:field="*{description}"></textarea>
-                    </div>
-                </div>
-
-                <div class="d-flex justify-content-end gap-3 mt-5">
-                    <button class="btn btn-secondary" type="submit">Submit</button>
-                    <a th:href="@{/jobs/manager/list/{id}(id=${session.account.getUserID()})}"
-                       class="btn btn-secondary"
-                       type="button">Cancel</a>
-                </div>
-            </form>
+                </form>
+            </div>
         </div>
-
     </div>
-</div>
 </body>
 <!-- Tom Select JS -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/tom-select/2.2.2/js/tom-select.complete.min.js"></script>

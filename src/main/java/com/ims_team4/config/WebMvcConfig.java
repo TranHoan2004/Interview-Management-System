@@ -27,6 +27,7 @@ public class WebMvcConfig implements WebMvcConfigurer {
 
     @Bean
     public LocaleResolver localeResolver() {
+        logger.info("localeResolver");
         return new SessionLocaleResolver();
     }
 }

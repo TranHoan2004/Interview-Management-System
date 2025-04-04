@@ -1,6 +1,5 @@
 package com.ims_team4.model;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
@@ -27,4 +26,13 @@ public class Skill {
     @ManyToMany(mappedBy = "skills")
     @JsonIgnore
     private Set<Job> jobs;
+
+    public Skill(String name) {
+        this.name = name;
+    }
+
+    @Override
+    public String toString() {
+        return "name='" + name + "'";
+    }
 }

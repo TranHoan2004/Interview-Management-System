@@ -1,6 +1,8 @@
 package com.ims_team4.controller;
 
+import com.ims_team4.controller.utils.UrlIdEncoder;
 import com.ims_team4.dto.*;
+import com.ims_team4.model.utils.CandidateStatus;
 import com.ims_team4.model.utils.HrRole;
 import com.ims_team4.service.*;
 import com.ims_team4.utils.email.EmailService;
@@ -44,7 +46,11 @@ public class OfferController {
     private final ChatService chatService;
     private final Logger logger = Logger.getLogger(OfferController.class.getName());
 
-    public OfferController(CandidateService candidateService, UserService userService, DepartmentService departmentService, StatusOfferService statusOfferService, PositionService positionService, EmployeeService employeeService, InterviewService interviewService, ContractTypeService contractTypeService, LevelService levelService, OfferService offerService, TemplateEngine templateEngine, ChatService chatService, ChatDetailService chatDetailService) {
+    public OfferController(CandidateService candidateService, UserService userService,
+            DepartmentService departmentService, StatusOfferService statusOfferService, PositionService positionService,
+            EmployeeService employeeService, InterviewService interviewService, ContractTypeService contractTypeService,
+            LevelService levelService, OfferService offerService, TemplateEngine templateEngine,
+            ChatService chatService, ChatDetailService chatDetailService) {
         this.candidateService = candidateService;
         this.userService = userService;
         this.departmentService = departmentService;
@@ -60,20 +66,24 @@ public class OfferController {
         this.chatDetailService = chatDetailService;
     }
 
-    @GetMapping("/offer/{id}")
+    @GetMapping("/offer/{encodedId}")
     public String index(@RequestParam(name = "page", defaultValue = "1") int page,
-                        @RequestParam(name = "size", defaultValue = "5") int size, @PathVariable("id") String idStr, Model model, HttpSession session) {
-        int id = Integer.parseInt(idStr);
+            @RequestParam(name = "size", defaultValue = "5") int size, @PathVariable("encodedId") String encodedId,
+            Model model, HttpSession session) {
+        int id = UrlIdEncoder.decodeId(encodedId);
         Page<OfferDTO> offerPage = offerService.findPaginatedByEmployee(page, size, id);
         model.addAttribute("listO", offerPage.getContent());
         model.addAttribute("currentPage", page);
         model.addAttribute("totalPages", offerPage.getTotalPages());
+        List<ChatDTO> listC1 = chatService.getAllChatOfRecruiter(id);
+        List<ChatDetailDTO> listLast = chatDetailService.getLastestChatDetailOfRecruiterAndManager();
         List<CandidateDTO> listC = candidateService.getAllCandidate();
         List<UserDTO> listU = userService.getAllUsers();
         List<DepartmentDTO> listD = departmentService.getAllDepartments();
         List<StatusOfferDTO> listS = statusOfferService.getStatusOffer();
         List<InterviewDTO> listI = interviewService.getAllInterviews();
         List<ChatDetailDTO> listL = chatDetailService.getFirstChatDetailOfRecruiter(id);
+        List<EmployeeDTO> listE = employeeService.getAllEmployee();
         int mid = 0;
         ChatDetailDTO cdDTO = new ChatDetailDTO();
         for (ChatDetailDTO cd : listL) {
@@ -87,18 +97,19 @@ public class OfferController {
         model.addAttribute("listD", listD);
         model.addAttribute("listS", listS);
         model.addAttribute("listI", listI);
+        model.addAttribute("listC1", listC1);
+        model.addAttribute("listLast", listLast);
+        model.addAttribute("listE", listE);
         model.addAttribute("rid", id);
-//        if (model.containsAttribute("msg")) {
-//            model.addAttribute("msg", model.asMap().get("msg"));
-//        }
         return "/recruiter-features/offer";
     }
 
-
     @GetMapping("/search")
     public String search(@RequestParam(name = "page", defaultValue = "1") int page,
-                         @RequestParam(name = "size", defaultValue = "5") int size, @RequestParam("rid") String ridStr, @RequestParam("text") String text, @RequestParam("dep") String dep, @RequestParam("status") String status, Model model) {
-        int rid = Integer.parseInt(ridStr);
+            @RequestParam(name = "size", defaultValue = "5") int size, @RequestParam("rid") String ridStr,
+            @RequestParam("text") String text, @RequestParam("dep") String dep, @RequestParam("status") String status,
+            Model model) {
+        int rid = UrlIdEncoder.decodeId(ridStr);
         int depid = Integer.parseInt(dep);
         int statusid = Integer.parseInt(status);
         Page<OfferDTO> listO1 = offerService.getAllOfferByNameMailDepStatus(text, depid, statusid, rid, page, size);
@@ -121,8 +132,9 @@ public class OfferController {
     }
 
     @GetMapping("/offerdetail/{id}")
-    public String offerDetail(@RequestParam("rid") int rid, @PathVariable Long id, Model model) {
-        OfferDTO offer = offerService.getOfferById(id);
+    public String offerDetail(@RequestParam("rid") String ridHash, @PathVariable("id") String encodedId, Model model) {
+        OfferDTO offer = offerService.getOfferById(UrlIdEncoder.decodeId(encodedId));
+        int rid = UrlIdEncoder.decodeId(ridHash);
         List<UserDTO> listU = userService.getAllUsers();
         List<PositionDTO> listP = positionService.getAllPosition();
         List<EmployeeDTO> listE = employeeService.getAllEmployee();
@@ -142,7 +154,9 @@ public class OfferController {
     }
 
     @GetMapping("/editoffer/{id}")
-    public String editOffer(@PathVariable Long id, @RequestParam("rid") int rid, Model model) {
+    public String editOffer(@PathVariable("id") String encodedId, @RequestParam("rid") String ridHash, Model model) {
+        int id = UrlIdEncoder.decodeId(encodedId);
+        int rid = UrlIdEncoder.decodeId(ridHash);
         List<CandidateDTO> listC = candidateService.getAllCandidate();
         model.addAttribute("listC", listC);
         OfferDTO offer = offerService.getOfferById(id);
@@ -173,23 +187,23 @@ public class OfferController {
 
     @GetMapping("/edit")
     public String editOffer(@RequestParam("candidate") String candidateStr,
-                            @RequestParam("position") String positionStr,
-                            @RequestParam("approver") String approverStr,
-                            @RequestParam("interviewId") String interviewIdStr,
-                            @RequestParam("from") String fromStr,
-                            @RequestParam("to") String toStr,
-                            @RequestParam("interviewNote") String interviewNote,
-                            @RequestParam("contractType") String contractTypeStr,
-                            @RequestParam("level") String levelStr,
-                            @RequestParam("department") String departmentStr,
-                            @RequestParam("recruiterOwner") String recruiterOwnerStr,
-                            @RequestParam("duedate") String dueDateStr,
-                            @RequestParam("salary") String salaryStr,
-                            @RequestParam("note") String note,
-                            @RequestParam("offerid") String offeridStr,
-                            @RequestParam("updateBy") String updateByStr,
-                            @RequestParam("rid") int rid,
-                            RedirectAttributes redirectAttributes) {
+            @RequestParam("position") String positionStr,
+            @RequestParam("approver") String approverStr,
+            @RequestParam("interviewId") String interviewIdStr,
+            @RequestParam("from") String fromStr,
+            @RequestParam("to") String toStr,
+            @RequestParam("interviewNote") String interviewNote,
+            @RequestParam("contractType") String contractTypeStr,
+            @RequestParam("level") String levelStr,
+            @RequestParam("department") String departmentStr,
+            @RequestParam("recruiterOwner") String recruiterOwnerStr,
+            @RequestParam("duedate") String dueDateStr,
+            @RequestParam("salary") String salaryStr,
+            @RequestParam("note") String note,
+            @RequestParam("offerid") String offeridStr,
+            @RequestParam("updateBy") String updateByStr,
+            @RequestParam("rid") int rid,
+            RedirectAttributes redirectAttributes) {
         try {
             if (offeridStr == null || offeridStr.isEmpty()) {
                 throw new IllegalArgumentException("Offer ID cannot be null or empty");
@@ -214,23 +228,24 @@ public class OfferController {
                     interviewNote, interviewId, note, recruiterOwner, candidateId,
                     contractTypeId, department, approverid, level, positionId, updateBy);
 
-            redirectAttributes.addFlashAttribute("msg", success ? "Change has been successfully updated" : "Failed to update change");
+            redirectAttributes.addFlashAttribute("msg",
+                    success ? "Change has been successfully updated" : "Failed to update change");
         } catch (Exception e) {
             logger.log(Level.ALL, e.getMessage(), e);
         }
-//        return "redirect:/offer/offerdetail/" + Integer.parseInt(offeridStr) + "?rid=" + rid;
         String role = employeeService.getEmployeeById(rid).getRole().name();
         if (role.equals(HrRole.ROLE_MANAGER.name())) {
-            return "redirect:/offer/managerOffer/" + rid;
+            return "redirect:/offer/managerOffer/" + UrlIdEncoder.encodeId(rid);
         } else if (role.equals(HrRole.ROLE_RECRUITER.name())) {
-            return "redirect:/offer/offer/" + rid;
+            return "redirect:/offer/offer/" + UrlIdEncoder.encodeId(rid);
         } else {
-            return "redirect:/offer/adminOffer/" + rid;
+            return "redirect:/offer/adminOffer/" + UrlIdEncoder.encodeId(rid);
         }
     }
 
     @GetMapping("/createoffer/{rid}")
-    public String createOffer(@PathVariable String rid, Model model) {
+    public String createOffer(@PathVariable("rid") String ridHash, Model model) {
+        int rid = UrlIdEncoder.decodeId(ridHash);
         List<CandidateDTO> listC = candidateService.getAllCandidateNoBan();
         model.addAttribute("listC", listC);
         List<UserDTO> listU = userService.getAllUsers();
@@ -251,26 +266,29 @@ public class OfferController {
         model.addAttribute("listR", listR);
         List<InterviewDTO> listI = interviewService.getAllInterviews();
         model.addAttribute("listI", listI);
-        model.addAttribute("rid", Integer.parseInt(rid));
+        model.addAttribute("rid", rid);
+        HrRole roleAdmin = HrRole.valueOf("ROLE_ADMINISTRATOR");
+        List<EmployeeDTO> admin = employeeService.getAllEmployeeByRole(roleAdmin);
+        model.addAttribute("admin", admin);
         return "/recruiter-features/createOffer";
     }
 
     @GetMapping("/create")
     public String createOffer(@RequestParam("rid") String rid, @RequestParam("candidate") String candidateStr,
-                              @RequestParam("position") String positionStr,
-                              @RequestParam("approver") String approverStr,
-                              @RequestParam("interviewId") String interviewIdStr,
-                              @RequestParam("from") String fromStr,
-                              @RequestParam("to") String toStr,
-                              @RequestParam("interviewNote") String interviewNote,
-                              @RequestParam("contractType") String contractTypeStr,
-                              @RequestParam("level") String levelStr,
-                              @RequestParam("department") String departmentStr,
-                              @RequestParam("recruiterOwner") String recruiterOwnerStr,
-                              @RequestParam("duedate") String dueDateStr,
-                              @RequestParam("salary") String salaryStr,
-                              @RequestParam("note") String note,
-                              RedirectAttributes redirectAttributes) {
+            @RequestParam("position") String positionStr,
+            @RequestParam("approver") String approverStr,
+            @RequestParam("interviewId") String interviewIdStr,
+            @RequestParam("from") String fromStr,
+            @RequestParam("to") String toStr,
+            @RequestParam("interviewNote") String interviewNote,
+            @RequestParam("contractType") String contractTypeStr,
+            @RequestParam("level") String levelStr,
+            @RequestParam("department") String departmentStr,
+            @RequestParam("recruiterOwner") String recruiterOwnerStr,
+            @RequestParam("duedate") String dueDateStr,
+            @RequestParam("salary") String salaryStr,
+            @RequestParam("note") String note,
+            RedirectAttributes redirectAttributes) {
         try {
             int interviewId = Integer.parseInt(interviewIdStr);
             int approverid = Integer.parseInt(approverStr);
@@ -290,12 +308,13 @@ public class OfferController {
                     interviewNote, interviewId, note, recruiterOwner, candidateId,
                     contractTypeId, department, approverid, level, positionId, updateBy);
 
-            redirectAttributes.addFlashAttribute("msg", success ? "Sucessfully created offer" : "Failed to created offer");
+            redirectAttributes.addFlashAttribute("msg",
+                    success ? "Sucessfully created offer" : "Failed to created offer");
         } catch (Exception e) {
             logger.log(Level.ALL, e.getMessage(), e);
         }
 
-        return "redirect:/offer/offer/" + Integer.parseInt(rid);
+        return "redirect:/offer/offer/" + UrlIdEncoder.encodeId(Integer.parseInt(rid));
     }
 
     @GetMapping("/popup")
@@ -304,11 +323,12 @@ public class OfferController {
     }
 
     @GetMapping("/canceloffer/{id}")
-    public String canceloffer(@PathVariable String id, @RequestParam("rid") String rid) {
+    public String canceloffer(@PathVariable("id") String id, @RequestParam("rid") String rid) {
         int oid = Integer.parseInt(id);
         int rid1 = Integer.parseInt(rid);
-        if (offerService.updateStatusOffer(oid, 7)) {
-            return "redirect:/offer/offerdetail/" + oid + "?rid=" + rid1;
+        CandidateStatus candidateStatus = CandidateStatus.valueOf("CANCELLED_OFFER");
+        if (offerService.updateStatusOffer(oid, 7, candidateStatus)) {
+            return "redirect:/offer/offerdetail/" + UrlIdEncoder.encodeId(oid) + "?rid=" + UrlIdEncoder.encodeId(rid1);
         }
         return "";
     }
@@ -317,36 +337,26 @@ public class OfferController {
     public String approveoffer(@PathVariable String id, @RequestParam("rid") String rid) {
         int oid = Integer.parseInt(id);
         int rid1 = Integer.parseInt(rid);
-        offerService.updateStatusOffer(oid, 2);
+        CandidateStatus candidateStatus = CandidateStatus.valueOf("APPROVED_OFFER");
+        offerService.updateStatusOffer(oid, 2, candidateStatus);
         String role = employeeService.getEmployeeById(Integer.parseInt(rid)).getRole().name();
-        return "redirect:/offer/offerdetail/" + oid + "?rid=" + rid1;
-//        if (role.equals("ROLE_MANAGER")) {
-//            return "redirect:/offer/offerdetail/" + oid + "?rid=" + rid1;
-//        } else {
-//            return "redirect:/offer/offerdetail/" + oid + "?rid=" + rid1;
-//        }
+        return "redirect:/offer/offerdetail/" + UrlIdEncoder.encodeId(oid) + "?rid=" + UrlIdEncoder.encodeId(rid1);
     }
 
     @GetMapping("/rejectoffer/{id}")
     public String rejectoffer(@PathVariable String id, @RequestParam("rid") String rid) {
         int oid = Integer.parseInt(id);
         int rid1 = Integer.parseInt(rid);
-        offerService.updateStatusOffer(oid, 3);
-        return "redirect:/offer/offerdetail/" + oid + "?rid=" + rid1;
-//        String role = employeeService.getEmployeeById(Integer.parseInt(rid)).getRole().name();
-//        if (role.equals("ROLE_MANAGER")) {
-//            return "redirect:/offer/managerOffer/" + rid1;
-//        } else {
-//            return "redirect:/offer/adminOffer/" + rid1;
-//        }
+        CandidateStatus candidateStatus = CandidateStatus.valueOf("REJECTED_OFFER");
+        offerService.updateStatusOffer(oid, 3, candidateStatus);
+        return "redirect:/offer/offerdetail/" + UrlIdEncoder.encodeId(oid) + "?rid=" + UrlIdEncoder.encodeId(rid1);
     }
 
     @GetMapping("/mark/{id}")
     public String mark(@PathVariable int id, @RequestParam("rid") int rid, @RequestParam("cid") int cid) {
-        // Cập nhật trạng thái offer
-        offerService.updateStatusOffer(id, 4);
+        CandidateStatus candidateStatus = CandidateStatus.valueOf("WAITING_FOR_RESPONSE");
+        offerService.updateStatusOffer(id, 4, candidateStatus);
 
-        // Lấy thông tin người dùng và vai trò
         EmployeeDTO e = employeeService.getEmployeeById(rid);
         if (e == null) {
         }
@@ -354,7 +364,7 @@ public class OfferController {
         UserDTO u = userService.getUserById(cid);
 
         // Lấy dữ liệu cần thiết để tạo Context
-        OfferDTO offer = offerService.getMaxOfferOfCandidate(cid);
+        OfferDTO offer = offerService.getOfferById(id);
         System.out.println();
 
         List<UserDTO> listU = userService.getAllUsers();
@@ -373,16 +383,7 @@ public class OfferController {
         context.setVariable("cid", id);
 
         sendEmail(u.getEmail(), context);
-        return "redirect:/offer/offerdetail/" + id + "?rid=" + rid;
-//        if(e.getRole().name().equals("ROLE_MANAGER")) {
-//            return "redirect:/offer/managerOffer/" + rid;
-//        }
-//        else if(e.getRole().name().equals("ROLE_RECRUITER")) {
-//            return "redirect:/offer/offer/" + rid;
-//        }
-//        else{
-//            return "redirect:/offer/adminOffer/" + rid;
-//        }
+        return "redirect:/offer/offerdetail/" + UrlIdEncoder.encodeId(id) + "?rid=" + UrlIdEncoder.encodeId(rid);
     }
 
     private void sendEmail(String email, Context context) {
@@ -403,32 +404,19 @@ public class OfferController {
     public String acceptoffer(@PathVariable String id, @RequestParam("rid") String rid) {
         int oid = Integer.parseInt(id);
         int rid1 = Integer.parseInt(rid);
-        offerService.updateStatusOffer(oid, 5);
-        return "redirect:/offer/offerdetail/" + oid + "?rid=" + rid1;
-//        String role = employeeService.getEmployeeById(Integer.parseInt(rid)).getRole().name();
-//        if (role.equals("ROLE_MANAGER")) {
-//            return "redirect:/managerOffer/" + rid1;
-//        } else if (role.equals("ROLE_RECRUITER")) {
-//            return "redirect:/offer/offer/" + rid1;
-//        } else {
-//            return "redirect:/offer/adminOffer/" + rid1;
-//        }
+        CandidateStatus candidateStatus = CandidateStatus.valueOf("ACCEPTED_OFFER");
+        offerService.updateStatusOffer(oid, 5, candidateStatus);
+        return "redirect:/offer/offerdetail/" + UrlIdEncoder.encodeId(oid) + "?rid=" + UrlIdEncoder.encodeId(rid1);
     }
 
     @GetMapping("/declineoffer/{id}")
     public String declineoffer(@PathVariable String id, @RequestParam("rid") String rid) {
         int oid = Integer.parseInt(id);
         int rid1 = Integer.parseInt(rid);
-        offerService.updateStatusOffer(oid, 6);
+        CandidateStatus candidateStatus = CandidateStatus.valueOf("DECLINED_OFFER");
+        offerService.updateStatusOffer(oid, 6, candidateStatus);
         String role = employeeService.getEmployeeById(Integer.parseInt(rid)).getRole().name();
-        return "redirect:/offer/offerdetail/" + oid + "?rid=" + rid1;
-//        if (role.equals("ROLE_MANAGER")) {
-//            return "redirect:/managerOffer/" + rid1;
-//        } else if (role.equals("ROLE_RECRUITER")) {
-//            return "redirect:/offer/offer/" + rid1;
-//        } else {
-//            return "redirect:/offer/adminOffer/" + rid1;
-//        }
+        return "redirect:/offer/offerdetail/" + UrlIdEncoder.encodeId(oid) + "?rid=" + UrlIdEncoder.encodeId(rid1);
     }
 
     @GetMapping("/candidateOffer/{id}")
@@ -449,10 +437,11 @@ public class OfferController {
         return "/recruiter-features/candidateOffer";
     }
 
-    @GetMapping("/managerOffer/{id}")
+    @GetMapping("/managerOffer/{encodedId}")
     public String managerOffer(@RequestParam(name = "page", defaultValue = "1") int page,
-                               @RequestParam(name = "size", defaultValue = "5") int size, @PathVariable("id") String idStr, Model model, HttpSession session) {
-        int id = Integer.parseInt(idStr);
+            @RequestParam(name = "size", defaultValue = "5") int size, @PathVariable("encodedId") String encodedId,
+            Model model, HttpSession session) {
+        int id = UrlIdEncoder.decodeId(encodedId);
         Page<OfferDTO> offerPage = offerService.findPaginatedByEmployee(page, size, id);
         model.addAttribute("listO", offerPage.getContent());
         model.addAttribute("currentPage", page);
@@ -483,10 +472,11 @@ public class OfferController {
         return "/recruiter-features/managerOffer";
     }
 
-    @GetMapping("/adminOffer/{id}")
+    @GetMapping("/adminOffer/{encodedId}")
     public String adminOffer(@RequestParam(name = "page", defaultValue = "1") int page,
-                             @RequestParam(name = "size", defaultValue = "5") int size, @PathVariable("id") String idStr, Model model) {
-        int id = Integer.parseInt(idStr);
+            @RequestParam(name = "size", defaultValue = "5") int size, @PathVariable("encodedId") String encodedId,
+            Model model) {
+        int id = UrlIdEncoder.decodeId(encodedId);
         Page<OfferDTO> offerPage = offerService.findPaginatedByEmployee(page, size, id);
         model.addAttribute("listO", offerPage.getContent());
         model.addAttribute("currentPage", page);
@@ -509,21 +499,32 @@ public class OfferController {
     }
 
     @GetMapping("/export")
-    public void exportToExcel(@RequestParam("rid") String rid, @RequestParam("from") String fromStr, @RequestParam("to") String toStr, HttpServletResponse response) throws IOException {
+    public void exportToExcel(@RequestParam("rid") String rid, @RequestParam("from") String fromStr,
+            @RequestParam("to") String toStr, HttpServletResponse response) throws IOException {
         // Setup response headers for file download
         response.setContentType("application/octet-stream");
         response.setHeader("Content-Disposition", "attachment; filename=OfferList-" + fromStr + "_" + toStr + ".xlsx");
-//+ new SimpleDateFormat("yyyy-MM-dd_HH:mm:ss").format(new Date()) +
+        // + new SimpleDateFormat("yyyy-MM-dd_HH:mm:ss").format(new Date()) +
         LocalDate from = LocalDate.parse(fromStr);
         LocalDate to = LocalDate.parse(toStr);
         List<OfferDTO> listOffers = offerService.getAllOfferFromToOfEid(from, to, Integer.parseInt(rid));
 
         new ExportExcelFile<>(listOffers)
-                .writeHeaderLine(new String[]{"STT", "Candidate", "Position", "Approver", "Interview Info", "Contract Period From", "Contract Period To", "Interview Note", "Status", "Contract Type", "Level", "Department", "Recruiter Owner", "Due date", "Salary", "Note", "Create At"})
-                .writeDataLines(new String[]{"id", "candidateName", "positionName", "employeeName", "interviewTitle", "contractPeriodFrom", "contractPeriodTo", "interviewNotes", "statusOfferName", "contractTypeName", "levelName", "departmentName", "recruiterName", "dueDate", "basicSalary", "note", "createAt"}, OfferDTO.class)
+                .writeHeaderLine(new String[] { "STT", "Candidate", "Position", "Approver", "Interview Info",
+                        "Contract Period From", "Contract Period To", "Interview Note", "Status", "Contract Type",
+                        "Level", "Department", "Recruiter Owner", "Due date", "Salary", "Note", "Create At" })
+                .writeDataLines(new String[] { "id", "candidateName", "positionName", "employeeName", "interviewTitle",
+                        "contractPeriodFrom", "contractPeriodTo", "interviewNotes", "statusOfferName",
+                        "contractTypeName", "levelName", "departmentName", "recruiterName", "dueDate", "basicSalary",
+                        "note", "createAt" }, OfferDTO.class)
                 .export(response);
     }
-//, "Candidate", "Position", "Approver", "Interview Info", "Contract Period From", "Contract Period To", "Interview Note", "Status", "Contract Type", "Level", "Department", "Recruiter Owner", "Due date", "Salary", "Note", "Create At"
-//"candidate", "position", "employee", "interview", "contractPeriodFrom", "contractPeriodTo", "interviewNotes", "statusOffer", "contractType", "level", "department", "recruiterOwner", "dueDate", "basicSalary", "note", "createdAt"
+    // , "Candidate", "Position", "Approver", "Interview Info", "Contract Period
+    // From", "Contract Period To", "Interview Note", "Status", "Contract Type",
+    // "Level", "Department", "Recruiter Owner", "Due date", "Salary", "Note",
+    // "Create At"
+    // "candidate", "position", "employee", "interview", "contractPeriodFrom",
+    // "contractPeriodTo", "interviewNotes", "statusOffer", "contractType", "level",
+    // "department", "recruiterOwner", "dueDate", "basicSalary", "note", "createdAt"
 }
 // </editor-fold>

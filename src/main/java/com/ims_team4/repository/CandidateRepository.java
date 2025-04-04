@@ -1,6 +1,10 @@
 package com.ims_team4.repository;
 
 import com.ims_team4.model.Candidate;
+import com.ims_team4.model.Employee;
+import com.ims_team4.model.HighestLevel;
+import com.ims_team4.model.Position;
+import com.ims_team4.model.utils.CandidateStatus;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
@@ -33,4 +37,17 @@ public interface CandidateRepository extends CrudRepository<Candidate, Long> {
     @Query("UPDATE Candidate c SET c.status = 'BANNED' WHERE c.user.id = :userId")
     void banCandidateByUserId(@Param("userId") Long userId);
 
+
+    Optional<HighestLevel> findHighestLevelById(long id);
+
+    Optional<Position> findPositionById(long id);
+
+    Optional<Employee> findEmployeeById(long id);
+
+    Optional<Employee> findDefaultEmployee();
+
+
+    int countByStatus(CandidateStatus status);
+
+    int countAllCandidates();
 }

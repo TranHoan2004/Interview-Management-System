@@ -39,8 +39,7 @@ public class InterviewServiceImpl implements InterviewService {
     // UC16 - Simple listing
     @Override
     public List<InterviewDTO> getAllInterviews() {
-        List<Interview> interviews = interviewRepository.findAll();
-        return interviews.stream()
+        return interviewRepository.findAll().stream()
                 .map(this::mapEntity)
                 .collect(Collectors.toList());
     }
@@ -118,9 +117,8 @@ public class InterviewServiceImpl implements InterviewService {
         Interview interview = interviewRepository.findById(interviewId)
                 .orElseThrow(() -> new RuntimeException("Interview not found with ID=" + interviewId));
 
-        if (interview.getStatus() == InterviewStatus.CANCELLED
-            || interview.getStatus() == InterviewStatus.INTERVIEWED) {
-            throw new IllegalStateException("Interview is already CANCELLED or INTERVIEWED.");
+        if (interview.getStatus() == InterviewStatus.CANCELLED) {
+            throw new IllegalStateException("Interview is already CANCELLED.");
         }
 
         interview.setResult(result);
@@ -180,15 +178,7 @@ public class InterviewServiceImpl implements InterviewService {
     private InterviewDTO mapEntity(@NotNull Interview interview) {
         if (interview == null) return null;
 
-        // Convert employees -> set of IDs
-        Set<Long> employeeIds = null;
-        if (interview.getEmployees() != null) {
-            employeeIds = interview.getEmployees().stream()
-                    .map(Employee::getId)
-                    .collect(Collectors.toSet());
-        }
-
-        return InterviewDTO.builder()
+        InterviewDTO dto = InterviewDTO.builder()
                 .id(interview.getId())
                 .title(interview.getTitle())
                 .note(interview.getNote())
@@ -199,15 +189,36 @@ public class InterviewServiceImpl implements InterviewService {
                 .status(interview.getStatus())
                 .locations(interview.getLocations())
                 .result(interview.getResult())
-                .candidateId(interview.getCandidate() != null
-                        ? interview.getCandidate().getId()
-                        : 0)
-                .jobId(interview.getJob() != null
-                        ? interview.getJob().getId()
+                .candidateId(interview.getCandidate() != null ? interview.getCandidate().getId() : 0)
+                .jobId(interview.getJob() != null ? interview.getJob().getId() : null)
+                .employeeIds(interview.getEmployees() != null
+                        ? interview.getEmployees().stream().map(Employee::getId).collect(Collectors.toSet())
                         : null)
-                .employeeIds(employeeIds)
+                .notificationSent(interview.getNotificationSent())
+                .recruiterOwner(interview.getRecruiterOwner())
                 .build();
-    }
+
+        // Additional read-only fields:
+        if (interview.getCandidate() != null && interview.getCandidate().getUser() != null) {
+            dto.setCandidateName(interview.getCandidate().getUser().getFullname());
+        } else {
+            dto.setCandidateName("");
+        }
+
+        if (interview.getJob() != null) {
+            dto.setJobTitle(interview.getJob().getTitle());
+        }
+
+        if (interview.getEmployees() != null && !interview.getEmployees().isEmpty()) {
+            String combinedNames = interview.getEmployees().stream()
+                    .map(e -> e.getUser().getFullname())
+                    .collect(Collectors.joining(", "));
+            dto.setInterviewerNames(combinedNames);
+        }
+
+        return dto;
+      }
+
 
     //VuTD
 //    private InterviewDTO mapToDTO(Interview interview) {

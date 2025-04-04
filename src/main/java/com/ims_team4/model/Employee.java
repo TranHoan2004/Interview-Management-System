@@ -36,6 +36,7 @@ public class Employee {
     private String workingName;
 
     @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+
     @JoinColumn(name = "department_id", nullable = false)
     private Department department;
 

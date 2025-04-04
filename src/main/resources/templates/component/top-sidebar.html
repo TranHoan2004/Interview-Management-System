@@ -1,28 +1,25 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
+
 <head>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
 </head>
+
 <body>
-<div class="d-flex justify-content-between align-items-center mb-0" th:fragment="topSidebar">
-    <div class="mb-1 p-3 bg-white rounded shadow-sm flex-grow-1 d-flex align-items-center" style="flex-basis: 35%;">
-        <div class="d-flex align-items-center me-3">
-            <img src="https://anhanime.me/wp-content/uploads/2024/03/anh-conan_5.jpg" alt="Avatar"
-                 class="rounded-circle border border-2" width="45" height="45">
-            <div class="ms-2">
-                <span class="fw-bold text-dark d-block" th:text="${session.account.getFullname()}"></span>
-                <small class="text-muted" th:text="${session.account.getDepartmentName()}"></small>
+    <div class="d-flex justify-content-between align-items-center mb-0" th:fragment="topSidebar">
+        <div class="mb-1 p-3 bg-white rounded shadow-sm flex-grow-1 d-flex align-items-center" style="flex-basis: 35%;">
+            <div class="d-flex align-items-center me-3">
+                <img src="https://anhanime.me/wp-content/uploads/2024/03/anh-conan_5.jpg" alt="Avatar"
+                    class="rounded-circle border border-2" width="45" height="45">
+                <div class="ms-2">
+                    <span class="fw-bold text-dark d-block" th:text="${session.account.getFullname()}"></span>
+                    <small class="text-muted" th:text="${session.account.getDepartmentName()}"></small>
+                </div>
             </div>
+            <span th:replace="~{login-logout-features/logoutPopup::logout}"></span>
         </div>
-        <span th:replace="~{login-logout-features/logoutPopup::logout}"></span>
-<!--        <button type="button" style="padding-left: 5px; text-decoration: none;">-->
-<!--            <i class="fa fa-gear"></i>-->
-<!--        </button>-->
-
     </div>
-</div>
-
 </body>
 
 </html>

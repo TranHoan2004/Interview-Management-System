@@ -1,239 +1,51 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Edit Offer</title>
+    <title th:text="${edit_offer_title}"></title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
-    <style>
-
-
-        body {
-            background-color: #f5f7fa;
-            font-family: 'Arial', sans-serif;
-        }
-
-        .logo {
-            font-weight: bold;
-            background: #fff;
-            color: #16a085;
-            padding: 2px 8px;
-            border-radius: 4px;
-        }
-
-        /* Sidebar */
-        .sidebar {
-            width: 240px;
-            background: #2c3e50;
-            height: 100vh;
-            position: fixed;
-            padding: 20px;
-            color: white;
-            transition: 0.3s;
-        }
-
-        .sidebar h4 {
-            font-weight: bold;
-            text-align: center;
-            margin-bottom: 20px;
-        }
-
-        .sidebar a.fw-bold {
-            background: #34495e;
-        }
-
-        .sidebar a {
-            display: flex;
-            align-items: center;
-            padding: 12px;
-            color: white;
-            text-decoration: none;
-            border-radius: 5px;
-            transition: all 0.3s;
-        }
-
-        .sidebar a:hover {
-            background: #1abc9c;
-            color: white;
-        }
-
-        .sidebar i {
-            margin-right: 10px;
-        }
-
-        /* Content */
-        .content {
-            margin-left: 260px;
-            padding: 30px;
-        }
-
-        .page-title {
-            font-size: 32px;
-            font-weight: bold;
-            background: linear-gradient(to right, #2c3e50, #1abc9c);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        /* Profile */
-        .profile-card {
-            display: flex;
-            align-items: center;
-            background: white;
-            padding: 15px;
-            border-radius: 8px;
-            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
-        }
-
-        .profile-card img {
-            border-radius: 50%;
-            border: 2px solid #2c3e50;
-            width: 50px;
-            height: 50px;
-        }
-
-        .profile-info {
-            margin-left: 15px;
-        }
-
-        /* Table Section */
-        .info-card {
-            background: white;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
-        }
-
-        .info-title {
-            font-weight: bold;
-            color: #2c3e50;
-        }
-
-        .text-highlight {
-            font-weight: bold;
-            color: #1abc9c;
-        }
-
-        /* Buttons */
-        .btn-primary {
-            background-color: #1abc9c;
-            border: none;
-            border-radius: 20px;
-            padding: 8px 20px;
-        }
-
-        .btn-primary:hover {
-            background-color: #16a085;
-        }
-
-        .btn-secondary {
-            background-color: #34495e;
-            border: none;
-            border-radius: 20px;
-            padding: 8px 20px;
-        }
-
-        .btn-secondary:hover {
-            background-color: #2c3e50;
-        }
-
-        /* Form elements */
-        .form-select, .form-control {
-            border-radius: 5px;
-            border: 1px solid #ddd;
-            padding: 8px;
-            width: 100%;
-        }
-
-        .form-select:focus, .form-control:focus {
-            border-color: #1abc9c;
-            box-shadow: 0 0 5px rgba(26, 188, 156, 0.5);
-        }
-
-        .form-group {
-            margin-bottom: 15px;
-        }
-
-        .form-group label {
-            margin-bottom: 5px;
-            display: block;
-            font-weight: bold;
-        }
-
-        .form-group input, .form-group select {
-            width: 100%;
-        }
-
-        .form-group .info-title {
-            margin-right: 10px;
-        }
-
-        /* Custom Checkbox */
-        .custom-checkbox {
-            width: 20px !important;
-            height: 20px;
-            border: 2px solid #1abc9c;
-            border-radius: 4px;
-            appearance: none; /* Loại bỏ kiểu mặc định */
-            cursor: pointer;
-            position: relative;
-            transition: background-color 0.3s, border-color 0.3s;
-            margin-right: 8px;
-        }
-
-        .custom-checkbox:checked {
-            background-color: #1abc9c; /* Màu nền khi được chọn */
-            border-color: #1abc9c; /* Màu viền khi được chọn */
-        }
-
-        .custom-checkbox:checked::after {
-            content: '\2713'; /* Unicode checkmark */
-            font-size: 14px; /* Kích thước dấu tích */
-            color: white; /* Màu dấu tích */
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%); /* Căn giữa dấu tích */
-        }
-
-        .custom-label {
-            font-size: 14px; /* Kích thước chữ */
-            color: #2c3e50; /* Màu chữ */
-            cursor: pointer;
-        }
-
-        .custom-checkbox:hover {
-            border-color: #16a085; /* Màu viền khi hover */
-        }
-
-        .custom-checkbox:checked:hover {
-            background-color: #16a085; /* Màu nền khi hover và được chọn */
-            border-color: #16a085; /* Màu viền khi hover và được chọn */
-        }
-    </style>
+    <link rel="stylesheet" th:href="@{/css/offer.css}">
 </head>
 <body>
-
-<div id="loading-overlay">
-    <div class="spinner"></div>
+<div class="navbar">
+    <div class="logo">DEV IMS</div>
+    <div class="menu-icon" onclick="toggleSidebar()">
+        <i class="fa-solid fa-bars"></i>
+    </div>
 </div>
 <!-- Sidebar -->
 <div class="sidebar" th:replace="~{component/left-sidebar::leftSidebar}"></div>
 
-<div class="content">
+<div class="content" style="padding-left: 50px">
     <div class="d-flex justify-content-between align-items-center mb-0">
-        <div class="container py-1 flex-grow-1" style="flex-basis: 68%;">
+        <div class="container py-1 flex-grow-1" style="flex-basis: 66%;">
             <h3 class="page-title fw-bold text-dark">
-                <i class="fa-solid fa-clipboard-list text-primary"></i> Edit Offer
+                <i class="fa-solid fa-clipboard-list text-primary"></i>
+                <span th:text="${edit_offer_title}"></span>
             </h3>
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb bg-white shadow-sm p-2 rounded">
                     <li class="breadcrumb-item">
-                        <a th:href="@{/offer/offer/{rid}(rid=${rid})}" class="text-decoration-none text-primary fw-bold">Offer
-                            List</a>
+                        <th:block th:if="${session.account.getRole().name().equals('ROLE_RECRUITER')}">
+                            <a th:href="@{/offer/offer/{rid}(rid=${T(com.ims_team4.controller.utils.UrlIdEncoder).encodeId(rid)})}"
+                               class="text-decoration-none text-primary fw-bold">Offer
+                                List</a>
+                        </th:block>
+                        <th:block th:if="${session.account.getRole().name().equals('ROLE_MANAGER')}">
+                            <a th:href="@{/offer/managerOffer/{rid}(rid=${T(com.ims_team4.controller.utils.UrlIdEncoder).encodeId(rid)})}"
+                               class="text-decoration-none text-primary fw-bold">Offer
+                                List</a>
+                        </th:block>
+                        <th:block th:if="${session.account.getRole().name().equals('ROLE_ADMINISTRATOR')}">
+                            <a th:href="@{/offer/adminOffer/{rid}(rid=${T(com.ims_team4.controller.utils.UrlIdEncoder).encodeId(rid)})}"
+                               class="text-decoration-none text-primary fw-bold">Offer
+                                List</a>
+                        </th:block>
                     </li>
-                    <li class="breadcrumb-item active text-secondary" aria-current="page">Edit Offer</li>
+                    <li class="breadcrumb-item active text-secondary" aria-current="page"
+                        th:text="${edit_offer_title}"></li>
                 </ol>
             </nav>
         </div>
@@ -243,8 +55,7 @@
     <!-- Offer -->
     <form th:action="@{/offer/edit}" method="get" class="info-card mt-2">
         <div class="d-flex justify-content-between align-items-center">
-            <h4 class="text-dark">Offer Detail</h4>
-
+            <h4 class="text-dark" th:text="${offer_detail_title}"></h4>
         </div>
         <hr>
         <div class="row">
@@ -252,47 +63,58 @@
             <div class="col-md-6">
                 <input type="hidden" name="offerid" th:value="${offer.getId()}">
                 <input type="hidden" name="rid" th:value="${session.account.getUserID()}">
+
                 <div class="form-group">
-                    <label class="info-title">Candidate:</label>
-                    <select class="form-select" name="candidate">
-                        <th:block th:each="candidate : ${listC}">
-                            <option th:each="user : ${listU}" th:value="${candidate.getUserId()}"
-                                    th:if="${user.getId() == candidate.getUserId()}" th:text="${user.getFullname()}"
-                                    th:selected="${offer.getCandidateId() == candidate.getUserId()}"></option>
-                        </th:block>
-                    </select>
+                    <label class="info-title" th:text="${candidate} + ':'"></label>
+                    <label>
+                        <select class="form-select" name="candidate">
+                            <th:block th:each="candidate : ${listC}">
+                                <option th:each="user : ${listU}" th:value="${candidate.getUserId()}"
+                                        th:if="${user.getId() == candidate.getUserId()}" th:text="${user.getFullname()}"
+                                        th:selected="${offer.getCandidateId() == candidate.getUserId()}"></option>
+                            </th:block>
+                        </select>
+                    </label>
                 </div>
 
                 <div class="form-group">
-                    <label class="info-title">Position:</label>
-                    <select class="form-select" name="position">
-                        <option th:each="position : ${listP}" th:value="${position.getId()}"
-                                th:text="${position.getName()}"
-                                th:selected="${offer.getPosition() == position.getId()}"></option>
-                    </select>
-                </div>
-
-                <div class="form-group">
-                    <label class="info-title">Approver:</label>
-                    <select class="form-select" name="approver">
-                        <th:block th:each="employee : ${listE}">
-                            <option th:each="user : ${listU}" th:value="${employee.getUserID()}"
-                                    th:if="${user.getId() == employee.getUserID()}" th:text="${user.getFullname()}"
-                                    th:selected="${offer.getEmployeeId() == employee.getUserID()}"></option>
-                        </th:block>
-                    </select>
-                </div>
-
-                <div class="form-group">
-                    <label class="info-title">Interview Info:</label>
-                    <select class="form-select" name="interviewId" id="interviewSelect" required>
-                        <option value="0" data-note="">Select an interview schedule title</option>
-                        <th:block th:each="interview : ${listI}">
-                            <option th:value="${interview.getId()}" th:text="${interview.getTitle()}"
-                                    th:data-note="${interview.getNote()}" th:selected="${interview.getId() == offer.getInterviewId()}">
+                    <label class="info-title" th:text="${positionTitle} + ':'"></label>
+                    <label>
+                        <select class="form-select" name="position">
+                            <option th:each="position : ${listP}" th:value="${position.getId()}"
+                                    th:text="${position.getName()}"
+                                    th:selected="${offer.getPosition() == position.getId()}">
                             </option>
-                        </th:block>
-                    </select>
+                        </select>
+                    </label>
+                </div>
+
+                <div class="form-group">
+                    <label class="info-title" th:text="${approver_title} + ':'"></label>
+                    <label>
+                        <select class="form-select" name="approver">
+                            <th:block th:each="employee : ${listE}">
+                                <option th:each="user : ${listU}" th:value="${employee.getUserID()}"
+                                        th:if="${user.getId() == employee.getUserID()}" th:text="${user.getFullname()}"
+                                        th:selected="${offer.getEmployeeId() == employee.getUserID()}"></option>
+                            </th:block>
+                        </select>
+                    </label>
+                </div>
+
+                <div class="form-group">
+                    <label class="info-title" th:text="${interview_info} + ':'"></label>
+                    <label>
+                        <select class="form-select" name="interviewId" id="interviewSelect" required>
+                            <option value="0" data-note="" th:text="${select_interview_schedule}"></option>
+                            <th:block th:each="interview : ${listI}">
+                                <option th:value="${interview.getId()}" th:text="${interview.getTitle()}"
+                                        th:data-note="${interview.getNote()}"
+                                        th:selected="${interview.getId() == offer.getInterviewId()}">
+                                </option>
+                            </th:block>
+                        </select>
+                    </label>
                     <br/>
                 </div>
 
@@ -307,85 +129,135 @@
                 </div>
 
                 <div class="form-group">
-                    <label class="info-title">Interview Notes:</label>
+                    <label class="info-title" th:text="${note} + ' ' + ${interviewTitle} + ':'"></label>
                     <th:block th:each="interview : ${listI}" th:if="${interview.getId() == offer.getInterviewId()}">
-                        <input type="text" name="interviewNote" id="interviewNote" class="form-control" th:value="${interview.getNote()}" required readonly>
+                        <label>
+                            <input type="text" name="interviewNote" id="interviewNote" class="form-control"
+                                   th:value="${interview.getNote()}" required readonly>
+                        </label>
                     </th:block>
                 </div>
 
                 <div class="form-group">
-                    <label class="info-title">Status:</label>
-                    <input readonly="" type="text" class="form-control" th:value="${offer.getStatusOfferName()}">
+                    <label class="info-title" th:text="${status} + ':'"></label>
+                    <label>
+                        <input readonly="" type="text" class="form-control" th:value="${offer.getStatusOfferName()}">
+                    </label>
                 </div>
             </div>
+
             <div class="col-md-6">
                 <div class="form-group">
-                    <label class="info-title">Contract Type:</label>
-                    <select class="form-select" name="contractType">
-                        <option th:each="contractType : ${listCo}" th:value="${contractType.getId()}"
-                                th:text="${contractType.getName()}"
-                                th:selected="${offer.getContractTypeId()== contractType.getId()}"></option>
-                    </select>
+                    <label class="info-title" th:text="${contract_type} + ':'"></label>
+                    <label>
+                        <select class="form-select" name="contractType">
+                            <option th:each="contractType : ${listCo}" th:value="${contractType.getId()}"
+                                    th:text="${contractType.getName()}"
+                                    th:selected="${offer.getContractTypeId()== contractType.getId()}"></option>
+                        </select>
+                    </label>
                 </div>
 
                 <div class="form-group">
-                    <label class="info-title">Level:</label>
-                    <select class="form-select" name="level">
-                        <option th:each="level : ${listL}" th:value="${level.getId()}" th:text="${level.getName()}"
-                                th:selected="${offer.getLevelId() == level.getId()}"></option>
-                    </select>
+                    <label class="info-title" th:text="${level_title} + ':'"></label>
+                    <label>
+                        <select class="form-select" name="level">
+                            <option th:each="level : ${listL}" th:value="${level.getId()}" th:text="${level.getName()}"
+                                    th:selected="${offer.getLevelId() == level.getId()}"></option>
+                        </select>
+                    </label>
                 </div>
 
                 <div class="form-group">
-                    <label class="info-title">Department:</label>
-                    <select class="form-select" name="department">
-                        <option th:each="department : ${listD}" th:value="${department.getId()}"
-                                th:text="${department.getName()}"
-                                th:selected="${offer.getDepartmentId() == department.getId()}"></option>
-                    </select>
+                    <label class="info-title" th:text="${departmentTitle} + ':'"></label>
+                    <label>
+                        <select class="form-select" name="department">
+                            <option th:each="department : ${listD}" th:value="${department.getId()}"
+                                    th:text="${department.getName()}"
+                                    th:selected="${offer.getDepartmentId() == department.getId()}"></option>
+                        </select>
+                    </label>
                 </div>
 
                 <div class="form-group">
-                    <label class="info-title">Recruiter Owner:</label>
-                    <select id="userSelect" class="form-select" name="recruiterOwner">
-                        <th:block th:each="employee : ${listR}">
-                            <option th:each="user : ${listU}" th:value="${employee.getUserID()}"
-                                    th:if="${user.getId() == employee.getUserID()}" th:text="${user.getFullname()}"
-                                    th:selected="${offer.getRecruiterOwner() == employee.getUserID()}"></option>
-                        </th:block>
-                    </select>
-                    <a id="assignButton" class="text-decoration-none" style="cursor: pointer">Assigned to me</a>
+                    <label class="info-title" th:text="${recruiter} + ':'"></label>
+                    <label>
+                        <select id="userSelect" class="form-select" name="recruiterOwner">
+                            <th:block th:each="employee : ${listR}">
+                                <option th:each="user : ${listU}" th:value="${employee.getUserID()}"
+                                        th:if="${user.getId() == employee.getUserID()}" th:text="${user.getFullname()}"
+                                        th:selected="${offer.getRecruiterOwner() == employee.getUserID()}"></option>
+                            </th:block>
+                        </select>
+                    </label>
+                    <a id="assignButton" class="text-decoration-none" style="cursor: pointer"
+                       th:text="${assigned_to_me}"></a>
                 </div>
 
                 <div class="form-group">
-                    <label for="duedate" class="info-title">Due Date:</label>
+                    <label for="duedate" class="info-title" th:text="${due_date} + ':'"></label>
                     <input id="duedate" name="duedate" type="date" class="form-control"
                            th:value="${offer.getDueDate()}"/>
                 </div>
 
                 <div class="form-group">
-                    <label for="salary" class="info-title">Basic Salary:</label>
+                    <label for="salary" class="info-title" th:text="${basic_salary} + ':'"></label>
                     <input id="salary" name="salary" type="text" class="form-control"
                            th:value="${offer.getBasicSalary()}"/>
+                    <small id="salaryHelp" class="text-danger"></small>
                 </div>
 
                 <div class="form-group">
-                    <label for="note" class="info-title">Note:</label>
+                    <label for="note" class="info-title" th:text="${note} + ':'"></label>
                     <input id="note" name="note" type="text" class="form-control" th:value="${offer.getNote()}"/>
                 </div>
             </div>
         </div>
         <hr>
         <div class="d-flex justify-content-end">
-            <a th:href="@{/offer/offer/{rid}(rid=${rid})}" class="btn btn-secondary me-2">Cancel</a>
-            <button type="submit" class="btn btn-primary">Submit</button>
+            <th:block th:if="${session.account.getRole().name().equals('ROLE_RECRUITER')}">
+                <a th:href="@{/offer/offer/{rid}(rid=${T(com.ims_team4.controller.utils.UrlIdEncoder).encodeId(rid)})}" class="btn btn-secondary me-2"
+                   th:text="${cancelBtn}"></a>
+            </th:block>
+            <th:block th:if="${session.account.getRole().name().equals('ROLE_MANAGER')}">
+                <a th:href="@{/offer/managerOffer/{rid}(rid=${T(com.ims_team4.controller.utils.UrlIdEncoder).encodeId(rid)})}" class="btn btn-secondary me-2"
+                   th:text="${cancelBtn}"></a>
+            </th:block>
+            <th:block th:if="${session.account.getRole().name().equals('ROLE_ADMINISTRATOR')}">
+                <a th:href="@{/offer/adminOffer/{rid}(rid=${T(com.ims_team4.controller.utils.UrlIdEncoder).encodeId(rid)})}" class="btn btn-secondary me-2"
+                   th:text="${cancelBtn}"></a>
+            </th:block>
+            <button type="submit" class="btn btn-primary" th:text="${submitBtn}"></button>
         </div>
     </form>
+    <div id="chatbot-icon" onclick="toggleChatBot()">
+        <img src="https://cdn-icons-png.flaticon.com/512/4712/4712035.png" alt="Chatbot">
+    </div>
+
+    <!-- Cửa sổ chat -->
+    <div id="chat-window" style="position: relative;">
+        <iframe
+                src="https://www.coze.com/store/agent/7488646243938762753?bot_id=true"
+                allow="microphone"
+                id="coze-bot">
+        </iframe>
+    </div>
 </div>
-
-</body>
-
+<script src="/js/recruiter-offer.js"></script>
 <script>
+    document.getElementById('salary').addEventListener('input', function () {
+        const salary = this.value;
+        const salaryHelp = document.getElementById('salaryHelp');
+
+        if (!/^\d+$/.test(salary) || parseInt(salary) <= 0) {
+            salaryHelp.textContent = 'Salary must be a natural number greater than 0';
+            this.setCustomValidity('Invalid');
+        } else {
+            salaryHelp.textContent = '';
+            this.setCustomValidity('');
+        }
+    });
+
     document.getElementById("assignButton").addEventListener("click", function () {
         const urlParams = new URLSearchParams(window.location.search);
         const idSelect = urlParams.get("rid");
@@ -431,10 +303,11 @@
         window.location.href = "/logout";
     }
 
-    document.getElementById("interviewSelect").addEventListener("change", function() {
-        var selectedOption = this.options[this.selectedIndex];
-        var note = selectedOption.getAttribute("data-note");
+    document.getElementById("interviewSelect").addEventListener("change", function () {
+        let selectedOption = this.options[this.selectedIndex];
+        let note = selectedOption.getAttribute("data-note");
         document.getElementById("interviewNote").value = note;
     });
 </script>
+</body>
 </html>

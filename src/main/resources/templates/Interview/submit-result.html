@@ -1,13 +1,11 @@
-<!-- file: templates/interview/submit-result.html -->
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
+
 <head>
-    <meta charset="UTF-8"/>
-    <title>Submit Interview Result</title>
-    <link rel="stylesheet"
-          href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"/>
-    <link rel="stylesheet"
-          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"/>
+    <meta charset="UTF-8" />
+    <title th:text="${submit_result_title}"></title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" />
     <style>
         /* Tổng thể */
         body {
@@ -89,83 +87,80 @@
         }
     </style>
 </head>
+
 <body>
-<div class="d-flex">
+    <div class="d-flex">
 
-    <!-- Left Sidebar -->
-    <div class="sidebar" th:replace="~{component/left-sidebar :: leftSidebar}"></div>
+        <!-- Left Sidebar -->
+        <div class="sidebar" th:replace="~{component/left-sidebar :: leftSidebar}"></div>
 
-    <!-- Main Content -->
-    <div class="content flex-grow-1 p-4">
-        <!-- Top Sidebar / Header -->
-        <div th:replace="~{component/top-sidebar :: topSidebar}"></div>
+        <!-- Main Content -->
+        <div class="content flex-grow-1 p-4">
+            <!-- Top Sidebar / Header -->
+            <div th:replace="~{component/top-sidebar :: topSidebar}"></div>
 
-        <div class="container mt-4">
-            <h2 class="fw-bold mb-3">Submit Interview Result</h2>
+            <div class="container mt-4">
+                <h2 class="fw-bold mb-3" th:text="${submit_result_title}"></h2>
 
-            <div class="card mb-3">
-                <div class="card-body">
-                    <p><strong>Interview ID:</strong> <span th:text="${interview.id}"></span></p>
-                    <p><strong>Title:</strong> <span th:text="${interview.title}"></span></p>
-                    <p><strong>Schedule Time:</strong>
-                        <span th:text="${#temporals.format(interview.scheduleTime, 'dd/MM/yyyy HH:mm')}"></span>
-                    </p>
-                    <p><strong>Locations:</strong> <span th:text="${interview.locations}"></span></p>
-                    <p><strong>Result:</strong>
-                        <span th:text="${interview.result ?: 'N/A'}"></span>
-                    </p>
-                    <p><strong>Status:</strong>
-                        <span th:text="${interview.status}"></span>
-                    </p>
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <p>
+                            <strong th:text="${interview_id} + ':'"></strong>
+                            <span th:text="${interview.id}"></span>
+                        </p>
+
+                        <p>
+                            <strong th:text="${title_label} + ':'"></strong>
+                            <span th:text="${interview.title}"></span>
+                        </p>
+
+                        <p>
+                            <strong th:text="${schedule_time_title} + ':'"></strong>
+                            <span th:text="${#temporals.format(interview.scheduleTime, 'dd/MM/yyyy HH:mm')}"></span>
+                        </p>
+
+                        <p>
+                            <strong th:text="${location_label} + ':'"></strong>
+                            <span th:text="${interview.locations}"></span>
+                        </p>
+                        <p>
+                            <strong th:text="${result_title} + ':'"></strong>
+                            <span th:text="${interview.result != null ? interview.result : 'N/A'}"></span>
+                        </p>
+
+                        <p>
+                            <strong th:text="${statusTitle} + ':'"></strong>
+                            <span th:text="${interview.status}"></span>
+                        </p>
+                    </div>
                 </div>
+
+                <form th:method="post" th:action="@{/interview/submitResult}">
+                    <input type="hidden" name="interviewId" th:value="${interview.id}" />
+
+                    <div class="mb-3">
+                        <label for="result" class="form-label fw-bold" th:text="${result_title}"></label>
+                        <select id="result" name="result" class="form-select" required>
+                            <option value="" th:text="'-- ' + ${select_label} + ' --'"></option>
+                            <option value="Passed" th:text="${passed_title}"></option>
+                            <option value="Failed" th:text="${failed_title}"></option>
+                        </select>
+                    </div>
+
+                    <button type="submit" class="btn btn-success">
+                        <i class="fa fa-check"></i>
+                        <span th:text="${submitBtn}"></span>
+                    </button>
+                    <a class="btn btn-danger text-white" th:href="@{/interview/list}">
+                        <i class="fa fa-arrow-left"></i>
+                        <span th:text="${cancelBtn}"></span>
+                    </a>
+                </form>
             </div>
-
-            <form onsubmit="return handleResultSubmission(event)">
-                <input type="hidden" id="interviewId" th:value="${interview.id}"/>
-
-                <div class="mb-3">
-                    <label for="result" class="form-label fw-bold">Result</label>
-                    <select id="result" class="form-select" required>
-                        <option value="">-- Select --</option>
-                        <option value="Passed">Passed</option>
-                        <option value="Failed">Failed</option>
-                    </select>
-                </div>
-
-                <button type="submit" class="btn btn-success">
-                    <i class="fa fa-check"></i> Submit
-                </button>
-                <a class="btn btn-secondary" th:href="@{/interview/list}">
-                    <i class="fa fa-arrow-left"></i> Cancel
-                </a>
-            </form>
         </div>
     </div>
-</div>
 
-<script>
-    function handleResultSubmission(e) {
-        e.preventDefault();
-        const interviewId = document.getElementById('interviewId').value;
-        const result = document.getElementById('result').value;
-        if (!interviewId || !result) {
-            alert("Please select a result.");
-            return false;
-        }
-        fetch(`/interview/submit?interviewId=${interviewId}&result=${result}`, {
-            method: 'POST'
-        })
-            .then(resp => {
-                if(resp.ok){
-                    alert("Interview result submitted successfully!");
-                    window.location.href = "/interview/list";
-                } else {
-                    alert("Failed to submit result!");
-                }
-            });
-        return false;
-    }
-</script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
+
 </html>

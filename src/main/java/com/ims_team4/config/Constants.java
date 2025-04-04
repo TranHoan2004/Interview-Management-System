@@ -28,7 +28,8 @@ public interface Constants {
         String GOOGLE_REDIRECT_URI = "";
         String GOOGLE_GRANT_TYPE = "";
         String GOOGLE_LINK_GET_USER_INFO = "";
-        String LOGIN_TYPE_GOOGLE = "google";
+        String LOGIN_TYPE_GOOGLE = "";
+        String OAUTH2_URL = "";
 
         // Facebook
         String FACEBOOK_CLIENT_ID = "";
@@ -36,7 +37,7 @@ public interface Constants {
         String FACEBOOK_REDIRECT_URI = "";
         String FACEBOOK_LINK_GET_TOKEN = "";
         String FACEBOOK_LINK_GET_USER_INFO = "";
-        String LOGIN_TYPE_FACEBOOK = "facebook";
+        String LOGIN_TYPE_FACEBOOK = "";
     }
 
     interface Role {

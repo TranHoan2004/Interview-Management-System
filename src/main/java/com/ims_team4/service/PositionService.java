@@ -7,5 +7,10 @@ import java.util.List;
 
 public interface PositionService {
     List<PositionDTO> getAllPosition();
+
+    Position getPositionById(Long id);
+
+    List<Position> getAllPositions();
+
     Position findById(long id);
 }

@@ -3,6 +3,7 @@ package com.ims_team4.service.impl;
 import com.ims_team4.dto.OfferDTO;
 import com.ims_team4.model.Offer;
 import com.ims_team4.model.Users;
+import com.ims_team4.model.utils.CandidateStatus;
 import com.ims_team4.repository.OfferRepository;
 import com.ims_team4.repository.UserRepository;
 import com.ims_team4.service.OfferService;
@@ -64,8 +65,8 @@ public class OfferServiceImpl implements OfferService {
     }
 
     @Override
-    public boolean updateStatusOffer(int offerid, int status) {
-        return offerRepository.updateStatusOffer(offerid, status);
+    public boolean updateStatusOffer(int offerid, int status, CandidateStatus candidateStatus) {
+        return offerRepository.updateStatusOffer(offerid, status, candidateStatus);
     }
 
     @Override

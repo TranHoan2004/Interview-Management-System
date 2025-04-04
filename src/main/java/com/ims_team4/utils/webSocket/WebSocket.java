@@ -1,13 +1,8 @@
 package com.ims_team4.utils.webSocket;
 
-import com.ims_team4.dto.ChatDetailDTO;
 import com.ims_team4.model.Chat;
 import com.ims_team4.model.ChatDetail;
-import com.ims_team4.repository.ChatDetailRepository;
 import com.ims_team4.repository.impl.ChatDetailRepositoryImpl;
-import com.ims_team4.service.ChatDetailService;
-import com.ims_team4.service.ChatService;
-import com.ims_team4.service.impl.ChatServiceImpl;
 import jakarta.websocket.*;
 import jakarta.websocket.server.PathParam;
 import jakarta.websocket.server.ServerEndpoint;
@@ -24,7 +19,7 @@ public class WebSocket {
 
     @OnOpen
     public void onOpen(@PathParam("conversationId") String conversationId,
-                       @PathParam("role") String role, @NotNull Session session) {
+            @PathParam("role") String role, @NotNull Session session) {
         // Store the role in the session properties
         session.getUserProperties().put("role", role);
         conversations.computeIfAbsent(conversationId, k -> Collections.synchronizedSet(new HashSet<>())).add(session);

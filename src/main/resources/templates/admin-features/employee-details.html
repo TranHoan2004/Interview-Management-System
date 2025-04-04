@@ -2,6 +2,174 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 
 <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${detailsTitle}">List Users</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" type="text/css" th:href="@{/css/styles.css}" />
+    <style>
+        .avatar-preview {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid #ddd;
+            padding: 2px;
+            margin: 0 auto; /* Căn giữa */
+            display: block;
+        }
+
+        .avatar-preview[src=""] {
+            visibility: hidden;
+            display: none !important;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="d-flex">
+        <!-- Left Sidebar -->
+        <div class="sidebar" th:replace="~{component/left-sidebar::leftSidebar}"></div>
+
+        <!-- Main Content -->
+        <div class="content flex-grow-1">
+            <!-- Top Sidebar / Header - REDESIGNED -->
+            <div th:replace="~{component/new-top-sidebar::newTopSidebar(${userH3}, '/user/list', ${detailsTitle})}">
+            </div>
+
+            <div class="stats-section">
+                <div class="stat-card">
+                    <i class="fas fa-calendar-alt stat-card-bg-icon"></i>
+                    <div class="stat-card-title" th:text="${detailsTitle}"></div>
+                </div>
+            </div>
+
+            <!-- User details -->
+            <div class="stats-section">
+                <div class="stat-card">
+                    <div class="row">
+<!--                        avatar-->
+                        <div class="d-flex justify-content-center">
+                            <img id="avatarPreview" th:src="${avatarBase64}" alt="Avatar Preview"
+                                 class="avatar-preview mb-3">
+                        </div>
+                        <!-- Đặt nút ở một dòng riêng, căn phải -->
+                        <div class="row">
+                            <div class="col-12 text-end mb-3">
+                                <form th:action="@{/user/activate/{id}(id=${employee.id})}" th:method="post">
+                                    <button type="submit" class="btn btn-sm px-2 py-1"
+                                        th:classappend="${employee.status} ? 'btn-danger' : 'btn-success'"
+                                        th:text="${employee.status} ?  ${deactive_user} : ${active_user}">
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <p>
+                                <strong th:text="${full_name} + ':'">full_name</strong>
+                                <span th:text="${employee.fullname ?: 'N/A'}">Fullname</span>
+                            </p>
+
+                            <p>
+                                <strong th:text="${dob} + ':'"></strong>
+                                <span th:if="${employee.dob}"
+                                    th:text="${#temporals.format(employee.dob, 'dd/MM/yyyy')}"></span>
+                                <span th:unless="${employee.dob}">N/A</span>
+                            </p>
+
+                            <p>
+                                <strong th:text="${phone} + ':'"></strong>
+                                <a th:if="${employee.phone}" th:href="'tel:' + ${employee.phone}"
+                                    th:text="${employee.phone}"></a>
+                                <span th:unless="${employee.phone}">N/A</span>
+                            </p>
+
+                            <p th:switch="${employee.role.name()}">
+                                <strong th:text="${role} + ':'"></strong>
+                                <span th:case="ROLE_ADMINISTRATOR" th:text="${admin}"></span>
+                                <span th:case="ROLE_MANAGER" th:text="${manager}"></span>
+                                <span th:case="ROLE_INTERVIEWER" th:text="${interviewer}"></span>
+                                <span th:case="ROLE_RECRUITER" th:text="${recruiter}"></span>
+                            </p>
+
+                            <p>
+                                <strong th:text="${positionTitle} + ':'"></strong>
+                                <span
+                                    th:text="${position != null and not #strings.isEmpty(#strings.trim(position)) ? position : 'N/A'}"></span>
+                            </p>
+
+                            <p>
+                                <strong th:text="${status} + ':'"></strong>
+                                <span th:if="${employee.status}" class="badge bg-success" th:text="${active}"></span>
+                                <span th:unless="${employee.status}" class="badge bg-danger"
+                                    th:text="${deactive}"></span>
+                            </p>
+                        </div>
+
+                        <div class="col-md-6">
+                            <p>
+                                <strong th:text="${email} + ':'"></strong>
+                                <a th:if="${employee.email}" th:href="'mailto:' + ${employee.email}"
+                                    th:text="${employee.email}"></a>
+                                <span th:unless="${employee.email}">N/A</span>
+                            </p>
+
+                            <p>
+                                <strong th:text="${address} + ':'"></strong>
+                                <span th:text="${employee.address ?: 'N/A'}"></span>
+                            </p>
+
+                            <p>
+                                <strong th:text="${gender} + ':'"></strong>
+                                <span th:switch="${employee.gender}">
+                                    <span th:case="0" class="badge bg-primary" th:text="${male}"></span>
+                                    <span th:case="1" class="badge bg-danger" th:text="${female}"></span>
+                                    <span th:case="2" class="badge bg-secondary" th:text="${other_gender}"></span>
+                                    <span th:case="*" class="text-muted">N/A</span>
+                                </span>
+                            </p>
+
+                            <p>
+                                <strong th:text="${departmentTitle} + ':'"></strong>
+                                <span th:if="${department != null and not #strings.isEmpty(department)}"
+                                    class="badge bg-secondary me-1" th:text="${department}"></span>
+                                <span th:unless="${department != null and not #strings.isEmpty(department)}">N/A</span>
+                            </p>
+
+                            <p>
+                                <strong th:text="${note} + ':'"></strong>
+                                <span th:text="${employee.note ?: 'N/A'}"></span>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="text-center mt-4">
+                <a th:href="@{/user/list}" class="btn btn-outline-primary" th:text="${back_to_list}"></a>
+                <a th:href="@{/user/edit/{id}(id=${employee.id})}" class="btn btn-warning">
+                    <span th:text="'✏️ ' + ${editBtn}"></span>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Script đầy đủ cũ để hết ở index.js -->
+    <script th:src="@{/js/index.js}"></script>
+</body>
+
+</html>
+
+<!-- <!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title th:text="${detailsTitle}"></title>
@@ -89,162 +257,173 @@
     </style>
 </head>
 
-<body>
-<div class="bg-light d-flex">
-    <!-- Left sidebar -->
-    <div th:replace="~{component/left-sidebar::leftSidebar}"></div>
-    <div class="content flex-grow-1">
-        <div class="d-flex justify-content-between align-items-center mb-0">
-            <div class="container py-2 flex-grow-1" style="flex-basis: 68%;">
-                <h3 class="page-title fw-bold text-dark">
-                    <i class="fa fa-user"></i>
-                    <span th:text="${user_management}"></span>
-                </h3>
-                <nav aria-label="breadcrumb">
-                    <ol class="breadcrumb bg-white shadow-sm p-2 rounded">
-                        <li class="breadcrumb-item">
-                            <a th:href="@{/dashboard}" class="text-decoration-none text-primary fw-bold"
-                               th:text="${home_page}"></a>
-                        </li>
-                    </ol>
-                </nav>
-            </div>
-            <div th:replace="~{component/top-sidebar::topSidebar}"></div>
-        </div>
+<body> -->
+<!-- <div class="bg-light d-flex"> -->
+<!-- Left sidebar -->
+<!-- <div th:replace="~{component/left-sidebar::leftSidebar}"></div>
+        <div class="content flex-grow-1">
+            <div class="d-flex justify-content-between align-items-center mb-0">
+                <div class="container py-2 flex-grow-1" style="flex-basis: 68%;">
+                    <h3 class="page-title fw-bold text-dark">
+                        <i class="fa fa-user"></i>
+                        <span th:text="${user_management}"></span>
+                    </h3>
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb bg-white shadow-sm p-2 rounded">
+                            <li class="breadcrumb-item">
+                                <a th:href="@{/dashboard}" class="text-decoration-none text-primary fw-bold"
+                                    th:text="${home_page}"></a>
+                            </li>
+                        </ol>
+                    </nav>
+                </div>
+                <div th:replace="~{component/top-sidebar::topSidebar}"></div>
+            </div> -->
 
-        <h3>
-            <a th:href="@{/user/list}">
-                <u th:text="${userH3}"></u>
-            </a>
-            <i class="bi bi-chevron-right"></i>
-            <u th:text="${detailsTitle}"></u>
-        </h3>
+<!-- <h3>
+                <a th:href="@{/user/list}">
+                    <u th:text="${userH3}"></u>
+                </a>
+                <i class="bi bi-chevron-right"></i>
+                <u th:text="${detailsTitle}"></u>
+            </h3> -->
 
-        <!-- Employee Details Card -->
-        <div class="card shadow-lg p-4 bg-white rounded">
-            <div class="card-body row">
-                <!-- Đặt nút ở một dòng riêng, căn phải -->
-                <div class="row">
-                    <div class="col-12 text-end mb-3">
-                        <form th:action="@{/user/activate/{id}(id=${employee.id})}" th:method="post">
-                            <button type="submit" class="btn btn-sm px-2 py-1"
+<!-- Employee Details Card -->
+<!-- <div class="card shadow-lg p-4 bg-white rounded">
+                <div class="card-body row"> -->
+<!-- Đặt nút ở một dòng riêng, căn phải -->
+<!-- <div class="row">
+                        <div class="col-12 text-end mb-3">
+                            <form th:action="@{/user/activate/{id}(id=${employee.id})}" th:method="post">
+                                <button type="submit" class="btn btn-sm px-2 py-1"
                                     th:classappend="${employee.status} ? 'btn-danger' : 'btn-success'"
-                                    th:text="${employee.status} ? '❌ ' + ${deactive_user} : '✅ ' + ${active_user}">
-                            </button>
-                        </form>
+                                    th:text="${employee.status} ?  ${deactive_user} : ${active_user}">
+                                </button>
+                            </form>
+                        </div>
+                    </div> -->
+
+<!-- <div class="col-md-6">
+                        <p>
+                            <strong th:text="${full_name} + ':'"></strong>
+                            <span th:text="${employee.fullname ?: 'N/A'}"></span>
+                        </p>
+
+                        <p>
+                            <strong th:text="${dob} + ':'"></strong>
+                            <span th:if="${employee.dob}"
+                                th:text="${#temporals.format(employee.dob, 'dd/MM/yyyy')}"></span>
+                            <span th:unless="${employee.dob}">N/A</span>
+                        </p>
+
+                        <p>
+                            <strong th:text="${phone} + ':'"></strong>
+                            <a th:if="${employee.phone}" th:href="'tel:' + ${employee.phone}"
+                                th:text="${employee.phone}"></a>
+                            <span th:unless="${employee.phone}">N/A</span>
+                        </p>
+
+                        <p th:switch="${employee.role.name()}">
+                            <strong th:text="${role} + ':'"></strong>
+                            <span th:case="ROLE_ADMINISTRATOR" th:text="${admin}"></span>
+                            <span th:case="ROLE_MANAGER" th:text="${manager}"></span>
+                            <span th:case="ROLE_INTERVIEWER" th:text="${interviewer}"></span>
+                            <span th:case="ROLE_RECRUITER" th:text="${recruiter}"></span>
+                        </p>
+
+                        <p>
+                            <strong th:text="${positionTitle} + ':'"></strong>
+                            <span
+                                th:text="${position != null and not #strings.isEmpty(#strings.trim(position)) ? position : 'N/A'}"></span>
+                        </p>
+
+                        <p>
+                            <strong th:text="${status} + ':'"></strong>
+                            <span th:if="${employee.status}" class="badge bg-success" th:text="${active}"></span>
+                            <span th:unless="${employee.status}" class="badge bg-danger" th:text="${deactive}"></span>
+                        </p>
                     </div>
-                </div>
 
-                <div class="col-md-6">
-                    <p>
-                        <strong th:text="${full_name} + ':'"></strong>
-                        <span th:text="${employee.fullname ?: 'N/A'}"></span>
-                    </p>
+                    <div class="col-md-6">
+                        <p>
+                            <strong th:text="${email} + ':'"></strong>
+                            <a th:if="${employee.email}" th:href="'mailto:' + ${employee.email}"
+                                th:text="${employee.email}"></a>
+                            <span th:unless="${employee.email}">N/A</span>
+                        </p>
 
-                    <p>
-                        <strong th:text="${dob} + ':'"></strong>
-                        <span th:if="${employee.dob}" th:text="${#temporals.format(employee.dob, 'dd/MM/yyyy')}"></span>
-                        <span th:unless="${employee.dob}">N/A</span>
-                    </p>
+                        <p>
+                            <strong th:text="${address} + ':'"></strong>
+                            <span th:text="${employee.address ?: 'N/A'}"></span>
+                        </p>
 
-                    <p>
-                        <strong th:text="${phone} + ':'"></strong>
-                        <a th:if="${employee.phone}" th:href="'tel:' + ${employee.phone}"
-                           th:text="${employee.phone}"></a>
-                        <span th:unless="${employee.phone}">N/A</span>
-                    </p>
-
-                    <p th:switch="${employee.role.name()}">
-                        <strong th:text="${role} + ':'"></strong>
-                        <span th:case="ROLE_ADMINISTRATOR" th:text="${admin}"></span>
-                        <span th:case="ROLE_MANAGER" th:text="${manager}"></span>
-                        <span th:case="ROLE_INTERVIEWER" th:text="${interviewer}"></span>
-                        <span th:case="ROLE_RECRUITER" th:text="${recruiter}"></span>
-                    </p>
-
-                    <p>
-                        <strong th:text="${positionTitle} + ':'"></strong>
-                        <span th:text="${position != null and not #strings.isEmpty(#strings.trim(position)) ? position : 'N/A'}"></span>
-                    </p>
-
-                    <p>
-                        <strong th:text="${status} + ':'"></strong>
-                        <span th:if="${employee.status}" class="badge bg-success" th:text="${active}"></span>
-                        <span th:unless="${employee.status}" class="badge bg-danger" th:text="${deactive}"></span>
-                    </p>
-                </div>
-
-                <div class="col-md-6">
-                    <p>
-                        <strong th:text="${email} + ':'"></strong>
-                        <a th:if="${employee.email}" th:href="'mailto:' + ${employee.email}"
-                           th:text="${employee.email}"></a>
-                        <span th:unless="${employee.email}">N/A</span>
-                    </p>
-
-                    <p>
-                        <strong th:text="${address} + ':'"></strong>
-                        <span th:text="${employee.address ?: 'N/A'}"></span>
-                    </p>
-
-                    <p>
-                        <strong th:text="${gender} + ':'"></strong>
-                        <span th:switch="${employee.gender}">
+                        <p>
+                            <strong th:text="${gender} + ':'"></strong>
+                            <span th:switch="${employee.gender}">
                                 <span th:case="0" class="badge bg-primary" th:text="${male}"></span>
                                 <span th:case="1" class="badge bg-danger" th:text="${female}"></span>
                                 <span th:case="2" class="badge bg-secondary" th:text="${other_gender}"></span>
                                 <span th:case="*" class="text-muted">N/A</span>
                             </span>
-                    </p>
+                        </p>
 
-                    <p>
-                        <strong th:text="${departmentTitle} + ':'"></strong>
-                        <span th:if="${department != null and not #strings.isEmpty(department)}"
-                              class="badge bg-secondary me-1" th:text="${department}"></span>
-                        <span th:unless="${department != null and not #strings.isEmpty(department)}">N/A</span>
-                    </p>
+                        <p>
+                            <strong th:text="${departmentTitle} + ':'"></strong>
+                            <span th:if="${department != null and not #strings.isEmpty(department)}"
+                                class="badge bg-secondary me-1" th:text="${department}"></span>
+                            <span th:unless="${department != null and not #strings.isEmpty(department)}">N/A</span>
+                        </p>
 
-                    <p>
-                        <strong th:text="${note} + ':'"></strong>
-                        <span th:text="${employee.note ?: 'N/A'}"></span>
-                    </p>
+                        <p>
+                            <strong th:text="${note} + ':'"></strong>
+                            <span th:text="${employee.note ?: 'N/A'}"></span>
+                        </p>
+                    </div>
+                </div>
+            </div> -->
+
+<!-- Action Buttons -->
+<!-- <div class="text-center mt-4">
+                <a href="/user/list" class="btn btn-outline-primary" th:text="${back_to_list}"></a>
+                <a th:href="@{/user/edit/{id}(id=${employee.id})}" class="btn btn-warning">✏️ <span
+                        th:text="${editBtn}"></span></a> -->
+<!--            <a th:if="${employee.id != null}" href="#" class="btn btn-danger"-->
+<!--               data-bs-toggle="modal" data-bs-target="#deleteConfirmModal">🗑-->
+<!--                <span th:text="${deleteBtn}"></span>-->
+<!--            </a>-->
+<!-- </div>
+        </div>
+    </div> -->
+
+<!-- Delete Confirmation Modal -->
+<!-- <div class="modal fade" id="deleteConfirmModal" tabindex="-1" aria-labelledby="deleteConfirmLabel"
+        aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="deleteConfirmLabel" th:text="${confirm_deletion}"></h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" th:text="${notification_before_delete}"></div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"
+                        th:text="${cancelBtn}"></button>
+                    <a id="confirmDeleteBtn" th:href="@{/user/delete/{id}(id=${employee.id})}" class="btn btn-danger"
+                        th:text="${deleteBtn}"></a>
                 </div>
             </div>
         </div>
+    </div> -->
 
-        <!-- Action Buttons -->
-        <div class="text-center mt-4">
-            <a href="/user/list" class="btn btn-outline-primary" th:text="${back_to_list}"></a>
-            <a th:href="@{/user/edit/{id}(id=${employee.id})}" class="btn btn-warning">✏️ <span
-                    th:text="${editBtn}"></span></a>
-            <a href="#" class="btn btn-danger"
-               data-bs-toggle="modal" data-bs-target="#deleteConfirmModal"
-               onclick="setDeleteLink('/user/delete/' + [[${employee.id}]])">🗑 <span th:text="${deleteBtn}"></span></a>
-        </div>
-    </div>
-</div>
-
-<!-- Delete Confirmation Modal -->
-<div class="modal fade" id="deleteConfirmModal" tabindex="-1" aria-labelledby="deleteConfirmLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="deleteConfirmLabel" th:text="${confirm_deletion}"></h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body" th:text="${notification_before_delete}"></div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" th:text="${cancelBtn}"></button>
-                <a id="confirmDeleteBtn" href="#" class="btn btn-danger" th:text="${deleteBtn}"></a>
-            </div>
-        </div>
-    </div>
-</div>
-
-<script>
-    function setDeleteLink(url) {
-        document.getElementById("confirmDeleteBtn").setAttribute("href", url);
-    }
-</script>
+<!-- <script>
+        function setDeleteLink(url) {
+            if (url.includes("null")) {
+                alert("Lỗi: Không thể xác định ID của nhân viên!");
+                return;
+            }
+            document.getElementById("confirmDeleteBtn").setAttribute("href", url);
+        }
+    </script>
 </body>
-</html>
+
+</html> -->

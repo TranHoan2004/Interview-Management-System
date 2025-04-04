@@ -1,6 +1,9 @@
 package com.ims_team4.repository.impl;
 
 import com.ims_team4.model.Candidate;
+import com.ims_team4.model.Employee;
+import com.ims_team4.model.HighestLevel;
+import com.ims_team4.model.Position;
 import com.ims_team4.model.utils.CandidateStatus;
 import com.ims_team4.repository.CandidateRepository;
 import jakarta.persistence.EntityManager;
@@ -163,17 +166,17 @@ public class CandidateRepositoryImpl implements CandidateRepository {
     @Override
     @Transactional
     public void deleteByUserId(@NotNull Long userId) {
-        System.out.println("🔴 Deleting candidate with userId: " + userId);
+//        System.out.println("🔴 Deleting candidate with userId: " + userId);
 
         int deletedCount = em.createQuery("DELETE FROM Candidate c WHERE c.user.id = :userId")
                 .setParameter("userId", userId)
                 .executeUpdate();
 
-        if (deletedCount > 0) {
-            System.out.println("✅ Candidate deleted from database!");
-        } else {
-            System.out.println("❌ No candidate found with userId: " + userId);
-        }
+//        if (deletedCount > 0) {
+//            System.out.println("✅ Candidate deleted from database!");
+//        } else {
+//            System.out.println("❌ No candidate found with userId: " + userId);
+//        }
     }
 
     @Override
@@ -185,20 +188,64 @@ public class CandidateRepositoryImpl implements CandidateRepository {
                 .setParameter("userId", userId)
                 .executeUpdate();
 
-        if (updatedCount > 0) {
-            System.out.println("✅ Candidate banned successfully!");
-        } else {
-            System.out.println("❌ No candidate found with userId: " + userId);
-        }
+//        if (updatedCount > 0) {
+//            System.out.println("✅ Candidate banned successfully!");
+//        } else {
+//            System.out.println("❌ No candidate found with userId: " + userId);
+//        }
     }
 
 
+    @Override
+    public Optional<HighestLevel> findHighestLevelById(long id) {
+        return Optional.ofNullable(
+                em.unwrap(Session.class).createQuery("SELECT h FROM HighestLevel h WHERE h.id = :id", HighestLevel.class)
+                        .setParameter("id", id)
+                        .uniqueResult()
+        );
+    }
+
+    @Override
+    public Optional<Position> findPositionById(long id) {
+        return Optional.ofNullable(
+                em.unwrap(Session.class).createQuery("SELECT p FROM Position p WHERE p.id = :id", Position.class)
+                        .setParameter("id", id)
+                        .uniqueResult()
+        );
+    }
+
+    @Override
+    public Optional<Employee> findEmployeeById(long id) {
+        return Optional.ofNullable(
+                em.unwrap(Session.class).createQuery("SELECT e FROM Employee e WHERE e.id = :id", Employee.class)
+                        .setParameter("id", id)
+                        .uniqueResult()
+        );
+    }
 
 
+    @Override
+    public Optional<Employee> findDefaultEmployee() {
+        return Optional.ofNullable(
+                em.unwrap(Session.class)
+                        .createQuery("SELECT e FROM Employee e WHERE e.workingName = 'Default Employee'", Employee.class)
+                        .uniqueResult()
+        );
+    }
 
 
+    @Override
+    public int countByStatus(CandidateStatus status) {
+        Query query = em.createQuery("SELECT COUNT(c) FROM Candidate c WHERE c.status = :status");
+        query.setParameter("status", status);
+        return ((Long) query.getSingleResult()).intValue();
+    }
 
-
+    @Override
+    public int countAllCandidates() {
+        Query query = em.createQuery("SELECT COUNT(c) FROM Candidate c");
+        return ((Long) query.getSingleResult()).intValue();
+    }
 
 
 }

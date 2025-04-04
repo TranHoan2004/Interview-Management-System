@@ -3,7 +3,6 @@ package com.ims_team4.model;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
-import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -70,9 +69,6 @@ public class Offer {
     @JoinColumn(name = "candidate_id", nullable = false)
     private Candidate candidate;
 
-    // Offer M-1 Employee (Manager)
-
-    // mânger
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "employee_id", nullable = false)
     private Employee employee;
@@ -88,4 +84,14 @@ public class Offer {
         createdAt = LocalDateTime.now();
     }
 
+    public Offer(String interviewNotes, String note) {
+        this.interviewNotes = interviewNotes;
+        this.note = note;
+    }
+
+    @Override
+    public String toString() {
+        return "interviewNote:'" + interviewNotes + "', " +
+                "note:'" + note + "'";
+    }
 }

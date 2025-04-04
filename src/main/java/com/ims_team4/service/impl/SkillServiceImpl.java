@@ -45,4 +45,10 @@ public class SkillServiceImpl implements SkillService {
                 .name(skill.getName())
                 .build();
     }
+
+    @Override
+    public Set<Skill> getSkillsByIds(List<Long> skillIds) {
+        return new HashSet<>(skillRepository.findAllById(skillIds));
+    }
+
 }

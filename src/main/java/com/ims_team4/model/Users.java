@@ -44,6 +44,8 @@ public class Users implements Constants.Regex {
 
     private String address;
 
+    @Lob
+    @Column(name = "avatar", columnDefinition = "MEDIUMBLOB")
     private byte[] avatar;
 
     @Column(nullable = false)
@@ -66,9 +68,6 @@ public class Users implements Constants.Regex {
     @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.MERGE, mappedBy = "user")
     @JsonIgnore
     private Employee employee;
-
-//    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "user")
-//    private Notification notification;
 
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "user")
     private Set<Notification> notifications;

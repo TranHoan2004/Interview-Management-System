@@ -1,6 +1,5 @@
 package com.ims_team4.model;
 
-import com.ims_team4.model.Candidate;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
@@ -30,4 +29,13 @@ public class Position {
 
     @OneToMany(mappedBy = "position", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Set<Employee> employees;
+
+    public Position(String name) {
+        this.name = name;
+    }
+
+    @Override
+    public String toString() {
+        return "name:'" + name + "'";
+    }
 }

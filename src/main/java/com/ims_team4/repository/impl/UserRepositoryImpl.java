@@ -60,8 +60,12 @@ public class UserRepositoryImpl implements UserRepository {
     @NotNull
     @Override
     public <S extends Users> S save(@NotNull S entity) {
-        em.persist(entity);
-        return entity;
+        if (entity.getId() == null) {
+            em.persist(entity);
+            return entity;
+        } else {
+            return em.merge(entity);
+        }
     }
 
     @NotNull
@@ -122,4 +126,63 @@ public class UserRepositoryImpl implements UserRepository {
     public void deleteAll() {
 
     }
+
+    @Override
+    public boolean checkExistsById(@NotNull Long userId) {
+        Session session = em.unwrap(Session.class);
+        Long count = session.createQuery("select count(u) from Users u where u.id = :id", Long.class)
+                .setParameter("id", userId)
+                .uniqueResult();
+        return count != null && count > 0;
+    }
+
+    @Override
+    public void removeById(@NotNull Long userId) {
+        Session session = em.unwrap(Session.class);
+        Users user = session.get(Users.class, userId);
+        if (user != null) {
+            session.remove(user);
+//            System.out.println("🗑️ User with ID " + userId + " deleted!");
+        }
+//        else {
+//            System.out.println("⚠️ User with ID " + userId + " not found!");
+//        }
+    }
+
+    @Override
+    public boolean existsByEmail(String email) {
+        Long count = em.createQuery("SELECT COUNT(u) FROM Users u WHERE u.email = :email", Long.class)
+                .setParameter("email", email)
+                .getSingleResult();
+        return count != null && count > 0;
+    }
+
+    @Override
+    public boolean existsByPhone(String phone) {
+        Long count = em.createQuery("SELECT COUNT(u) FROM Users u WHERE u.phone = :phone", Long.class)
+                .setParameter("phone", phone)
+                .getSingleResult();
+        return count != null && count > 0;
+    }
+
+    @Override
+    public boolean existsByEmailAndUserIdNot(String email, Long userId) {
+        Long count = em.createQuery(
+                        "SELECT COUNT(u) FROM Users u WHERE u.email = :email AND u.id <> :userId", Long.class)
+                .setParameter("email", email)
+                .setParameter("userId", userId)
+                .getSingleResult();
+        return count != null && count > 0;
+    }
+
+    @Override
+    public boolean existsByPhoneAndUserIdNot(String phone, Long userId) {
+        Long count = em.createQuery(
+                        "SELECT COUNT(u) FROM Users u WHERE u.phone = :phone AND u.id <> :userId", Long.class)
+                .setParameter("phone", phone)
+                .setParameter("userId", userId)
+                .getSingleResult();
+        return count != null && count > 0;
+    }
+
 }

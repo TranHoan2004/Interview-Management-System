@@ -22,10 +22,11 @@ public class HighestLevelRepositoryImpl implements HighestLevelRepository {
         this.em = em;
     }
 
+
     @Override
     public List<HighestLevel> getAllHighestLevel() {
         Session session = em.unwrap(Session.class);
-        List<HighestLevel> highestLevels = session.createQuery("select h from HighestEducation h", HighestLevel.class).getResultList();
+        List<HighestLevel> highestLevels = session.createQuery("select h from HighestLevel h", HighestLevel.class).getResultList();
         session.close();
         return highestLevels;
     }
@@ -94,4 +95,13 @@ public class HighestLevelRepositoryImpl implements HighestLevelRepository {
     public void deleteAll() {
 
     }
+
+    @Override
+    public Optional<HighestLevel> findByIdCustom(@NotNull Long id) {
+        return Optional.ofNullable(em.find(HighestLevel.class, id)); // ✅ Dùng EntityManager tìm trực tiếp
+    }
+
+
+
+
 }

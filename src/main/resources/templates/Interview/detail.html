@@ -1,196 +1,659 @@
-<!-- file: templates/interview/detail.html -->
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
+
 <head>
-  <meta charset="UTF-8"/>
-  <title>Interview Details</title>
-  <link rel="stylesheet"
-        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"/>
-  <link rel="stylesheet"
-        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"/>
-  <style>
-    /* Tổng thể */
-    body {
-      background-color: #f8f9fa;
-      font-family: 'Arial', sans-serif;
-    }
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${interview_details}"></title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" />
+    <style>
+        :root {
+            --primary: #2c3e50;
+            --secondary: #1abc9c;
+            --accent: #3498db;
+            --light: #f8f9fa;
+            --dark: #343a40;
+            --success: #2ecc71;
+            --warning: #f39c12;
+            --danger: #e74c3c;
+            --card-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s ease;
+        }
 
-    .logo {
-      font-weight: bold;
-      background: #fff;
-      color: #16a085;
-      padding: 2px 8px;
-      border-radius: 4px;
-    }
+        /* General Styles */
+        body {
+            background-color: #f5f7fa;
+            font-family: 'Segoe UI', 'Arial', sans-serif;
+            line-height: 1.6;
+            color: #333;
+        }
 
-    /* Sidebar */
-    .sidebar {
-      width: 240px;
-      background: #2c3e50;
-      height: 100vh;
-      position: fixed;
-      padding: 20px;
-      color: white;
-    }
+        .logo {
+            font-weight: bold;
+            background: #fff;
+            color: var(--secondary);
+            padding: 2px 8px;
+            border-radius: 4px;
+        }
 
-    .sidebar h4 {
-      font-weight: bold;
-      text-align: center;
-      margin-bottom: 20px;
-    }
+        /* Sidebar */
+        .sidebar {
+            width: 240px;
+            background: var(--primary);
+            height: 100vh;
+            position: fixed;
+            padding: 20px;
+            color: white;
+            z-index: 100;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+        }
 
-    .sidebar a {
-      display: flex;
-      align-items: center;
-      padding: 12px;
-      color: white;
-      text-decoration: none;
-      border-radius: 5px;
-      transition: background 0.3s;
-    }
+        .sidebar h4 {
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 20px;
+        }
 
-    .sidebar a.fw-bold {
-      background: #34495e;
-    }
+        .sidebar a {
+            display: flex;
+            align-items: center;
+            padding: 12px;
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+            border-radius: 5px;
+            transition: var(--transition);
+            margin-bottom: 4px;
+        }
 
-    .sidebar a:hover {
-      background: #1abc9c;
-    }
+        .sidebar a.fw-bold {
+            background: #34495e;
+        }
 
-    .sidebar i {
-      margin-right: 10px;
-    }
+        .sidebar a:hover {
+            background: var(--secondary);
+            color: white;
+            transform: translateX(4px);
+        }
 
-    .sidebar a.active {
-      background-color: #007bff;
-      color: white;
-    }
+        .sidebar i {
+            margin-right: 10px;
+            width: 20px;
+            text-align: center;
+        }
 
-    /* Main Content */
-    .content {
-      margin-left: 260px;
-      padding: 40px;
-      transition: all 0.3s;
-    }
+        .sidebar a.active {
+            background-color: var(--accent);
+            color: white;
+        }
 
-    .content h3 {
-      color: #2c3e50;
-      font-weight: bold;
-    }
+        /* Main Content */
+        .content {
+            margin-left: 260px;
+            padding: 30px;
+            transition: var(--transition);
+        }
 
-    .content a {
-      text-decoration: none;
-      font-weight: bold;
-      color: #007bff;
-    }
+        .content h2 {
+            color: var(--primary);
+            font-weight: 700;
+            margin-bottom: 25px;
+            position: relative;
+            padding-bottom: 10px;
+        }
 
-    .content a:hover {
-      text-decoration: underline;
-    }
-  </style>
+        .content h2:after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 50px;
+            height: 3px;
+            background: var(--secondary);
+            border-radius: 2px;
+        }
+
+        /* Cards and Details */
+        .detail-card {
+            background: white;
+            border-radius: 10px;
+            box-shadow: var(--card-shadow);
+            overflow: hidden;
+            transition: var(--transition);
+            border: none;
+            margin-bottom: 20px;
+        }
+
+        .detail-card:hover {
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.12);
+            transform: translateY(-5px);
+        }
+
+        .card-header {
+            background: var(--primary);
+            color: white;
+            padding: 15px 20px;
+            font-weight: 600;
+            font-size: 18px;
+            border-bottom: none;
+        }
+
+        .detail-row {
+            display: flex;
+            border-bottom: 1px solid #eee;
+            padding: 12px 0;
+        }
+
+        .detail-row:last-child {
+            border-bottom: none;
+        }
+
+        .detail-label {
+            font-weight: 600;
+            width: 180px;
+            color: var(--dark);
+            padding-right: 15px;
+        }
+
+        .detail-value {
+            flex: 1;
+        }
+
+        /* Status indicators */
+        .status-badge {
+            padding: 5px 10px;
+            border-radius: 50px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            display: inline-block;
+        }
+
+        .status-new {
+            background-color: #e3f2fd;
+            color: #1976d2;
+        }
+
+        .status-invited {
+            background-color: #e8f5e9;
+            color: #388e3c;
+        }
+
+        .status-interviewed {
+            background-color: #fff9c4;
+            color: #fbc02d;
+        }
+
+        .status-cancelled {
+            background-color: #ffebee;
+            color: #d32f2f;
+        }
+
+        /* Action Buttons */
+        .action-btn {
+            border-radius: 50px;
+            padding: 8px 20px;
+            font-weight: 600;
+            transition: var(--transition);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            border: none;
+            margin-right: 10px;
+            display: inline-flex;
+            align-items: center;
+        }
+
+        .action-btn i {
+            margin-right: 8px;
+        }
+
+        .btn-info {
+            background-color: var(--accent);
+            color: white;
+        }
+
+        .btn-info:hover {
+            background-color: #2980b9;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+            color: white;
+        }
+
+        .btn-warning {
+            background-color: var(--warning);
+            color: white;
+        }
+
+        .btn-warning:hover {
+            background-color: #e67e22;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+            color: white;
+        }
+
+        .btn-danger {
+            background-color: var(--danger);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background-color: #c0392b;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+            color: white;
+        }
+
+        .btn-success {
+            background-color: var(--success);
+            color: white;
+        }
+
+        .btn-success:hover {
+            background-color: #27ae60;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+            color: white;
+        }
+
+        .btn-secondary {
+            background-color: #95a5a6;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background-color: #7f8c8d;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+            color: white;
+        }
+
+        /* Action panel */
+        .action-panel {
+            background: #fff;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: var(--card-shadow);
+            margin-top: 20px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            align-items: center;
+            transition: var(--transition);
+        }
+
+        .action-panel:hover {
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .divider {
+            height: 35px;
+            width: 1px;
+            background-color: #ddd;
+            margin: 0 10px;
+        }
+
+        /* Notification */
+        .notification-toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: white;
+            border-left: 4px solid var(--success);
+            padding: 15px 20px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            border-radius: 4px;
+            z-index: 1050;
+            transform: translateX(400px);
+            opacity: 0;
+            transition: all 0.5s ease;
+        }
+
+        .notification-toast.show {
+            transform: translateX(0);
+            opacity: 1;
+        }
+
+        .notification-toast.success {
+            border-left-color: var(--success);
+        }
+
+        .notification-toast.error {
+            border-left-color: var(--danger);
+        }
+
+        /* Responsiveness */
+        @media (max-width: 992px) {
+            .content {
+                margin-left: 0;
+                padding: 80px 15px 15px;
+            }
+
+            .sidebar {
+                transform: translateX(-100%);
+            }
+
+            .sidebar.show {
+                transform: translateX(0);
+            }
+
+            .detail-label {
+                width: 140px;
+            }
+        }
+    </style>
 </head>
+
 <body>
-<div class="d-flex">
+    <div class="d-flex">
 
-  <!-- Left Sidebar -->
-  <div class="sidebar" th:replace="~{component/left-sidebar :: leftSidebar}"></div>
+        <!-- Left Sidebar -->
+        <div class="sidebar" th:replace="~{component/left-sidebar :: leftSidebar}"></div>
 
-  <!-- Main Content -->
-  <div class="content flex-grow-1 p-4">
-    <!-- Top Sidebar / Header -->
-    <div th:replace="~{component/top-sidebar :: topSidebar}"></div>
+        <!-- Main Content -->
+        <div class="content flex-grow-1 p-4">
+            <!-- Top Sidebar / Header -->
+            <div th:replace="~{component/top-sidebar :: topSidebar}"></div>
 
-    <div class="container mt-4">
-      <h2 class="fw-bold">Interview Schedule Detail</h2>
+            <div class="container-fluid mt-4">
+                <div class="d-flex align-items-center justify-content-between mb-4">
+                    <h2 class="mb-0">
+                        <i class="fas fa-calendar-check me-2 text-secondary"></i>
+                        <span th:text="${interview_details}"></span>
+                    </h2>
 
-      <div class="card">
-        <div class="card-body">
-          <p><strong>Interview ID:</strong> <span th:text="${interview.id}"></span></p>
-          <p><strong>Title:</strong> <span th:text="${interview.title}"></span></p>
-          <p><strong>Candidate ID:</strong> <span th:text="${interview.candidateId}"></span></p>
-          <p><strong>Job ID:</strong> <span th:text="${interview.jobId}"></span></p>
-          <p><strong>Schedule Time:</strong>
-            <span th:text="${#temporals.format(interview.scheduleTime, 'dd/MM/yyyy HH:mm')}"></span>
-          </p>
-          <p><strong>Location:</strong> <span th:text="${interview.locations}"></span></p>
-          <p><strong>Recruiter Owner:</strong> <span th:text="${interview.recruiterOwner}"></span></p>
-          <p><strong>Meeting ID:</strong> <span th:text="${interview.meetId}"></span></p>
-          <p><strong>Note:</strong> <span th:text="${interview.note}"></span></p>
-          <p><strong>Result:</strong> <span th:text="${interview.result ?: 'N/A'}"></span></p>
-          <p><strong>Status:</strong> <span th:text="${interview.status}"></span></p>
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb m-0">
+                            <li class="breadcrumb-item">
+                                <a th:href="@{/dashboard}" class="text-decoration-none" th:text="${home_page}"></a>
+                            </li>
+
+                            <li class="breadcrumb-item">
+                                <a th:href="@{/interview/list}" class="text-decoration-none"
+                                    th:text="${interview_title}"></a>
+                            </li>
+                            <li class="breadcrumb-item active" aria-current="page" th:text="${details_title}"></li>
+                        </ol>
+                    </nav>
+                </div>
+
+                <!-- Main Card -->
+                <div class="detail-card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <span>
+                            <i class="fas fa-info-circle me-2"></i>
+                            <span th:text="${interview_information}"></span>
+                        </span>
+
+                        <!-- Fixed status badge with separate class attributes -->
+                        <span class="status-badge" th:classappend="${interview.status.name() == new_title ? 'status-new' :
+                                           interview.status.name() == invited_title ? 'status-invited' :
+                                           interview.status.name() == interviewed_title ? 'status-interviewed' :
+                                           'status-cancelled'}">
+                            <i class="fas" th:classappend="${interview.status.name() == new_title ? 'fa-clock' :
+                                           interview.status.name() == invited_title ? 'fa-envelope' :
+                                           interview.status.name() == interviewed_title ? 'fa-check-circle' :
+                                           'fa-times-circle'}"></i>
+                            <span th:text="${interview.status}"></span>
+                        </span>
+                    </div>
+
+                    <div class="card-body p-4">
+                        <div class="row">
+                            <div class="col-lg-6">
+                                <div class="detail-row">
+                                    <div class="detail-label" th:text="${interview_id}"></div>
+                                    <div class="detail-value" th:text="${interview.id}"></div>
+                                </div>
+
+                                <div class="detail-row">
+                                    <div class="detail-label" th:text="${title_label}"></div>
+                                    <div class="detail-value" th:text="${interview.title}"></div>
+                                </div>
+
+                                <div class="detail-row">
+                                    <div class="detail-label" th:text="${candidate_id}"></div>
+                                    <div class="detail-value" th:text="${interview.candidateId}"></div>
+                                </div>
+
+                                <div class="detail-row">
+                                    <div class="detail-label" th:text="${job_id}"></div>
+                                    <div class="detail-value" th:text="${interview.jobId}"></div>
+                                </div>
+
+                                <div class="detail-row">
+                                    <div class="detail-label" th:text="${recruiter_owner}"></div>
+                                    <div class="detail-value" th:text="${interview.recruiterOwner}"></div>
+                                </div>
+                            </div>
+
+                            <div class="col-lg-6">
+                                <div class="detail-row">
+                                    <div class="detail-label">
+                                        <i class="far fa-calendar-alt me-1 text-secondary"></i>
+                                        <span th:text="${schedule_time_title}"></span>
+                                    </div>
+
+                                    <div class="detail-value fw-semibold"
+                                        th:text="${#temporals.format(interview.scheduleTime, 'dd/MM/yyyy HH:mm')}">
+                                    </div>
+                                </div>
+
+                                <div class="detail-row">
+                                    <div class="detail-label">
+                                        <i class="fas fa-map-marker-alt me-1 text-secondary"></i>
+                                        <span th:text="${location_label}"></span>
+                                    </div>
+                                    <div class="detail-value" th:text="${interview.locations}"></div>
+                                </div>
+
+                                <div class="detail-row">
+                                    <div class="detail-label">
+                                        <i class="fas fa-video me-1 text-secondary"></i>
+                                        <span th:text="${meeting_id}"></span>
+                                    </div>
+
+                                    <div class="detail-value">
+                                        <span th:text="${interview.meetId}"></span>
+                                        <button class="btn btn-sm btn-outline-secondary ms-2"
+                                            onclick="copyToClipboard(this)" th:attr="data-text=${interview.meetId}">
+                                            <i class="far fa-copy"></i>
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <div class="detail-row">
+                                    <div class="detail-label">
+                                        <i class="fas fa-star me-1 text-warning"></i>
+                                        <span th:text="${result_title}"></span>
+                                    </div>
+
+                                    <div class="detail-value">
+                                        <span th:if="${interview.result}" th:text="${interview.result}"
+                                            class="fw-semibold" th:classappend="${
+                                          interview.result == 'PASS' ? 'text-success' :
+                                          interview.result == 'FAIL' ? 'text-danger' : ''}"></span>
+                                        <span th:unless="${interview.result}" class="text-muted fst-italic">N/A</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mt-3">
+                            <div class="detail-row">
+                                <div class="detail-label">
+                                    <i class="far fa-sticky-note me-1 text-secondary"></i>
+                                    <span th:text="${note}"></span>
+                                </div>
+                                <div class="detail-value">
+                                    <p th:if="${interview.note}" th:text="${interview.note}" class="mb-0"></p>
+                                    <p th:unless="${interview.note}" class="text-muted fst-italic mb-0"
+                                        th:text="${no_note_provide}"></p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Action Panel -->
+                <div class="action-panel">
+                    <!-- Button to send reminder (UC22) - if user is Interviewer -->
+                    <button class="action-btn btn-info"
+                        th:if="${session.account != null && session.account.role != null && session.account.role.name() == 'ROLE_INTERVIEWER'}"
+                        onclick="sendReminder()">
+                        <i class="fa fa-envelope"></i>
+                        <span th:text="${send_reminder}"></span>
+                    </button>
+
+                    <!-- Button to edit (UC20) -->
+                    <a class="action-btn btn-warning"
+                        th:if="${session.account != null && session.account.role != null && session.account.role.name() != 'ROLE_INTERVIEWER'}"
+                        th:href="@{/interview/editInterviewView(id=${interview.id})}">
+                        <i class="fa fa-edit"></i>
+                        <span th:text="${editBtn}"></span>
+                    </a>
+
+                    <!-- Button to Cancel (UC21) -->
+                    <button class="action-btn btn-danger"
+                        th:if="${session.account != null && session.account.role != null && session.account.role.name() != 'ROLE_INTERVIEWER'}"
+                        onclick="cancelInterview()">
+                        <i class="fa fa-times"></i>
+                        <span th:text="${cancelBtn}"></span>
+                    </button>
+
+                    <!-- Button to Submit Result (UC19) -->
+                    <a class="action-btn btn-success"
+                        th:if="${session.account != null && session.account.role != null && session.account.role.name() == 'ROLE_INTERVIEWER'}"
+                        th:href="@{/interview/submitResultView(id=${interview.id})}">
+                        <i class="fa fa-check"></i>
+                        <span th:text="${submit_result}"></span>
+                    </a>
+
+                    <div class="divider"></div>
+
+                    <a class="action-btn btn-secondary" th:href="@{/interview/list}">
+                        <i class="fa fa-arrow-left"></i>
+                        <span th:text="${normal_back_to_list}"></span>
+                    </a>
+                </div>
+            </div>
         </div>
-      </div>
-
-      <div class="mt-3">
-        <!-- Button to send reminder (UC22) - if user is Interviewer, or you might show it to Admin too -->
-        <button class="btn btn-sm btn-info me-2"
-                th:if="${session.account.getRole().name() == 'ROLE_INTERVIEWER'}"
-                onclick="sendReminder()">
-          <i class="fa fa-envelope"></i> Send Reminder
-        </button>
-
-        <!-- Button to edit (UC20) -->
-        <a class="btn btn-sm btn-warning me-2"
-           th:if="${session.account.getRole().name() != 'ROLE_INTERVIEWER'}"
-           th:href="@{/interview/editInterviewView(id=${interview.id})}">
-          <i class="fa fa-edit"></i> Edit
-        </a>
-
-        <!-- Button to Cancel (UC21) -->
-        <button class="btn btn-sm btn-danger me-2"
-                th:if="${session.account.getRole().name() != 'ROLE_INTERVIEWER'}"
-                onclick="cancelInterview()">
-          <i class="fa fa-times"></i> Cancel
-        </button>
-
-        <!-- Button to Submit Result (UC19) -->
-        <a class="btn btn-sm btn-success"
-           th:if="${session.account.getRole().name() == 'ROLE_INTERVIEWER'}"
-           th:href="@{/interview/submitResultView(id=${interview.id})}">
-          <i class="fa fa-check"></i> Submit Result
-        </a>
-
-        <a class="btn btn-secondary" th:href="@{/interview/list}">
-          <i class="fa fa-arrow-left"></i> Back
-        </a>
-      </div>
     </div>
-  </div>
-</div>
 
-<script>
-  function sendReminder() {
-    const interviewId = /*[[${interview.id}]]*/ 0;
-    if(!confirm("Send a reminder for this interview?")) return;
-    fetch(`/interview/reminder?interviewId=${interviewId}`, {
-      method: 'POST'
-    })
-            .then(resp => {
-              if(resp.ok) {
-                alert("Reminder sent successfully!");
-                location.reload();
-              } else {
-                alert("Failed to send reminder!");
-              }
-            });
-  }
+    <!-- Notification Toast -->
+    <div id="notification" class="notification-toast">
+        <div class="d-flex align-items-center">
+            <i id="notificationIcon" class="fas fa-check-circle me-2 text-success"></i>
+            <span id="notificationMessage" th:text="${message_goes_here}" </span>
+        </div>
+    </div>
 
-  function cancelInterview() {
-    const interviewId = /*[[${interview.id}]]*/ 0;
-    if(!confirm("Are you sure you want to cancel this interview?")) return;
-    fetch(`/interview/cancelInterview?id=${interviewId}`, {
-      method: 'PUT'
-    })
-            .then(resp => {
-              if(resp.ok) {
-                alert("Interview cancelled successfully!");
-                location.reload();
-              } else {
-                alert("Failed to cancel!");
-              }
+    <script th:inline="javascript">
+        // Get interview ID from Thymeleaf model
+        const interviewId = [[${ interview.id }]];
+
+        // Function to send reminder
+        function sendReminder() {
+            if (!confirm("Send a reminder for this interview?")) return;
+
+            showLoading();
+
+            fetch(`/interview/reminder?interviewId=${interviewId}`, {
+                method: 'GET'  // Changed to GET per your controller
+            }).then(resp => {
+                if (resp.ok) {
+                    showNotification('success', 'Reminder sent successfully!');
+                    setTimeout(() => location.reload(), 1500);
+                } else {
+                    showNotification('error', 'Failed to send reminder!');
+                }
+            }).catch(err => {
+                showNotification('error', 'An error occurred!');
+                console.error(err);
             });
-  }
-</script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+        }
+
+        // Function to cancel interview
+        function cancelInterview() {
+            if (!confirm("Are you sure you want to cancel this interview?")) return;
+
+            showLoading();
+
+            fetch(`/interview/cancelInterview?id=${interviewId}`, {
+                method: 'GET'  // Changed to GET per your controller
+            })
+                .then(resp => {
+                    if (resp.ok) {
+                        showNotification('success', 'Interview cancelled successfully!');
+                        setTimeout(() => location.reload(), 1500);
+                    } else {
+                        showNotification('error', 'Failed to cancel interview!');
+                    }
+                })
+                .catch(err => {
+                    showNotification('error', 'An error occurred!');
+                    console.error(err);
+                });
+        }
+
+        // Function to copy text to clipboard
+        function copyToClipboard(button) {
+            const text = button.getAttribute('data-text');
+            navigator.clipboard.writeText(text)
+                .then(() => {
+                    const originalHTML = button.innerHTML;
+                    button.innerHTML = '<i class="fas fa-check"></i>';
+                    setTimeout(() => {
+                        button.innerHTML = originalHTML;
+                    }, 1500);
+                    showNotification('success', 'Copied to clipboard!');
+                })
+                .catch(err => {
+                    console.error('Failed to copy: ', err);
+                    showNotification('error', 'Failed to copy to clipboard');
+                });
+        }
+
+        // Show notification toast
+        function showNotification(type, message) {
+            const toast = document.getElementById('notification');
+            const icon = document.getElementById('notificationIcon');
+            const messageElement = document.getElementById('notificationMessage');
+
+            // Set icon and class based on type
+            if (type === 'success') {
+                icon.className = 'fas fa-check-circle me-2 text-success';
+                toast.className = 'notification-toast success show';
+            } else {
+                icon.className = 'fas fa-exclamation-circle me-2 text-danger';
+                toast.className = 'notification-toast error show';
+            }
+
+            messageElement.textContent = message;
+
+            // Hide after 3 seconds
+            setTimeout(() => {
+                toast.className = 'notification-toast';
+            }, 3000);
+        }
+
+        // Show loading state
+        function showLoading() {
+            const toast = document.getElementById('notification');
+            const icon = document.getElementById('notificationIcon');
+            const messageElement = document.getElementById('notificationMessage');
+
+            icon.className = 'fas fa-circle-notch fa-spin me-2 text-primary';
+            toast.className = 'notification-toast show';
+            messageElement.textContent = 'Processing...';
+        }
+
+        // Check if success parameter is true
+        document.addEventListener('DOMContentLoaded', function () {
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.get('success') === 'true') {
+                showNotification('success', 'Operation completed successfully!');
+            }
+        });
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
+
 </html>

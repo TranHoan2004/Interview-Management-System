@@ -1,6 +1,7 @@
 package com.ims_team4.repository;
 
 import com.ims_team4.model.Offer;
+import com.ims_team4.model.utils.CandidateStatus;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.CrudRepository;
 
@@ -21,7 +22,7 @@ public interface OfferRepository extends CrudRepository<Offer, Long> {
 
     boolean editOffer(int offerid, int salary, LocalDate from, LocalDate to, LocalDate duedate, String interviewNote, int interviewId, String note, int recruiterOwner, int cid, int coid, int did, int eid, int lid, int pid, int updateBy);
 
-    boolean updateStatusOffer(int offerid, int status);
+    boolean updateStatusOffer(int offerid, int status, CandidateStatus candidateStatus);
 
     long countAllOffers(int id);
 

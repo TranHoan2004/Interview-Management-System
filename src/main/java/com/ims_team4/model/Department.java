@@ -1,6 +1,5 @@
 package com.ims_team4.model;
 
-import com.ims_team4.model.Employee;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -8,7 +7,6 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 
-import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -17,7 +15,7 @@ import java.util.Set;
 @SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
-@ToString(exclude = {"offers", "employees"})
+@ToString(exclude = { "offers", "employees" })
 public class Department {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

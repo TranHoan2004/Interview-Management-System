@@ -1,5 +1,6 @@
 package com.ims_team4.controller;
 
+import com.ims_team4.controller.utils.UrlIdEncoder;
 import com.ims_team4.dto.ChatDTO;
 import com.ims_team4.dto.ChatDetailDTO;
 import com.ims_team4.dto.EmployeeDTO;
@@ -28,7 +29,9 @@ public class ChatController {
     }
 
     @GetMapping("/chat")
-    public String chat(@RequestParam("rid") int rid, @RequestParam("mid") int mid, @RequestParam("role") String role, Model model, HttpSession session) {
+    public String chat(@RequestParam("rid") String ridHash, @RequestParam("mid") String midHash, @RequestParam("role") String role, Model model, HttpSession session) {
+        int rid = UrlIdEncoder.decodeId(ridHash);
+        int mid = UrlIdEncoder.decodeId(midHash);
         int chatId = chatService.getChatIdByRecruiterAndManager(rid, mid);
         if (chatId == -1) {
             chatId = chatService.insertChat(rid, mid);

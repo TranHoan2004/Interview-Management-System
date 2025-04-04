@@ -20,13 +20,10 @@ spring:
     view:
       prefix: classpath:/templates/
       suffix: .html
-
 # Protect cookies from csrf and xss
 server:
   servlet:
     session:
       cookie:
         http-only: true
-        secure: true
-        same-site: strict
 

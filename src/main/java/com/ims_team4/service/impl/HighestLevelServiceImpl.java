@@ -8,6 +8,7 @@ import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -31,4 +32,12 @@ public class HighestLevelServiceImpl implements HighestLevelService {
                 .name(highestLevel.getName())
                 .build();
     }
+
+    @Override
+    public Optional<HighestLevel> getHighestLevelById(long id) {
+        return highestLevelRepository.findByIdCustom(id); // ✅ Gọi repository đúng cách
+    }
+
+
+
 }

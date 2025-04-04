@@ -1,6 +1,7 @@
 package com.ims_team4.repository.impl;
 
 import com.ims_team4.model.*;
+import com.ims_team4.model.utils.CandidateStatus;
 import com.ims_team4.model.utils.HrRole;
 import com.ims_team4.repository.OfferRepository;
 import jakarta.persistence.EntityManager;
@@ -250,18 +251,19 @@ public class OfferRepositoryImpl implements OfferRepository {
 
 
     @Override
-    public boolean updateStatusOffer(int offerid, int status) {
+    public boolean updateStatusOffer(int offerid, int status, CandidateStatus candidateStatus) {
         Session session = em.unwrap(Session.class);
         Transaction transaction = session.beginTransaction();
 
         try {
             Offer offer = session.get(Offer.class, offerid);
-
+            Candidate c = offer.getCandidate();
             if (offer == null) {
                 session.close();
                 return false;
             }
             offer.setStatusOffer(session.get(StatusOffer.class, status));
+            c.setStatus(candidateStatus);
             session.merge(offer);
             transaction.commit();
             return true;
@@ -460,12 +462,12 @@ public class OfferRepositoryImpl implements OfferRepository {
             switch (e.getRole()) {
                 case ROLE_RECRUITER:
                     queryString = "SELECT o FROM Offer o WHERE o.recruiterOwner = :eid "
-                            + "AND o.contractPeriodFrom <= :to AND o.contractPeriodTo >= :from";
+                            + "AND o.contractPeriodFrom >= :from AND o.contractPeriodTo <= :to";
                     break;
                 case ROLE_MANAGER:
                 case ROLE_ADMINISTRATOR:
                     queryString = "SELECT o FROM Offer o WHERE o.employee.id = :eid "
-                            + "AND o.contractPeriodFrom <= :to AND o.contractPeriodTo >= :from";
+                            + "AND o.contractPeriodFrom >= :from AND o.contractPeriodTo <= :to";
                     break;
                 default:
                     return offers;

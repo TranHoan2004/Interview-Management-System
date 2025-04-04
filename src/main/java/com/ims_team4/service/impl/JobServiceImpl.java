@@ -8,36 +8,48 @@ import com.ims_team4.service.BenefitService;
 import com.ims_team4.service.JobService;
 import com.ims_team4.service.LevelService;
 import com.ims_team4.service.SkillService;
+import com.ims_team4.utils.excel.ImportExcelFile;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.stream.Collectors;
 
+
 @Service
 public class JobServiceImpl implements JobService {
-    private final JobRepository jobRepository;
-    private final LevelRepository levelRepository;
-    private final SkillRepository skillRepository;
-    private final BenefitRepository benefitRepository;
-    private final UserRepository userRepository;
-    private final LevelService levelService;
-    private final SkillService skillService;
-    private final BenefitService benefitService;
 
-    public JobServiceImpl(JobRepository jobRepository, LevelRepository levelRepository, SkillRepository skillRepository, BenefitRepository benefitRepository, UserRepository userRepository, LevelService levelService, SkillService skillService, BenefitService benefitService) {
-        this.jobRepository = jobRepository;
-        this.levelRepository = levelRepository;
-        this.skillRepository = skillRepository;
-        this.benefitRepository = benefitRepository;
-        this.userRepository = userRepository;
-        this.levelService = levelService;
-        this.skillService = skillService;
-        this.benefitService = benefitService;
-    }
+    @Autowired
+    private JobRepository jobRepository;
+
+    @Autowired
+    private LevelRepository levelRepository;
+
+    @Autowired
+    private SkillRepository skillRepository;
+
+    @Autowired
+    private BenefitRepository benefitRepository;
+
+    @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
+    private LevelService levelService;
+
+    @Autowired
+    private SkillService skillService;
+
+    @Autowired
+    private BenefitService benefitService;
 
     @Override
     public List<JobDTO> getAllJobs() {
@@ -117,6 +129,7 @@ public class JobServiceImpl implements JobService {
             throw e;
         }
     }
+
     @Override
     public boolean editJob(Long managerId, Long jobId, JobDTO jobDTO) {
         Optional<Job> jobOptional = jobRepository.findJobDetailForManager(managerId, jobId);

@@ -2,16 +2,77 @@
 <html xmlns:th="http://www.thymeleaf.org" lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Offer</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title th:text="${admin_offer_title}"></title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
-
     <style>
-        /* Tổng thể */
+        /* Global Styles */
         body {
             background-color: #eef1f6;
             font-family: 'Arial', sans-serif;
+            padding-top: 0;
+        }
+
+        /* Mobile menu toggle button */
+        .mobile-menu-toggle {
+            display: none;
+            position: fixed;
+            top: 15px;
+            left: 15px;
+            z-index: 1001;
+            background: #2c3e50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 8px 12px;
+            font-size: 1.2rem;
+            cursor: pointer;
+        }
+
+        /* Sidebar styles */
+        .sidebar {
+            background-color: #2c3e50;
+            color: white;
+            height: 100vh;
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 250px;
+            transition: transform 0.3s ease;
+            z-index: 1000;
+            overflow-y: auto;
+            padding-top: 20px;
+        }
+
+        .sidebar h4 {
+            color: white;
+            padding: 0 20px 20px;
+            margin: 0;
+        }
+
+        .sidebar a {
+            display: flex;
+            align-items: center;
+            color: white;
+            padding: 12px 20px;
+            text-decoration: none;
+            transition: background-color 0.3s;
+        }
+
+        .sidebar a:hover {
+            background-color: #34495e;
+        }
+
+        .sidebar a.active {
+            background-color: #007bff;
+            color: white;
+        }
+
+        .sidebar a i {
+            margin-right: 10px;
+            width: 20px;
+            text-align: center;
         }
 
         .logo {
@@ -22,73 +83,69 @@
             border-radius: 4px;
         }
 
-        /* Sidebar */
-        .sidebar {
-            width: 240px;
-            background: #2c3e50;
-            height: 100vh;
+        /* Overlay when sidebar is open on mobile */
+        .sidebar-overlay {
+            display: none;
             position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+        }
+
+        /* Main Content Area */
+        .main-content {
+            margin-left: 250px;
             padding: 20px;
-            color: white;
+            transition: all 0.3s ease;
         }
 
-        .sidebar h4 {
+        /* Header Styles */
+        .page-title {
+            font-size: 35px;
             font-weight: bold;
-            text-align: center;
-            margin-bottom: 20px;
+            color: #2c3e50;
+            margin-bottom: 0;
         }
 
-        .sidebar a {
-            display: flex;
-            align-items: center;
-            padding: 12px;
-            color: white;
-            text-decoration: none;
-            border-radius: 5px;
-            transition: background 0.3s;
+        .breadcrumb {
+            background-color: white;
+            box-shadow: 0px 1px 3px rgba(0, 0, 0, 0.1);
         }
 
-        .sidebar a.fw-bold {
-            background: #34495e;
-        }
-
-        .sidebar a:hover {
-            background: #1abc9c;
-        }
-
-        .sidebar i {
-            margin-right: 10px;
-        }
-
-        /* Nội dung chính */
-        .content {
-            margin-left: 260px;
-            padding: 30px;
-        }
-
-        /* Thanh tìm kiếm và bộ lọc */
+        /* Filter Bar Styles */
         .filter-bar {
             display: flex;
             gap: 10px;
             align-items: center;
+            margin-bottom: 20px;
         }
 
-        .filter-bar .form-control, .filter-bar .form-select {
+        .filter-bar .form-control,
+        .filter-bar .form-select {
             max-width: 220px;
         }
 
-        /* Bảng dữ liệu */
+        .search-container {
+            flex: 1;
+        }
+
+        /* Table Styles */
         .table-container {
             background: white;
             padding: 20px;
             border-radius: 8px;
             box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+            overflow-x: auto;
         }
 
         .table th {
             background-color: #2c3e50;
             color: white;
             text-align: center;
+            white-space: nowrap;
         }
 
         .table td {
@@ -104,14 +161,7 @@
             color: #1abc9c;
         }
 
-        /* Tiêu đề */
-        .page-title {
-            font-size: 35px;
-            font-weight: bold;
-            color: #2c3e50;
-        }
-
-        /* Nút bấm */
+        /* Button Styles */
         .btn-primary {
             background-color: #1abc9c;
             border: none;
@@ -130,19 +180,7 @@
             background-color: #2c3e50;
         }
 
-        .search {
-            width: 24% !important;
-        }
-
-        .status {
-            margin-right: 6rem;
-        }
-
-        .title {
-            margin-bottom: -10px;
-        }
-
-        /* Popup container */
+        /* Notification Popup */
         .custom-popup {
             position: fixed;
             top: 20px;
@@ -158,7 +196,6 @@
             animation: fadeInSlideDown 0.5s ease-out;
         }
 
-        /* Nội dung popup */
         .popup-content {
             display: flex;
             align-items: center;
@@ -167,30 +204,8 @@
             color: #333;
         }
 
-        /* Nút đóng */
-        .btn-close {
-            background: none;
-            border: none;
-            font-size: 16px;
-            cursor: pointer;
-            margin-left: auto;
-        }
-
-        /* Hiệu ứng xuất hiện */
-        @keyframes fadeInSlideDown {
-            from {
-                opacity: 0;
-                transform: translateY(-20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        /* Nút đóng popup đẹp hơn */
         .btn-close-custom {
-            background: #ff5e57; /* Màu đỏ nổi bật */
+            background: #ff5e57;
             border: none;
             width: 30px;
             height: 30px;
@@ -202,7 +217,7 @@
         }
 
         .btn-close-custom:hover {
-            background: #e74c3c; /* Màu đậm hơn khi hover */
+            background: #e74c3c;
             transform: scale(1.1);
         }
 
@@ -211,9 +226,191 @@
             font-size: 16px;
         }
 
+        @keyframes fadeInSlideDown {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Responsive Styles */
+        @media (max-width: 1199.98px) {
+            .filter-bar {
+                flex-wrap: wrap;
+            }
+
+            .search-container {
+                min-width: 100%;
+            }
+        }
+
+        @media (max-width: 991.98px) {
+            .mobile-header {
+                display: flex;
+            }
+
+            .sidebar {
+                transform: translateX(-100%);
+            }
+
+            .sidebar.open {
+                transform: translateX(0);
+            }
+
+            .sidebar-overlay.active {
+                display: block;
+            }
+
+            .main-content {
+                margin-left: 0;
+                padding-top: 80px;
+            }
+
+            .page-title {
+                font-size: 28px;
+            }
+
+            .filter-bar {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 15px;
+            }
+
+            .filter-bar .form-control,
+            .filter-bar .form-select {
+                max-width: 100%;
+            }
+
+            .select-container {
+                width: 100% !important;
+                margin-right: 0 !important;
+            }
+
+            .status {
+                margin-right: 0 !important;
+            }
+        }
+
+        @media (max-width: 767.98px) {
+            .page-title {
+                font-size: 24px;
+            }
+
+            .table-container {
+                padding: 10px;
+            }
+
+            .table td, .table th {
+                padding: 0.5rem;
+                font-size: 0.9rem;
+            }
+
+            .breadcrumb {
+                font-size: 0.85rem;
+            }
+        }
+
+        @media (max-width: 575.98px) {
+            .page-title {
+                font-size: 20px;
+            }
+
+            .main-content {
+                padding: 15px 10px;
+            }
+
+            .button-group {
+                width: 100%;
+            }
+
+            .button-group .btn {
+                width: 100%;
+                margin-bottom: 10px;
+            }
+
+            .pagination {
+                flex-wrap: wrap;
+            }
+        }
     </style>
 </head>
+
 <body>
+<!-- Mobile Header -->
+<div class="mobile-header">
+    <div class="logo">DEV IMS</div>
+    <button class="menu-toggle" id="menuToggle">
+        <i class="fas fa-bars"></i>
+    </button>
+</div>
+
+<!-- Sidebar -->
+<button class="mobile-menu-toggle" id="mobileMenuToggle">
+    <i class="fas fa-bars"></i>
+</button>
+
+<!-- Sidebar Overlay -->
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+<!-- Sidebar -->
+<div id="sidebar" class="sidebar" th:fragment="leftSidebar">
+    <h4><span class="logo">DEV</span> IMS</h4>
+
+    <a th:href="@{/dashboard}">
+        <i class="fa-solid fa-house"></i>
+        <div th:text="${homeLeftSidebar}"></div>
+    </a>
+
+    <a th:href="@{/candidate/list}">
+        <i class="fa-solid fa-user"></i>
+        <div th:text="${candidateLeftSidebar}"></div>
+    </a>
+
+    <!--Job-->
+    <div th:if="${session.account.getRole().name().equals('ROLE_MANAGER')}">
+        <a th:href="@{/jobs/manager/list/{id}(id=${session.account.getUserID()})}">
+            <i class="fa-solid fa-briefcase"></i>
+            <div th:text="${jobLeftSidebar}"></div>
+        </a>
+    </div>
+
+    <div th:if="${session.account.getRole().name().equals('ROLE_ADMINISTRATOR')}">
+        <a th:href="@{/jobs/admin/listAllJob}">
+            <i class="fa-solid fa-briefcase"></i>
+            <div th:text="${jobLeftSidebar}"></div>
+        </a>
+    </div>
+
+    <a th:href="@{/interview/list}">
+        <i class="fa-solid fa-comments"></i>
+        <div th:text="${interviewLeftSidebar}"></div>
+    </a>
+
+    <div th:if="${session.account.getRole().name().equals('ROLE_RECRUITER')}">
+        <a th:href="@{/offer/offer/{id}(id=${session.account.getUserID()})}" id="offer-link">
+            <i class="fa-solid fa-file-alt"></i>
+            <div th:text="${offerLeftSidebar}"></div>
+        </a>
+    </div>
+
+    <div th:if="${session.account.getRole().name().equals('ROLE_MANAGER')}">
+        <a th:href="@{/offer/managerOffer/{id}(id=${session.account.getUserID()})}" id="manager-offer-link">
+            <i class="fa-solid fa-file-alt"></i>
+            <div th:text="${offerLeftSidebar}"></div>
+        </a>
+    </div>
+
+    <div th:if="${session.account.getRole().name().equals('ROLE_ADMINISTRATOR')}">
+        <a th:href="@{/offer/adminOffer/{id}(id=${session.account.getUserID()})}" id="admin-offer-link">
+            <i class="fa-solid fa-file-alt"></i>
+            <div th:text="${offerLeftSidebar}"></div>
+        </a>
+        <a th:href="@{/user/list}" id="user-management-link">
+            <i class="fa-solid fa-users"></i>
+            <div th:text="${userManagementLeftSidebar}"></div>
+        </a>
+    </div>
+</div>
+
+<!-- Notification Popup -->
 <div id="notification" class="custom-popup">
     <div class="popup-content">
         <i class="fa-solid fa-circle-check text-success fa-2x"></i>
@@ -223,21 +420,20 @@
         </button>
     </div>
 </div>
-<!-- Sidebar -->
-<div class="sidebar" th:replace="~{component/left-sidebar::leftSidebar}"></div>
 
-<!-- Nội dung -->
-<div class="content">
-    <div class="d-flex justify-content-between align-items-center mb-0">
+<!-- Main Content -->
+<div class="main-content">
+    <div class="d-flex justify-content-between align-items-center mb-0 flex-wrap">
         <div class="container py-2 flex-grow-1" style="flex-basis: 68%;">
             <h3 class="page-title fw-bold text-dark">
-                <i class="fa-solid fa-clipboard-list text-primary"></i> Offer List
+                <i class="fa-solid fa-clipboard-list text-primary"></i>
+                <span th:text="${offer_list}"></span>
             </h3>
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb bg-white shadow-sm p-2 rounded">
                     <li class="breadcrumb-item">
                         <a th:href="@{/offer/adminOffer/{rid}(rid=${rid})}"
-                           class="text-decoration-none text-primary fw-bold">Offer List</a>
+                           class="text-decoration-none text-primary fw-bold" th:text="${offer_list}"></a>
                     </li>
                 </ol>
             </nav>
@@ -245,37 +441,41 @@
         <div th:replace="~{component/top-sidebar::topSidebar}"></div>
     </div>
 
-    <!-- Thanh tìm kiếm và bộ lọc -->
+    <!-- Search and Filter Bar -->
     <form th:action="@{/offer/search}" method="get">
-        <div class="filter-bar mb-3">
+        <div class="filter-bar">
             <input type="hidden" name="rid" th:value="${rid}"/>
-            <div class="search input-group">
+            <div class="search-container input-group">
                 <span class="input-group-text"><i class="fa-solid fa-search"></i></span>
-                <input type="text" name="text" class="form-control" placeholder="Search">
+                <input type="text" name="text" class="form-control" th:placeholder="${search}">
             </div>
-            <select class="form-select" name="dep">
-                <option value="0">Department</option>
-                <option th:each="department : ${listD}" th:value="${department.getId()}"
-                        th:text="${department.getName()}"></option>
-            </select>
-            <select class="form-select status" name="status">
-                <option value="0">Status</option>
-                <option th:each="statusOffer : ${listS}" th:value="${statusOffer.getId()}"
-                        th:text="${statusOffer.getStatusName()}"></option>
-            </select>
-            <button type="submit" class="btn btn-secondary">Search</button>
-            <button type="button" class="btn btn-outline-secondary" data-bs-toggle="modal"
-                    data-bs-target="#exportModal">
-                Export
-            </button>
+            <div class="select-container d-flex flex-wrap gap-2" style="width: 45%">
+                <select class="form-select" name="dep">
+                    <option value="0" th:text="${department}"></option>
+                    <option th:each="department : ${listD}" th:value="${department.getId()}"
+                            th:text="${department.getName()}"></option>
+                </select>
+
+                <select class="form-select status" name="status">
+                    <option value="0" th:text="${status}"></option>
+                    <option th:each="statusOffer : ${listS}" th:value="${statusOffer.getId()}"
+                            th:text="${statusOffer.getStatusName()}"></option>
+                </select>
+            </div>
+            <div class="button-group d-flex gap-2">
+                <button type="submit" class="btn btn-secondary" th:text="${search}"></button>
+                <button type="button" class="btn btn-outline-secondary" data-bs-toggle="modal"
+                        data-bs-target="#exportModal" th:text="${exportBtn}"></button>
+            </div>
         </div>
     </form>
 
+    <!-- Export Modal -->
     <div class="modal fade" id="exportModal" tabindex="-1" aria-labelledby="exportModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <form th:action="@{/offer/export}" class="modal-content rounded-3 shadow-lg p-3">
                 <div class="modal-header bg-primary-subtle text-dark position-relative">
-                    <h5 class="modal-title" id="exportModalLabel">Export Offer</h5>
+                    <h5 class="modal-title" id="exportModalLabel" th:text="${export_offer_btn}"></h5>
                     <button type="button" class="btn btn-danger btn-close position-absolute top-0 end-0 m-2 p-2"
                             data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
@@ -283,35 +483,36 @@
                     <input type="hidden" name="rid" th:value="${rid}">
 
                     <div class="mb-3">
-                        <label for="from" class="form-label fw-bold">From:</label>
+                        <label for="from" class="form-label fw-bold" th:text="${from_label} + ':'"></label>
                         <input type="date" id="from" name="from" class="form-control" required>
                     </div>
 
                     <div class="mb-3">
-                        <label for="to" class="form-label fw-bold">To:</label>
+                        <label for="to" class="form-label fw-bold" th:text="${to_label} + ':'"></label>
                         <input type="date" id="to" name="to" class="form-control" required>
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="submit" class="btn btn-primary">Submit</button>
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary" th:text="${submitBtn}"></button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"
+                            th:text="${cancelBtn}"></button>
                 </div>
             </form>
         </div>
     </div>
 
-    <!-- Bảng dữ liệu -->
+    <!-- Data Table -->
     <div class="table-container">
         <table class="table table-bordered table-hover">
             <thead>
             <tr>
-                <th>Candidate Name</th>
-                <th>Email</th>
-                <th>Approver</th>
-                <th>Department</th>
-                <th>Notes</th>
-                <th>Status</th>
-                <th>Action</th>
+                <th th:text="${candidate_name}"></th>
+                <th th:text="${email}"></th>
+                <th th:text="${approver_title}"></th>
+                <th th:text="${department}"></th>
+                <th th:text="${note}"></th>
+                <th th:text="${status}"></th>
+                <th th:text="${action}"></th>
             </tr>
             </thead>
             <tbody>
@@ -367,47 +568,72 @@
                 </li>
             </ul>
         </nav>
-
     </div>
 </div>
-</body>
 
 <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const mobileMenuToggle = document.getElementById('mobileMenuToggle');
+        const sidebar = document.getElementById('sidebar');
+        const sidebarOverlay = document.getElementById('sidebarOverlay');
+
+        // Toggle sidebar on menu button click
+        mobileMenuToggle.addEventListener('click', function() {
+            sidebar.classList.toggle('open');
+            sidebarOverlay.classList.toggle('active');
+        });
+
+        // Close sidebar when clicking on overlay
+        sidebarOverlay.addEventListener('click', function() {
+            sidebar.classList.remove('open');
+            sidebarOverlay.classList.remove('active');
+        });
+
+        // Close sidebar when clicking outside on mobile
+        document.addEventListener('click', function(event) {
+            if (window.innerWidth <= 991.98) {
+                const isClickInsideSidebar = sidebar.contains(event.target);
+                const isClickOnMenuToggle = mobileMenuToggle.contains(event.target);
+
+                if (!isClickInsideSidebar && !isClickOnMenuToggle && sidebar.classList.contains('open')) {
+                    sidebar.classList.remove('open');
+                    sidebarOverlay.classList.remove('active');
+                }
+            }
+        });
+    });
+
     document.addEventListener("DOMContentLoaded", function () {
-        var msg = `[[${msg}]]`;  // Thymeleaf lấy msg từ session
+        let msg = `[[${msg}]]`;
         if (msg && msg !== "null") {
             showNotification(msg);
         }
     });
 
     function showNotification(message) {
-        var notification = document.getElementById("notification");
-        var notificationText = document.getElementById("notification-text");
+        let notification = document.getElementById("notification");
+        let notificationText = document.getElementById("notification-text");
         notificationText.innerText = message;
         notification.style.display = "block";
 
-        // Tự động ẩn sau 3 giây
         setTimeout(() => {
             closeNotification();
         }, 3000);
     }
 
     function closeNotification() {
-        var notification = document.getElementById("notification");
+        let notification = document.getElementById("notification");
         notification.style.display = "none";
     }
 
     function checkStatusToEdit(offerId, status, eid) {
-        if (status == "1") {
+        if (status === "1") {
             window.location.href = `/offer/editoffer/${offerId}?rid=${eid}`;
         } else {
             alert("Editing is not allowed because the status is invalid.");
         }
     }
-
-    function logout() {
-        window.location.href = "/logout";
-    }
 </script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
 </html>

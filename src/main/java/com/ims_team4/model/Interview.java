@@ -1,7 +1,6 @@
 package com.ims_team4.model;
 
 import com.ims_team4.model.utils.InterviewStatus;
-import com.ims_team4.model.Job;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -11,8 +10,8 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.HashSet;
 import java.util.Set;
+
 @Entity
 @Table(name = "interview")
 @Data
@@ -25,7 +24,7 @@ public class Interview {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(columnDefinition = "TEXT")
+    @Column(columnDefinition = "TEXT", nullable = false)
     private String title;
 
     @Column(columnDefinition = "TEXT")
@@ -65,11 +64,7 @@ public class Interview {
     private long recruiterOwner;
 
     @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(
-            name = "interview_employee",
-            joinColumns = @JoinColumn(name = "interview_id"),
-            inverseJoinColumns = @JoinColumn(name = "employee_id")
-    )
+    @JoinTable(name = "interview_employee", joinColumns = @JoinColumn(name = "interview_id"), inverseJoinColumns = @JoinColumn(name = "employee_id"))
     private Set<Employee> employees;
 
     @ManyToOne

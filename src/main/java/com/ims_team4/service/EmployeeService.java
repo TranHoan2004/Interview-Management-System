@@ -1,9 +1,11 @@
 package com.ims_team4.service;
 
 import com.ims_team4.dto.EmployeeDTO;
+import com.ims_team4.model.Employee;
 import com.ims_team4.model.utils.HrRole;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface EmployeeService {
     // 🔹 Lấy danh sách tất cả nhân viên
@@ -13,10 +15,7 @@ public interface EmployeeService {
     List<EmployeeDTO> findByPosition(String position);
 
     // 🔹 Thêm mới nhân viên từ EmployeeDTO
-    void saveEmployee(EmployeeDTO employee);
-
-    // 🔹 Cập nhật thông tin nhân viên
-    EmployeeDTO updateEmployee(Long id, EmployeeDTO employee);
+    void saveEmployee(EmployeeDTO employeeDTO, Long userId, Long deptId, Long posId);
 
     void updateEmployeesPassword(EmployeeDTO employee);
 
@@ -31,4 +30,11 @@ public interface EmployeeService {
 
     List<EmployeeDTO> search(String title, Long positionId);
 
+    Optional<Employee> getEmployeeByUserId(Long userId);
+
+    Optional<Employee> getDefaultEmployee();
+
+    EmployeeDTO getEmployeeDTOByEmail(String email);
+
+    List<EmployeeDTO> getActiveEmployees();
 }

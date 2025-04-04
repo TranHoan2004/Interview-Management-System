@@ -23,4 +23,13 @@ public class Level {
 
     @OneToMany(mappedBy = "level", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Set<Offer> offers;
+
+    public Level(String name) {
+        this.name = name;
+    }
+
+    @Override
+    public String toString() {
+        return "name:'" + name + "'";
+    }
 }

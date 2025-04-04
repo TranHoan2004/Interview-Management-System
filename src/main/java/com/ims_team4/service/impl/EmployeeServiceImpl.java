@@ -1,49 +1,33 @@
 package com.ims_team4.service.impl;
 
 import com.ims_team4.dto.EmployeeDTO;
-import com.ims_team4.model.Department;
 import com.ims_team4.model.Employee;
-import com.ims_team4.model.Position;
-import com.ims_team4.model.Users;
 import com.ims_team4.model.utils.HrRole;
-import com.ims_team4.repository.DepartmentRepository;
 import com.ims_team4.repository.EmployeeRepository;
-import com.ims_team4.repository.PositionRepository;
-import com.ims_team4.repository.UserRepository;
-import com.ims_team4.service.DepartmentService;
 import com.ims_team4.service.EmployeeService;
-import com.ims_team4.service.PositionService;
-import com.ims_team4.service.UserService;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.nio.ByteBuffer;
 import java.util.List;
 import java.util.Optional;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 import static com.ims_team4.utils.RandomCode.generateSixRandomCodes;
-import static com.ims_team4.utils.webSocket.InsertImageToMySQL.avatarValues;
 
 @Service
 // TrangNT
 public class EmployeeServiceImpl implements EmployeeService {
     private final EmployeeRepository employeeRepository;
-    private final DepartmentService departmentService;
-    private final PositionService positionService;
-    private final UserService userService;
     private final BCryptPasswordEncoder encoder;
+    private final Logger logger = java.util.logging.Logger.getLogger(EmployeeServiceImpl.class.getName());
 
-    public EmployeeServiceImpl(BCryptPasswordEncoder encoder, EmployeeRepository employeeRepository,
-                               DepartmentService departmentService, PositionService positionService, UserService userService) {
+    public EmployeeServiceImpl(BCryptPasswordEncoder encoder, EmployeeRepository employeeRepository) {
         this.encoder = encoder;
         this.employeeRepository = employeeRepository;
-        this.departmentService = departmentService;
-        this.positionService = positionService;
-        this.userService = userService;
     }
 
     @Override
@@ -91,65 +75,27 @@ public class EmployeeServiceImpl implements EmployeeService {
                 .collect(Collectors.toList());
     }
 
-
     @Override
-    public void saveEmployee(@NotNull EmployeeDTO employeeDTO) {
-        // Kiểm tra xem Employee đã tồn tại chưa
+    @Transactional
+    public void saveEmployee(@NotNull EmployeeDTO employeeDTO, Long userId, Long deptId, Long posId) {
         Employee existingEmployee = employeeRepository.findById(employeeDTO.getUserID()).orElse(null);
 
         if (existingEmployee == null) {
-            // Employee chưa tồn tại => INSERT
-            existingEmployee = Employee.builder()
-                    .user(userService.getUser(employeeDTO.getUserID()))
-                    .department(departmentService.findById(employeeDTO.getDepartmentId()))
-                    .position(positionService.findById(employeeDTO.getPositionId()))
-                    .password(encoder.encode("123"))
-                    .workingName(generateSixRandomCodes())
-                    .role(employeeDTO.getRole())
-                    .build();
+            // Employee chưa tồn tại => INSERT bằng HQL
+            employeeRepository.insertEmployee(
+                    userId,
+                    deptId,
+                    posId,
+                    encoder.encode(employeeDTO.getPassword()),
+                    generateSixRandomCodes(),
+                    employeeDTO.getRole().toString()
+            );
         } else {
-            // Employee đã tồn tại => UPDATE
-            existingEmployee.setDepartment(departmentService.findById(employeeDTO.getDepartmentId()));
-            existingEmployee.setPosition(positionService.findById(employeeDTO.getPositionId()));
-            existingEmployee.setRole(employeeDTO.getRole());
+            // Employee đã tồn tại => UPDATE bằng HQL
+            // Chuyển từ String thành Enum
+
+            employeeRepository.updateEmployee(existingEmployee.getUser().getId(), userId, deptId, posId, employeeDTO.getRole(), employeeDTO.getPassword());
         }
-
-        // Lưu vào database (có thể là INSERT hoặc UPDATE)
-        employeeRepository.save(existingEmployee);
-    }
-
-
-    @Override
-    public EmployeeDTO updateEmployee(Long id, @NotNull EmployeeDTO employeeDTO) {
-        // Tìm Employee từ ID
-        Employee existingEmployee = employeeRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Employee not found with ID: " + id));
-
-        // Cập nhật thông tin User
-//        Users user = existingEmployee.getUser();
-        // user.setDob(employeeDTO.getUser().getDob());
-        // user.setGender(employeeDTO.getUser().getGender());
-        // user.setEmail(employeeDTO.getUser().getEmail());
-        // user.setAddress(employeeDTO.getUser().getAddress());
-        // user.setFullname(employeeDTO.getUser().getFullname());
-        // user.setPhone(employeeDTO.getUser().getPhone());
-        // user.setRole(employeeDTO.getUser().getRole());
-
-
-//         Kiểm tra & lấy Department & Position từ DB
-        Department dept = departmentService.findById(employeeDTO.getDepartmentId());
-
-        Position position =  positionService.findById(employeeDTO.getPositionId());
-
-        // Cập nhật thông tin Employee
-        existingEmployee.setPassword(employeeDTO.getPassword());
-        existingEmployee.setPosition(position);
-        existingEmployee.setRole(employeeDTO.getRole());
-        existingEmployee.setDepartment(dept);
-
-        Employee savedEmployee = employeeRepository.save(existingEmployee);
-        return convertToDTO(savedEmployee);
-
     }
 
     @Override
@@ -165,7 +111,8 @@ public class EmployeeServiceImpl implements EmployeeService {
     public void deleteById(Long id) {
         Employee employee = employeeRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Cannot delete. Employee not found with ID: " + id));
-
+        employee.setDepartment(null);
+        employee.setPosition(null);
         // Xóa Employee (do CascadeType.ALL, User cũng bị xóa)
         employeeRepository.delete(employee);
     }
@@ -217,34 +164,33 @@ public class EmployeeServiceImpl implements EmployeeService {
                 .build();
     }
 
-//    private Employee convert(@NotNull EmployeeDTO dto, Department department, Position position) {
-    // if (dto == null)
-    // return null;
-    // User user = User.builder()
-    // .id(dto.getUser().getId()) // Nếu ID null, tạo User mới
-    // .dob(dto.getUser().getDob())
-    // .gender(dto.getUser().getGender())
-    // .email(dto.getUser().getEmail())
-    // .address(dto.getUser().getAddress())
-    // .fullname(dto.getUser().getFullname())
-    // .phone(dto.getUser().getPhone())
-    // .role(dto.getUser().getRole())
-    // .build();
+    @Override
+    public Optional<Employee> getEmployeeByUserId(Long userId) {
+        Optional<Employee> employee = employeeRepository.findByUserId(userId);
 
-    // Employee employee = Employee.builder()
-    // .id(dto.getUser().getId())
-    // .password(dto.getPassword())
-    // .position(position)
-    // .department(department)
-    // .build();
-    // return employee;
-//        return Employee.builder()
-//                .user(dto.getUser())
-//                .password(dto.getPassword())
-//                .role(dto.getRole())
-//                .position(position)
-//                .department(department)
-//                .build();
-//    }
+        if (employee.isEmpty()) {
+            logger.severe("❌ Employee NOT FOUND for User ID: " + userId);
+        } else {
+            logger.info("✅ Employee FOUND: " + employee.get().getUser().getFullname());
+        }
 
+        return employee;
+    }
+
+    @Override
+    public Optional<Employee> getDefaultEmployee() {
+        return employeeRepository.findDefaultEmployee();
+    }
+
+    @Override
+    public EmployeeDTO getEmployeeDTOByEmail(String email) {
+        return convertToDTO(employeeRepository.findByEmail(email));
+    }
+
+    @Override
+    public List<EmployeeDTO> getActiveEmployees() {
+        return employeeRepository.getActiveEmployees().stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
+    }
 }

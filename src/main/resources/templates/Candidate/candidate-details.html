@@ -1,70 +1,19 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Candidate Details</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
-
+    <title th:text="${candidate_details}"></title>
+<!--    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">-->
+<!--    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">-->
+<!--    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>-->
+<!--    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">-->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+          rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <link rel="stylesheet" type="text/css" th:href="@{/css/styles.css}" />
     <style>
-        /* Tổng thể */
-        body {
-            background-color: #eef1f6;
-            font-family: 'Arial', sans-serif;
-        }
 
-        .logo {
-            font-weight: bold;
-            background: #fff;
-            color: #16a085;
-            padding: 2px 8px;
-            border-radius: 4px;
-        }
-
-        /* Sidebar */
-        .sidebar {
-            width: 240px;
-            background: #2c3e50;
-            height: 100vh;
-            position: fixed;
-            padding: 20px;
-            color: white;
-        }
-
-        .sidebar h4 {
-            font-weight: bold;
-            text-align: center;
-            margin-bottom: 20px;
-        }
-
-        .sidebar a {
-            display: flex;
-            align-items: center;
-            padding: 12px;
-            color: white;
-            text-decoration: none;
-            border-radius: 5px;
-            transition: background 0.3s;
-        }
-
-        .sidebar a.fw-bold {
-            background: #34495e;
-        }
-
-        .sidebar a:hover{
-            background: #1abc9c;
-        }
-
-        .sidebar i {
-            margin-right: 10px;
-        }
-
-        /* Nội dung chính */
-        .content {
-            margin-left: 260px;
-            padding: 30px;
-        }
 
         /* Thanh tìm kiếm và bộ lọc */
         .filter-bar {
@@ -82,7 +31,7 @@
             background: white;
             padding: 20px;
             border-radius: 8px;
-            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
         }
 
         .table th {
@@ -112,19 +61,13 @@
         }
 
         /* Nút bấm */
-        .btn-primary {
-            background-color: #1abc9c;
-            border: none;
-        }
+
 
         .btn-primary:hover {
             background-color: #16a085;
         }
 
-        .btn-secondary {
-            background-color: #34495e;
-            border: none;
-        }
+
 
         .btn-secondary:hover {
             background-color: #2c3e50;
@@ -186,270 +129,539 @@
                 opacity: 1;
                 transform: translateY(0);
             }
-        }        .badge-male { background-color: #007bff; }
-        .badge-female { background-color: #e83e8c; }
-        .badge-other { background-color: #6c757d; }
+        }
+
+        .badge-male {
+            background-color: #007bff;
+        }
+
+        .badge-female {
+            background-color: #e83e8c;
+        }
+
+        .badge-other {
+            background-color: #6c757d;
+        }
+
+        .btn-edit {
+            background-color: #0acce6; /* Xanh ngọc */
+            color: white;
+        }
+
+        /* Nút Ban */
+        .ban-btn {
+            background-color: #e67e22 !important; /* Cam đậm */
+            color: white !important;
+            border: none;
+        }
+
+        /* Nút Unban */
+        .unban-btn {
+            background-color: #2ecc71 !important; /* Xanh lá nhạt */
+            color: white !important;
+            border: none;
+        }
+
+        .container-detail {
+            width: calc(100% - 48px); /* Điều chỉnh để khớp với top sidebar */
+            margin: 0 auto; /* Canh giữa container */
+        }
+
     </style>
 </head>
 <body>
 <!-- Toàn bộ thông tin chỉ hiển thị nếu người dùng có một trong các role -->
-<div sec:authorize="hasAnyRole('ROLE_RECRUITER', 'ROLE_MANAGER', 'ROLE_ADMINISTRATOR', 'ROLE_INTERVIEWER')">
-    <div class="d-flex">
-        <!-- Left sidebar -->
-        <div class="sidebar" th:replace="~{component/left-sidebar::leftSidebar}"></div>
+<div class="d-flex">
+    <!-- Left sidebar -->
+    <div class="sidebar" th:replace="~{component/left-sidebar::leftSidebar}"></div>
 
-        <!-- Nội dung chính -->
-        <div class="content flex-grow-1">
-            <div class="main-content">
-                <div class="d-flex justify-content-between align-items-center mb-0">
-                    <div class="container py-2 flex-grow-1" style="flex-basis: 68%;">
-                        <h3 class="page-title fw-bold text-dark">
-                            <i class="fa fa-briefcase text-primary"></i> Candidate
-                        </h3>
+    <!-- Nội dung chính -->
+    <div class="content flex-grow-1">
+        <div class="main-content">
+            <div class="top-sidebar">
+                <div class="top-sidebar-container">
+                    <div class="breadcrumb-section">
                         <nav aria-label="breadcrumb">
-                            <ol class="breadcrumb bg-white shadow-sm p-2 rounded">
+                            <ol class="breadcrumb mb-0">
                                 <li class="breadcrumb-item">
-                                    <a href="/candidate/list" class="text-decoration-none text-primary fw-bold">Candidate List</a>
+                                    <a href="/dashboard">
+                                        <i class="fas fa-home"></i>
+                                        <span th:text="${home_page}"></span>
+                                    </a>
                                 </li>
-                                <li class="breadcrumb-item active" aria-current="page">Candidate Details</li>
+                                <li class="breadcrumb-item">
+                                    <a th:href="@{/candidate/list}">
+                                        <span th:text="${candidate_list_title}"></span>
+                                    </a>
+                                </li>
+                                <li class="breadcrumb-item active" aria-current="page" th:text="${candidate_details}"></li>
                             </ol>
                         </nav>
                     </div>
-                    <div th:replace="~{component/top-sidebar::topSidebar}"></div>
+
+                    <div class="top-sidebar-actions">
+                        <!-- Notifications -->
+                        <div class="dropdown">
+                            <button class="btn action-btn" type="button" data-bs-toggle="dropdown"
+                                    aria-expanded="false">
+                                <i class="fas fa-bell"></i>
+                                <span class="notification-badge">3</span>
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end notification-menu">
+                                <li class="dropdown-header">
+                                    <h6 class="mb-0">Notifications</h6>
+                                    <span class="text-muted small">You have 3 unread messages</span>
+                                </li>
+                                <li>
+                                    <hr class="dropdown-divider">
+                                </li>
+                                <li><a class="dropdown-item notification-item unread" href="#">
+                                    <div class="notification-icon bg-primary">
+                                        <i class="fas fa-calendar-check text-white"></i>
+                                    </div>
+                                    <div class="notification-text">
+                                        <p class="mb-0">New interview scheduled</p>
+                                        <span class="text-muted small">15 minutes ago</span>
+                                    </div>
+                                </a></li>
+                                <li><a class="dropdown-item notification-item unread" href="#">
+                                    <div class="notification-icon bg-success">
+                                        <i class="fas fa-user-check text-white"></i>
+                                    </div>
+                                    <div class="notification-text">
+                                        <p class="mb-0">Candidate profile updated</p>
+                                        <span class="text-muted small">1 hour ago</span>
+                                    </div>
+                                </a></li>
+                                <li><a class="dropdown-item notification-item unread" href="#">
+                                    <div class="notification-icon bg-warning">
+                                        <i class="fas fa-clock text-white"></i>
+                                    </div>
+                                    <div class="notification-text">
+                                        <p class="mb-0">Interview reminder</p>
+                                        <span class="text-muted small">Tomorrow, 10:00 AM</span>
+                                    </div>
+                                </a></li>
+                                <li>
+                                    <hr class="dropdown-divider">
+                                </li>
+                                <li><a class="dropdown-item text-center small" href="#">View all notifications</a></li>
+                            </ul>
+                        </div>
+
+                        <!-- Settings -->
+                        <div class="dropdown">
+                            <button class="btn action-btn" type="button" data-bs-toggle="dropdown"
+                                    aria-expanded="false">
+                                <i class="fas fa-cog"></i>
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end">
+                                <li><a class="dropdown-item" href="#"><i class="fas fa-user-cog me-2"></i>Account
+                                    Settings</a></li>
+                                <li><a class="dropdown-item" href="#"><i class="fas fa-palette me-2"></i>Appearance</a>
+                                </li>
+                                <li><a class="dropdown-item" href="#"><i class="fas fa-bell me-2"></i>Notification
+                                    Settings</a></li>
+                                <li>
+                                    <hr class="dropdown-divider">
+                                </li>
+                                <li><a class="dropdown-item" href="#"><i class="fas fa-question-circle me-2"></i>Help
+                                    Center</a></li>
+                            </ul>
+                        </div>
+
+                        <!-- User Profile - REDESIGNED -->
+                        <div class="dropdown">
+                            <div class="user-profile" data-bs-toggle="dropdown">
+                                <div class="user-avatar-container">
+                                    <img th:src="${session.account != null ? 'https://ui-avatars.com/api/?name=' + session.account.getFullname() + '&background=random' : 'https://ui-avatars.com/api/?name=User&background=random'}"
+                                         alt="User" class="user-avatar">
+                                    <span class="user-status"></span>
+                                </div>
+                                <div class="user-info d-none d-md-flex">
+                                    <span class="user-name"
+                                          th:text="${session.account != null ? session.account.getFullname() : 'User Name'}">User
+                                        Name</span>
+                                    <span class="user-role"
+                                          th:text="${session.account != null ? session.account.getDepartmentName() : 'Department'}">Department</span>
+                                </div>
+                                <button class="user-dropdown-btn">
+                                    <i class="fas fa-chevron-down"></i>
+                                </button>
+                            </div>
+                            <ul class="dropdown-menu dropdown-menu-end">
+                                <li><a class="dropdown-item" href="#"><i class="fas fa-user me-2"></i>My Profile</a>
+                                </li>
+                                <li><a class="dropdown-item" href="#"><i class="fas fa-history me-2"></i>Activity
+                                    Log</a></li>
+                                <li>
+                                    <hr class="dropdown-divider">
+                                </li>
+                                <li><a class="dropdown-item" href="#" onclick="logout()"><i
+                                        class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
+                            </ul>
+                        </div>
+                    </div>
                 </div>
-    <div class="container mt-4">
-    <h4 class="fw-bold">Candidate Details</h4>
+            </div>
 
-
-    <div class="card shadow-lg p-4 bg-white rounded">
-        <div class="card-body">
-            <div class="row">
-                <!-- Cột bên trái -->
-                <div class="col-md-6">
-                    <h5 class="fw-bold">I. Personal Information</h5>
-                    <p><strong>Full name:</strong> <span th:text="${candidate.fullName ?: 'N/A'}"></span></p>
-                    <p><strong>D.O.B:</strong> <span th:text="${candidate.dob != null ? candidate.dob : 'N/A'}"></span></p>
-                    <p><strong>Phone number:</strong>
-                        <a th:if="${candidate.phone != null}" th:href="'tel:' + ${candidate.phone}" th:text="${candidate.phone}"></a>
-                        <span th:unless="${candidate.phone != null}">N/A</span>
-                    </p>
-
-                    <p><strong>Email:</strong>
-                        <a th:if="${candidate.email != null}" th:href="'mailto:' + ${candidate.email}" th:text="${candidate.email}"></a>
-                        <span th:unless="${candidate.email != null}">N/A</span>
-                    </p>
-
-                    <p><strong>Address:</strong> <span th:text="${candidate.address != null ? candidate.address : 'N/A'}"></span></p>
-                    <p><strong>Gender:</strong>
-                        <span th:switch="${candidate.gender}">
-        <span th:case="0" class="badge badge-male">Male</span>
-        <span th:case="1" class="badge badge-female">Female</span>
-        <span th:case="2" class="badge badge-other">Other</span>
-        <span th:case="*" class="text-muted">N/A</span>
-    </span>
-                    </p>
+            <div class="container mt-4 container-detail">
+                <div class="stats-section">
+                    <div class="stat-card">
+                        <i class="fas fa-user stat-card-bg-icon"></i>
+                        <div class="stat-card-title" th:text="${candidate_details}"></div>
+                    </div>
                 </div>
 
-                <!-- Cột bên phải -->
-                <div class="col-md-6">
-                    <h5 class="fw-bold">II. Professional Information</h5>
+                <div class="card shadow-lg p-4 bg-white rounded">
+                    <div class="card-body">
+                        <div class="row">
+                            <!-- Cột bên trái -->
+                            <div class="col-md-6">
+                                <h5 class="fw-bold" th:text="${personal_information}"></h5>
+                                <p>
+                                    <strong th:text="${full_name} + ':'"></strong>
+                                    <span th:text="${candidate.fullName ?: 'N/A'}"></span>
+                                </p>
 
-                    <!-- CV -->
-                    <p><strong>CV attachment:</strong>
-                        <span th:if="${candidate.cv != null}">
-                            <a href="#" th:text="'Download CV'"></a> 📎
-                        </span>
-                        <span th:unless="${candidate.cv != null}">No CV</span>
-                    </p>
+                                <p>
+                                    <strong th:text="${dob} + ':'"></strong>
+                                    <span id="dob-value" th:text="${candidate.dob != null ? candidate.dob : 'N/A'}"></span>
+                                </p>
 
-                    <!-- Position -->
-                    <p><strong>Current Position:</strong> <span th:text="${candidate.positionName ?: 'N/A'}"></span></p>
+                                <p>
+                                    <strong th:text="${age_title} + ':'"></strong>
+                                    <span id="age-display"></span>
+                                </p>
 
-                    <!-- Status -->
-                    <p><strong>Status:</strong> <span th:text="${#strings.capitalize(#strings.toLowerCase(candidate.status ?: 'Unknown'))}"></span></p>
+                                <p>
+                                    <strong th:text="${phone} + ':'"></strong>
+                                    <a th:if="${candidate.phone != null}" th:href="'tel:' + ${candidate.phone}"
+                                       th:text="${candidate.phone}"></a>
+                                    <span th:unless="${candidate.phone != null}">N/A</span>
+                                </p>
 
-                    <!-- Experience -->
-                    <p><strong>Year of Experience:</strong> <span th:text="${candidate.experience != null ? candidate.experience + ' years' : 'N/A'}"></span></p>
+                                <p>
+                                    <strong th:text="${email} + ':'"></strong>
+                                    <a th:if="${candidate.email != null}" th:href="'mailto:' + ${candidate.email}"
+                                       th:text="${candidate.email}"></a>
+                                    <span th:unless="${candidate.email != null}">N/A</span>
 
-                    <!-- Highest Level (Education) -->
-                    <p><strong>Highest level:</strong>
-                        <span th:switch="${candidate.highestEducation}">
-        <span th:case="1">High School</span>
-        <span th:case="2">Bachelor’s Degree</span>
-        <span th:case="3">Master Degree, PhD</span>
-        <span th:case="*">N/A</span>
-    </span>
-                    </p>
+                                <form th:action="@{/candidate/{userId}/send-invitation(userId=${candidate.userId})}" method="post" style="display: inline;" hidden="">
+                                    <button type="submit" class="btn btn-success">
+                                        ✉️ Send interview invitation
+                                    </button>
+                                </form>
+
+                                </p>
+
+                                <p>
+                                    <strong th:text="${address} + ':'"></strong>
+                                    <span th:text="${candidate.address != null ? candidate.address : 'N/A'}"></span>
+                                </p>
+
+                                <p>
+                                    <strong th:text="${gender} + ':'"></strong>
+                                    <span th:switch="${candidate.gender}">
+                                        <span th:case="0" class="badge badge-male" th:text="${male}"></span>
+                                        <span th:case="1" class="badge badge-female" th:text="${female}"></span>
+                                        <span th:case="2" class="badge badge-other" th:text="${other_gender}"></span>
+                                        <span th:case="*" class="text-muted">N/A</span>
+                                    </span>
+                                </p>
+                            </div>
+
+                            <!-- Cột bên phải -->
+                            <div class="col-md-6">
+                                <h5 class="fw-bold" th:text="${professional_information}"></h5>
+                                <p>
+                                    <strong th:text="${cv_attachment} + ':'"></strong>
+                                    <span th:if="${candidate.cv != null}">
+                                        <a th:href="@{/candidate/download-cv/{userId}(userId=${candidate.userId})}"
+                                           th:text="${download_cv}"></a> 📎
+                                    </span>
+                                    <span th:unless="${candidate.cv != null}" th:text="${no_cv}"></span>
+                                </p>
+
+                                <p>
+                                    <strong th:text="${current_position} + ':'"></strong>
+                                    <span th:text="${candidate.positionName ?: 'N/A'}"></span>
+                                </p>
+
+                                <p>
+                                    <strong th:text="${statusTitle} + ':'"></strong>
+                                    <span th:text="${#strings.replace(#strings.capitalize(#strings.toLowerCase(candidate.status ?: 'Unknown')), '_', ' ')}"></span>
+                                </p>
+
+                                <p>
+                                    <strong th:text="${year_of_experience} + ':'"></strong>
+                                    <span th:text="${candidate.experience != null ? candidate.experience + ' years' : 'N/A'}"></span>
+                                </p>
+
+                                <p>
+                                    <strong th:text="${highest_level_title} + ':'"></strong>
+                                    <span th:each="level : ${highestLevels}">
+                                    <span th:if="${level.id == candidate.highestEducation}" th:text="${level.name}"></span>
+                                    </span>
+                                </p>
 
 
-                    <!-- Skills -->
-                    <p><strong>Skills:</strong>
-                        <span th:if="${candidate.skills != null}" th:each="skill : ${candidate.skills}" class="badge bg-secondary me-1" th:text="${skill}"></span>
-                        <span th:unless="${candidate.skills != null}">N/A</span>
-                    </p>
+                                <p>
+                                    <strong th:text="${skill} + ':'"></strong>
+                                    <span th:if="${candidate.skills != null}" th:each="skill : ${candidate.skills}"
+                                          class="badge bg-secondary me-1" th:text="${skill}"></span>
+                                    <span th:unless="${candidate.skills != null}">N/A</span>
+                                </p>
 
-                    <p><strong>Recruiter:</strong>
-                        <span th:text="${candidate.recruiter != null ? candidate.recruiter : 'N/A'}"></span>
-                    </p>
+                                <p>
+                                    <strong th:text="${recruiter} + ':'"></strong>
+                                    <span th:text="${candidate.recruiter != null ? candidate.recruiter : 'N/A'}"></span>
+                                </p>
 
-                    <!-- Note -->
-                    <p><strong>Note:</strong> <span th:text="${candidate.note != null ? candidate.note : 'N/A'}"></span></p>
+                                <p>
+                                    <strong th:text="${note} + ':'"></strong>
+                                    <span th:text="${candidate.note != null ? candidate.note : 'N/A'}"></span>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Button Actions -->
+                <div class="text-center mt-4">
+                    <a th:href="@{/candidate/list}" class="btn btn-outline-primary" th:text="${back_to_list}"></a>
+                    <!-- Chỉnh sửa -->
+                    <a th:href="@{/candidate/edit/{userId}(userId=${candidate.userId})}"
+                       class="btn btn-edit"
+                       th:if="${!session.get('account').getRole().name().equals('ROLE_INTERVIEWER')}"
+                       th:text="'✏️ ' + ${editBtn}"></a>
+                    <button type="button" class="btn btn-danger delete-btn"
+                            data-bs-toggle="modal" data-bs-target="#deleteModal"
+                            th:attr="data-user-id=${candidate.userId}"
+                            th:if="${!session.get('account').getRole().name().equals('ROLE_INTERVIEWER') && candidate.status == 'OPEN'}"
+                            th:text="'🗑️ ' + ${deleteBtn}"></button>
+                    <form th:action="@{/candidate/ban/{userId}(userId=${candidate.userId})}"
+                          th:method="post" style="display: inline;"
+                          th:if="${!session.get('account').getRole().name().equals('ROLE_INTERVIEWER')}">
+                        <button type="button"
+                                class="btn btn-danger ban-btn"
+                                th:classappend="${candidate.status == 'BANNED'} ? 'unban-btn' : 'ban-btn'"
+                                data-bs-toggle="modal"
+                                data-bs-target="#banModal"
+                                th:attr="data-user-id=${candidate.userId}, data-status=${candidate.status}">
+                            <span th:if="${candidate.status == 'BANNED'}" th:text="${unban_title}"></span>
+                            <span th:unless="${candidate.status == 'BANNED'}" th:text="'🚫 ' + ${ban_title}"></span>
+                        </button>
+                    </form>
                 </div>
             </div>
         </div>
     </div>
-
-    <!-- Button Actions -->
-    <div class="text-center mt-4">
-        <a href="/candidate/list" class="btn btn-outline-primary">🔙 Back to List</a>
-        <!-- Chỉ ROLE_RECRUITER, ROLE_MANAGER, và ROLE_ADMINISTRATOR mới có quyền chỉnh sửa -->
-        <a th:href="@{/candidates/edit/{id}(id=${candidate.userId})}" class="btn btn-warning"
-           sec:authorize="hasAnyRole('ROLE_RECRUITER', 'ROLE_MANAGER', 'ROLE_ADMINISTRATOR')">✏️ Edit</a>
-
-        <!-- Chỉ ROLE_RECRUITER, ROLE_MANAGER, và ROLE_ADMINISTRATOR mới có quyền xóa -->
-        <button type="button" class="btn btn-danger delete-btn"
-                data-bs-toggle="modal" data-bs-target="#deleteModal"
-                th:attr="data-user-id=${candidate.userId}"
-                sec:authorize="hasAnyRole('ROLE_RECRUITER', 'ROLE_MANAGER', 'ROLE_ADMINISTRATOR')"
-                th:if="${candidate.status == 'OPEN'}">
-            🗑 Delete
-        </button>
-        <!-- Chỉ ROLE_RECRUITER, ROLE_MANAGER, và ROLE_ADMINISTRATOR mới có quyền cấm -->
-        <!-- Nút Ban -->
-        <button type="button"
-                class="btn btn-warning ban-btn"
-                data-bs-toggle="modal"
-                data-bs-target="#banModal"
-                th:attr="data-user-id=${candidate.userId}"
-                sec:authorize="hasAnyRole('ROLE_RECRUITER', 'ROLE_MANAGER', 'ROLE_ADMINISTRATOR')"
-                th:if="${candidate.status != 'BANNED'}">
-            🚫 Ban
-        </button>
-
-
-
-    </div>
-</div>
-    </div>
-</div>
-    </div>
-    </div>
-
-<!-- Modal Xác Nhận Xóa -->
-<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="deleteModalLabel">Confirm Delete</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                Are you sure you want to delete this candidate?
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                <a id="confirmDeleteBtn" href="#" class="btn btn-danger">Delete</a>
-            </div>
-        </div>
-    </div>
 </div>
 
-<!-- Modal Xác Nhận Ban -->
-<div class="modal fade" id="banModal" tabindex="-1" aria-labelledby="banModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="banModalLabel">Confirm Ban</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                Are you sure you want to ban this candidate?
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                <form id="banForm" method="post">
-                    <button type="submit" class="btn btn-warning">Ban</button>
-                </form>
-            </div>
-        </div>
-    </div>
-</div>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        // Xóa Candidate
+        document.querySelectorAll(".delete-btn").forEach(button => {
+            button.addEventListener("click", function () {
+                const userId = this.getAttribute("data-user-id");
 
+                if (!userId) {
+                    console.error("❌ Error: Cannot get userId!");
+                    return;
+                }
 
+                Swal.fire({
+                    title: "Confirm Delete",
+                    text: "Are you sure you want to delete this candidate?",
+                    icon: "warning",
+                    showCancelButton: true,
+                    confirmButtonText: "Delete",
+                    cancelButtonText: "Cancel",
+                    backdrop: true
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        window.location.href = `/candidate/delete/${userId}`;
+                    }
+                });
+            });
+        });
 
-<!-- SweetAlert2 Delete Candidate -->
+        // Ban/Unban Candidate
+        document.querySelectorAll(".ban-btn").forEach(button => {
+            button.addEventListener("click", function () {
+                let userId = this.getAttribute("data-user-id");
+                let currentStatus = this.getAttribute("data-status");
+                let actionText = currentStatus === "BANNED" ? "Unban" : "Ban";
+                let message = currentStatus === "BANNED"
+                    ? "Are you sure you want to unban this candidate?"
+                    : "Are you sure you want to ban this candidate?";
+
+                Swal.fire({
+                    title: `${actionText} Confirmation`,
+                    text: message,
+                    icon: "warning",
+                    showCancelButton: true,
+                    confirmButtonText: actionText,
+                    cancelButtonText: "Cancel",
+                    backdrop: true
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        fetch(`/candidate/ban/${userId}`, {
+                            method: "POST",
+                            headers: {
+                                "Content-Type": "application/json"
+                            }
+                        }).then(response => {
+                            if (response.ok) {
+                                // Sử dụng biến unbanSuccess hoặc banSuccess để hiển thị thông báo
+                                if (currentStatus === "BANNED") {
+                                    localStorage.setItem("unbanSuccess", "Candidate has been unbanned successfully!");
+                                } else {
+                                    localStorage.setItem("banSuccess", "Candidate has been banned successfully!");
+                                }
+                                window.location.href = "/candidate/list"; // Cập nhật lại danh sách
+                            } else {
+                                // Sử dụng biến success để hiển thị thông báo
+                                localStorage.setItem("success", "Failed to update candidate status!");
+                            }
+                        }).catch(error => {
+                            console.error("❌ Fetch error:", error);
+                            // Sử dụng biến success để hiển thị thông báo
+                            localStorage.setItem("success", "Something went wrong!");
+                        });
+                    }
+                });
+            });
+        });
+    });
+</script>
+    <!-- SweetAlert2 Delete Candidate -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script th:inline="javascript">
+        document.addEventListener("DOMContentLoaded", function () {
+            const deleteButtons = document.querySelectorAll(".delete-btn");
+            const confirmDeleteBtn = document.getElementById("confirmDeleteBtn");
+
+            // Khi nhấn nút Delete, cập nhật đường dẫn xóa
+            deleteButtons.forEach(button => {
+                button.addEventListener("click", function () {
+                    const userId = this.getAttribute("data-user-id");
+                    if (userId) {
+                        confirmDeleteBtn.setAttribute("href", "/candidate/delete/" + userId);
+                    }
+                });
+            });
+
+            // Hiển thị thông báo sau khi xóa
+            const successMessage = "[[${success}]]";
+            const errorMessage = "[[${error}]]";
+
+            if (successMessage && successMessage !== "null") {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Deleted successfully!',
+                    text: successMessage,
+                    confirmButtonText: 'OK'
+                }).then(() => {
+                    window.location.href = "/candidate/list"; // Chuyển về Candidate List
+                });
+            }
+
+            const bannedSuccess = /*[[${bannedSuccess}]]*/ {}
+            console.log(bannedSuccess)
+            if (banMessage && banMessage !== "null") {
+                Swal.fire({
+                    icon: 'warning',
+                    // title: 'Banned successfully!',
+                    title: bannedSuccess,
+                    text: banMessage,
+                    confirmButtonText: 'OK'
+                });
+            }
+
+            const errorTitle = /*[[${error_title}]]*/ {}
+            console.log(errorTitle)
+            if (errorMessage && errorMessage !== "null") {
+                Swal.fire({
+                    icon: 'error',
+                    // title: 'Error!',
+                    title: errorTitle + '!',
+                    text: errorMessage,
+                    confirmButtonText: 'OK'
+                }).then(() => {
+                    window.location.href = "/candidate/list"; // Chuyển về Candidate List
+                });
+            }
+        });
+
+        document.addEventListener("DOMContentLoaded", function () {
+            const banButtons = document.querySelectorAll(".ban-btn");
+            const banForm = document.getElementById("banForm");
+
+            banButtons.forEach(button => {
+                button.addEventListener("click", function () {
+                    const userId = this.getAttribute("data-user-id");
+                    console.log("🚫 Ban Candidate UserID: ", userId);
+                    if (userId) {
+                        banForm.setAttribute("action", "/candidate/ban/" + userId);
+                    }
+                });
+            });
+        });
+    </script>
+
+    <script th:inline="javascript">
+        function calculateAge() {
+            let dobText = document.getElementById("dob-value").innerText.trim();
+
+            if (dobText && dobText !== "N/A") {
+                let dob = new Date(dobText);
+                const invalidDateFormat = /*[[${invalidDateFormat}]]*/ {}
+                console.log(invalidDateFormat)
+                if (isNaN(dob)) {
+                    // document.getElementById("age-display").innerText = "Invalid date format";
+                    document.getElementById("age-display").innerText = invalidDateFormat;
+                    return;
+                }
+
+                let today = new Date();
+                let age = today.getFullYear() - dob.getFullYear();
+                let monthDiff = today.getMonth() - dob.getMonth();
+
+                if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < dob.getDate())) {
+                    age--; // Nếu chưa đến sinh nhật trong năm nay thì trừ đi 1 tuổi
+                }
+
+                document.getElementById("age-display").innerText = age;
+            } else {
+                document.getElementById("age-display").innerText = "N/A";
+            }
+        }
+
+    // Gọi hàm khi trang tải xong để cập nhật tuổi ngay từ đầu
+    document.addEventListener("DOMContentLoaded", calculateAge);
+</script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
 <script>
     document.addEventListener("DOMContentLoaded", function () {
-        const deleteButtons = document.querySelectorAll(".delete-btn");
-        const confirmDeleteBtn = document.getElementById("confirmDeleteBtn");
+        const emailMessage = "[[${emailMessage}]]";  // Nhận thông báo từ Controller
+        const emailStatus = "[[${emailStatus}]]";    // Nhận trạng thái (thành công/lỗi)
 
-        // Khi nhấn nút Delete, cập nhật đường dẫn xóa
-        deleteButtons.forEach(button => {
-            button.addEventListener("click", function () {
-                const userId = this.getAttribute("data-user-id");
-                if (userId) {
-                    confirmDeleteBtn.setAttribute("href", "/candidate/delete/" + userId);
-                }
-            });
-        });
-
-        // Hiển thị thông báo sau khi xóa
-        const successMessage = "[[${success}]]";
-        const errorMessage = "[[${error}]]";
-
-        if (successMessage && successMessage !== "null") {
+        if (emailMessage && emailMessage.trim() !== "" && emailMessage !== "null") {
             Swal.fire({
-                icon: 'success',
-                title: 'Deleted successfully!',
-                text: successMessage,
-                confirmButtonText: 'OK'
-            }).then(() => {
-                window.location.href = "/candidate/list"; // Chuyển về Candidate List
-            });
-        }
-
-
-        if (banMessage && banMessage !== "null") {
-            Swal.fire({
-                icon: 'warning',
-                title: 'Banned successfully!',
-                text: banMessage,
-                confirmButtonText: 'OK'
-            });
-        }
-
-
-        if (errorMessage && errorMessage !== "null") {
-            Swal.fire({
-                icon: 'error',
-                title: 'Error!',
-                text: errorMessage,
-                confirmButtonText: 'OK'
-            }).then(() => {
-                window.location.href = "/candidate/list"; // Chuyển về Candidate List
+                icon: emailStatus === "success" ? "success" : "error",
+                title: emailStatus === "success" ? "Send email successfully!" : "Lỗi!",
+                text: emailMessage,
+                confirmButtonText: "OK"
             });
         }
     });
 </script>
+<input type="hidden" th:value="${emailMessage}" id="emailMessage">
+<input type="hidden" th:value="${emailStatus}" id="emailStatus">
 
-<script>
-    document.addEventListener("DOMContentLoaded", function () {
-        const banButtons = document.querySelectorAll(".ban-btn");
-        const banForm = document.getElementById("banForm");
 
-        banButtons.forEach(button => {
-            button.addEventListener("click", function () {
-                const userId = this.getAttribute("data-user-id");
-                console.log("🚫 Ban Candidate UserID: ", userId);
-                if (userId) {
-                    banForm.setAttribute("action", "/candidate/ban/" + userId);
-                }
-            });
-        });
-    });
-</script>
 
 </body>
 </html>

@@ -1,18 +1,21 @@
 <!DOCTYPE html>
-<html lang="vi">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Xóa công việc</title>
-    <link rel="stylesheet" href="/css/style.css">
+    <title th:text="${delete_job_title}"></title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
 </head>
-<body>
-<h2>Xác nhận xóa công việc</h2>
-<p>Bạn có chắc chắn muốn xóa công việc <strong></strong> không?</p>
 
-<form  method="post">
-    <button type="submit" class="btn btn-danger">Xóa</button>
-    <a href="/jobs" class="btn btn-secondary">Hủy</a>
-</form>
+<body>
+    <h2 th:text="${confirm_delete_job_title}"></h2>
+    <p th:text="${confirm_delete_job}"></p>
+
+    <form method="post">
+        <button type="submit" class="btn btn-danger" th:text="${deleteBtn}"></button>
+        <a th:href="@{/jobs}" class="btn btn-secondary" th:text="${cancelBtn}"></a>
+    </form>
 </body>
+
 </html>

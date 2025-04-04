@@ -8,6 +8,7 @@ import com.ims_team4.model.Candidate;
 import com.ims_team4.model.Employee;
 import com.ims_team4.model.Interview;
 import com.ims_team4.model.Job;
+import com.ims_team4.model.utils.HrRole;
 import com.ims_team4.model.utils.InterviewStatus;
 import com.ims_team4.repository.CandidateRepository;
 import com.ims_team4.repository.EmployeeRepository;
@@ -17,19 +18,15 @@ import com.ims_team4.service.EmployeeService;
 import com.ims_team4.service.InterviewService;
 import com.ims_team4.utils.email.EmailService;
 import com.ims_team4.utils.email.EmailServiceImpl;
-import jakarta.servlet.http.HttpServletResponse;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.data.domain.Page;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import java.io.IOException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
@@ -80,12 +77,16 @@ public class InterviewController implements Constants.Link {
             @RequestParam(defaultValue = "10") int size,
             Model model) {
         Page<InterviewDTO> interviewPage = interviewService.searchInterviews(search, status, employeeId, page, size);
+
+        List<EmployeeDTO> interviewers = empSrv.getAllEmployeeByRole(HrRole.ROLE_INTERVIEWER);
+
         model.addAttribute("interviewPage", interviewPage);
         model.addAttribute("search", search);
         model.addAttribute("status", status);
         model.addAttribute("employeeId", employeeId);
         model.addAttribute("page", page);
         model.addAttribute("size", size);
+        model.addAttribute("interviewers", interviewers);
         return "Interview/list";
     }
 
@@ -102,6 +103,7 @@ public class InterviewController implements Constants.Link {
     }
 
     // <editor-fold> desc="UC17: Create new interview schedule"
+    //UC17: Create new interview schedule. GET /interview/createInterviewView
     @GetMapping("/createInterviewView")
     public String showCreateInterviewForm(Model model) {
         model.addAttribute("interviewForm", new InterviewDTO());
@@ -111,8 +113,9 @@ public class InterviewController implements Constants.Link {
     @PostMapping("/createInterview")
     public String createInterview(@ModelAttribute("interviewForm") InterviewDTO interviewDTO) {
         // 1) Fetch the needed Entities from their repositories
-        Candidate candidate = candidateRepository.findById(interviewDTO.getCandidateId())
+        Candidate candidate = candidateRepository.findByUserId(interviewDTO.getCandidateId())
                 .orElseThrow(() -> new RuntimeException("Candidate not found!"));
+
         Job job = null;
         if (interviewDTO.getJobId() != null) {
             job = jobRepository.findById(interviewDTO.getJobId())
@@ -162,10 +165,10 @@ public class InterviewController implements Constants.Link {
     // PUT/POST /interview/editInterview -> Actually update
     @PostMapping("/editInterview")
     public String editInterview(@ModelAttribute("interview") InterviewDTO interviewDTO) {
-        // 1) Load the existing Interview entity from DB
+        // Load the existing Interview entity from DB
         Interview existing = interviewService.findEntityById(interviewDTO.getId());
 
-        // 2) If the user changed candidate or job or employees, re-fetch them:
+        // candidate
         if (interviewDTO.getCandidateId() != 0
             && (existing.getCandidate() == null
                 || !existing.getCandidate().getId().equals(interviewDTO.getCandidateId()))) {
@@ -174,6 +177,7 @@ public class InterviewController implements Constants.Link {
             existing.setCandidate(candidate);
         }
 
+        // job
         if (interviewDTO.getJobId() != null
             && (existing.getJob() == null
                 || !existing.getJob().getId().equals(interviewDTO.getJobId()))) {
@@ -231,7 +235,7 @@ public class InterviewController implements Constants.Link {
     }
     // </editor-fold>
 
-    // <editor-fold> desc="UC22: Send a reminder for upcoming schedule (HTML approach). For a quick approach, we might just do a GET or POST link.”
+    // <editor-fold> desc="UC22: Send a reminder for upcoming schedule (HTML approach). For a quick approach, we might just do a GET or POST link.&rdquo;
 
     /**
      * <p>Send API status to detail screen value of true for send a reminder successfully.</p>
@@ -273,7 +277,7 @@ public class InterviewController implements Constants.Link {
         try {
             List<InterviewDTO> list = checkUpcomingInterview();
             if (!CollectionUtils.isEmpty(list)) {
-//                logger.info("There is " + list.size() + " upcoming interviews at" + LocalTime.now().plusHours(24));
+                logger.info("There is " + list.size() + " upcoming interviews at" + LocalTime.now().plusHours(24));
                 list.forEach(interviewDTO -> {
                     CandidateDTO candidateDTO = cSrv.getCandidateByUserId(interviewDTO.getCandidateId()).getFirst();
                     String recruiterEmail = empSrv.getEmployeeById(Math.toIntExact(interviewDTO.getId())).getEmail();
@@ -281,7 +285,7 @@ public class InterviewController implements Constants.Link {
                     sendEmail(interviewDTO, candidateDTO, recruiterEmail, body);
                     interviewService.updateNotificationSent(interviewDTO.getId());
                 });
-            } else {
+//            } else {
 //                logger.info("There is no upcoming interviews at" + LocalTime.now().plusHours(24));
             }
         } catch (Exception e) {

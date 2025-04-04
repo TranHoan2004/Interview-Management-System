@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <title>Load</title>
+</head>
+
+<body>
+    <div class="loading-overlay" id="loadingOverlay" th:fragment="load">
+        <div class="spinner-grow" role="status">
+            <span class="visually-hidden" th:text="${loading_title}"></span>
+        </div>
+    </div>
+</body>
+
+</html>

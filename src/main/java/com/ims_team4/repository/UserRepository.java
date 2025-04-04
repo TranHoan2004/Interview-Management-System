@@ -1,6 +1,7 @@
 package com.ims_team4.repository;
 
 import com.ims_team4.model.Users;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
@@ -21,4 +22,16 @@ public interface UserRepository extends CrudRepository<Users, Long> {
 
     @Query("SELECT u FROM Users u WHERE u.id = :id")
     Optional<Users> findById(@Param("id") Long id);
+
+    boolean checkExistsById(@NotNull Long userId);
+
+    void removeById(@NotNull Long userId);
+
+    boolean existsByEmail(String email);
+
+    boolean existsByPhone(String phone);
+
+    boolean existsByEmailAndUserIdNot(String email, Long userId);
+
+    boolean existsByPhoneAndUserIdNot(String phone, Long userId);
 }

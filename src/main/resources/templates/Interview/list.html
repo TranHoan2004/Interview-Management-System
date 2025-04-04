@@ -1,237 +1,423 @@
-<!-- file: templates/interview/list.html -->
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
+
 <head>
-    <meta charset="UTF-8"/>
-    <title>Interview List</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${interview_list_title}"></title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" rel="stylesheet">
-    <style>
-        .page-title {
-            font-weight: bold;
-            color: #2c3e50;
-        }
-
-        /* Tổng thể */
-        body {
-            background-color: #f8f9fa;
-            font-family: 'Arial', sans-serif;
-        }
-
-        .logo {
-            font-weight: bold;
-            background: #fff;
-            color: #16a085;
-            padding: 2px 8px;
-            border-radius: 4px;
-        }
-
-        /* Sidebar */
-        .sidebar {
-            width: 240px;
-            background: #2c3e50;
-            height: 100vh;
-            position: fixed;
-            padding: 20px;
-            color: white;
-        }
-
-        .sidebar h4 {
-            font-weight: bold;
-            text-align: center;
-            margin-bottom: 20px;
-        }
-
-        .sidebar a {
-            display: flex;
-            align-items: center;
-            padding: 12px;
-            color: white;
-            text-decoration: none;
-            border-radius: 5px;
-            transition: background 0.3s;
-        }
-
-        .sidebar a.fw-bold {
-            background: #34495e;
-        }
-
-        .sidebar a:hover {
-            background: #1abc9c;
-        }
-
-        .sidebar i {
-            margin-right: 10px;
-        }
-
-
-        /* Main Content */
-        .content {
-            margin-left: 260px;
-            padding: 40px;
-            transition: all 0.3s;
-        }
-
-        .content h3 {
-            color: #2c3e50;
-            font-weight: bold;
-        }
-
-        .content a {
-            text-decoration: none;
-            font-weight: bold;
-            color: #007bff;
-        }
-
-        .content a:hover {
-            text-decoration: underline;
-        }
-    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@4.1.1/animate.min.css">
+    <link rel="stylesheet" type="text/css" th:href="@{/css/styles.css}" />
+    <link rel="stylesheet" type="text/css" th:href="@{/css/interview.css}" />
 </head>
+
 <body>
-<div class="d-flex">
+    <!-- Loading overlay -->
+    <div th:replace="~{component/load::load}"></div>
 
-    <!-- Left Sidebar -->
-    <div class="sidebar" th:replace="~{component/left-sidebar::leftSidebar}"></div>
+    <div class="d-flex">
 
-    <!-- Main Content -->
-    <div class="content flex-grow-1 p-4">
-        <!-- Top Sidebar / Header -->
-        <div th:replace="~{component/top-sidebar::topSidebar}"></div>
+        <!-- Left Sidebar -->
+        <div class="sidebar" th:replace="~{component/left-sidebar::leftSidebar}"></div>
 
-        <div class="container mt-4">
-            <h2 class="page-title mb-3">Interview Schedule List</h2>
-
-            <!-- Search form -->
-            <form method="get" th:action="@{/interview/list}" class="row mb-4">
-                <div class="col-md-3">
-                    <label for="search" class="form-label fw-bold">Search</label>
-                    <input type="text" class="form-control" id="search" name="search"
-                           th:value="${param.search ?: ''}"
-                           placeholder="Enter keyword...">
-                </div>
-                <div class="col-md-3">
-                    <label for="status" class="form-label fw-bold">Status</label>
-                    <select class="form-select" id="status" name="status">
-                        <option value="" th:text="'(All Statuses)'"
-                                th:selected="${param.status == null}"></option>
-                        <option value="NEW" th:selected="${param.status == 'NEW'}">NEW</option>
-                        <option value="INVITED" th:selected="${param.status == 'INVITED'}">INVITED</option>
-                        <option value="INTERVIEWED" th:selected="${param.status == 'INTERVIEWED'}">INTERVIEWED</option>
-                        <option value="CANCELLED" th:selected="${param.status == 'CANCELLED'}">CANCELLED</option>
-                    </select>
-                </div>
-                <div class="col-md-3">
-                    <label for="employeeId" class="form-label fw-bold">Interviewer ID</label>
-                    <input type="text" class="form-control" id="employeeId"
-                           name="employeeId"
-                           th:value="${param.employeeId ?: ''}"
-                           placeholder="Interviewer ID">
-                </div>
-                <div class="col-md-3 d-flex align-items-end">
-                    <button type="submit" class="btn btn-primary me-2">
-                        <i class="fa-solid fa-search"></i> Search
-                    </button>
-                </div>
-            </form>
-
-            <!-- Table of Interviews -->
-            <div class="table-responsive">
-                <table class="table table-bordered align-middle">
-                    <thead class="table-light">
-                    <tr>
-                        <th>#ID</th>
-                        <th>Title</th>
-                        <th>Candidate</th>
-                        <th>Schedule Time</th>
-                        <th>Locations</th>
-                        <th>Status</th>
-                        <th>Actions</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <!-- Assuming we pass a Page<InterviewDTO> as 'interviewPage' to the model -->
-                    <tr th:each="interview : ${interviewPage.content}">
-                        <td th:text="${interview.id}"></td>
-                        <td th:text="${interview.title}"></td>
-                        <td th:text="${interview.candidateId}"></td>
-                        <td th:text="${#temporals.format(interview.scheduleTime, 'dd/MM/yyyy HH:mm')}"></td>
-                        <td th:text="${interview.locations}"></td>
-                        <td th:text="${interview.status}"></td>
-                        <td>
-                            <a class="btn btn-sm btn-info"
-                               th:href="@{/interview/interviewDetail(id=${interview.id})}">
-                                <i class="fa fa-eye"></i> View
-                            </a>
-                            <!-- Possibly a link to edit, if user is Recruiter/Manager/Admin -->
-                            <a class="btn btn-sm btn-warning"
-                               th:href="@{/interview/editInterviewView(id=${interview.id})}">
-                                <i class="fa fa-edit"></i> Edit
-                            </a>
-                        </td>
-                    </tr>
-                    </tbody>
-                </table>
+        <!-- Main Content -->
+        <div class="content flex-grow-1">
+            <!-- Top Sidebar / Header -->
+            <div
+                th:replace="~{component/new-top-sidebar::newTopSidebar(${interview_schedules}, '/interview/list', null)}">
             </div>
 
-            <!-- Pagination controls (example) -->
-            <nav th:if="${interviewPage.totalPages} > 1">
+            <!-- Page Header -->
+            <div class="d-flex flex-column mb-4 animate__animated animate__fadeInUp">
+                <h1 class="module-title" th:text="${interview_schedules}"></h1>
+                <p class="submodule-title" th:text="${interview_schedules_list}"></p>
+            </div>
+
+            <!-- Dashboard Stats Section -->
+            <div class="stats-section animate__animated animate__fadeInUp" style="animation-delay: 0.1s;">
+                <div class="stat-card">
+                    <i class="fas fa-calendar-alt stat-card-bg-icon"></i>
+                    <div class="stat-card-title">Total Interviews</div>
+                    <div class="stat-card-value" th:text="${interviewPage.totalElements}">25</div>
+                    <div class="stat-card-info positive">
+                        <i class="fas fa-arrow-up"></i> 15% from last month
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <i class="fas fa-check-circle stat-card-bg-icon"></i>
+                    <div class="stat-card-title">Completed</div>
+                    <div class="stat-card-value" id="completedCount">0</div>
+                    <div class="stat-card-info positive">
+                        <i class="fas fa-arrow-up"></i> 8% from last month
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <i class="fas fa-clock stat-card-bg-icon"></i>
+                    <div class="stat-card-title">Upcoming</div>
+                    <div class="stat-card-value" id="upcomingCount">0</div>
+                    <div class="stat-card-info negative">
+                        <i class="fas fa-arrow-down"></i> 3% from last month
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <i class="fas fa-user-check stat-card-bg-icon"></i>
+                    <div class="stat-card-title">Success Rate</div>
+                    <div class="stat-card-value" id="successRate">0%</div>
+                    <div class="stat-card-info positive">
+                        <i class="fas fa-arrow-up"></i> 5% from last month
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab Container -->
+            <div class="tab-container animate__animated animate__fadeInUp" style="animation-delay: 0.2s;">
+                <button class="tab-button active" id="allTab" th:text="${all_interview}"></button>
+                <button class="tab-button" id="todayTab" th:text="${today_title}"></button>
+                <button class="tab-button" id="upcomingTab" th:text="${upcoming_title}"></button>
+                <button class="tab-button" id="completedTab" th:text="${completed_title}"></button>
+            </div>
+
+            <!-- Search form -->
+            <div class="search-section animate__animated animate__fadeInUp" style="animation-delay: 0.3s;">
+                <form method="get" th:action="@{/interview/list}" class="row g-3" id="searchForm">
+                    <div class="col-md-3">
+                        <label for="search" class="form-label" th:text="${searchTitle}"></label>
+                        <div class="input-group">
+                            <span class="input-group-text">
+                                <i class="fas fa-search"></i>
+                            </span>
+                            <input type="text" class="form-control" id="search" name="search"
+                                th:value="${param.search ?: ''}" th:placeholder="${enter_title_location}">
+                        </div>
+                    </div>
+
+                    <div class="col-md-3">
+                        <label for="status" class="form-label" th:text="${statusTitle}"></label>
+                        <select class="form-select" id="status" name="status">
+                            <option value="" th:text="${all_status}" th:selected="${param.status == null}"></option>
+                            <option value="NEW" th:selected="${param.status == 'NEW'}" th:text="${new_title}">
+                            </option>
+                            <option value="INVITED" th:selected="${param.status == 'INVITED'}"
+                                th:text="${invited_title}"></option>
+                            <option value="INTERVIEWED" th:selected="${param.status == 'INTERVIEWED'}"
+                                th:text="${interviewed_title}"></option>
+                            <option value="CANCELLED" th:selected="${param.status == 'CANCELLED'}"
+                                th:text="${canceled_title}"></option>
+                        </select>
+                    </div>
+
+                    <div class="col-md-3">
+                        <label for="employeeId" class="form-label" th:text="${interviewerTitle}"></label>
+                        <select class="form-select" id="employeeId" name="employeeId">
+                            <option value="" th:text="${all_interview}"></option>
+                            <option th:each="interviewer : ${interviewers}" th:value="${interviewer.userID}"
+                                th:text="${interviewer.fullname}"
+                                th:selected="${param.employeeId != null && param.employeeId == interviewer.userID}">
+                            </option>
+                        </select>
+                    </div>
+
+                    <div class="col-md-3 d-flex align-items-end">
+                        <button type="submit" class="btn btn-primary w-100" id="searchButton">
+                            <i class="fa-solid fa-search me-1"></i>
+                            <span th:text="${searchTitle}"></span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- View toggle buttons -->
+            <div class="d-flex justify-content-between align-items-center my-4 animate__animated animate__fadeInUp"
+                style="animation-delay: 0.4s;">
+                <a class="btn btn-success" th:href="@{/interview/createInterviewView}"
+                    th:if="${session.account != null && (session.account.getRole().name() == 'ROLE_MANAGER' || session.account.getRole().name() != 'ROLE_INTERVIEWER')}">
+                    <i class="fa fa-plus me-1"></i>
+                    <span th:text="${create_new_interview}"></span>
+                </a>
+                <div class="ms-auto"></div>
+                <div class="view-toggle">
+                    <button id="gridViewBtn" class="btn btn-outline-primary active">
+                        <i class="fas fa-th"></i>
+                        <span th:text="${grid_view}"></span>
+                    </button>
+                    <button id="tableViewBtn" class="btn btn-outline-primary">
+                        <i class="fas fa-list"></i>
+                        <span th:text="${table_view}"></span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Grid View of Interviews -->
+            <div id="gridView" class="interview-grid">
+                <!-- Display each interview as a card -->
+                <div th:each="interview, iterStat : ${interviewPage.content}" class="interview-card"
+                    th:data-status="${interview.status}" th:data-result="${interview.result}">
+                    <div class="status-badge">
+                        <span th:if="${interview.status == 'NEW'}" class="badge badge-new"
+                            th:text="${new_title}"></span>
+                        <span th:if="${interview.status == 'INVITED'}" class="badge badge-invited"
+                            th:text="${invited_title}"></span>
+                        <span th:if="${interview.status == 'INTERVIEWED'}" class="badge badge-interviewed"
+                            th:text="${interviewed_title}"></span>
+                        <span th:if="${interview.status == 'CANCELLED'}" class="badge badge-cancelled"
+                            th:text="${canceled_title}"></span>
+                    </div>
+
+                    <div class="interview-card-content">
+                        <div class="interview-card-header">
+                            <h5 th:text="${interview.title}"></h5>
+                            <small>ID: <span th:text="${interview.id}"></span></small>
+                        </div>
+
+                        <div class="interview-card-body">
+                            <div class="interview-detail">
+                                <i class="fas fa-user"></i>
+                                <span class="candidate-name" th:text="${interview.candidateName}"></span>
+                            </div>
+
+                            <div class="interview-detail">
+                                <i class="fas fa-users"></i>
+                                <span th:text="${interview.interviewerNames}"></span>
+                            </div>
+
+                            <div class="interview-detail">
+                                <i class="far fa-calendar-alt"></i>
+                                <span th:text="${#temporals.format(interview.scheduleTime, 'dd/MM/yyyy') + ' ' +
+                                interview.startTime + ' - ' + interview.endTime}"></span>
+                            </div>
+
+                            <div class="interview-detail">
+                                <i class="fas fa-map-marker-alt"></i>
+                                <span th:text="${interview.locations}"></span>
+                            </div>
+
+                            <div class="interview-detail">
+                                <i class="fas fa-briefcase"></i>
+                                <span class="card-job-title" th:text="${interview.jobTitle}"></span>
+                            </div>
+
+                            <div class="interview-detail">
+                                <i class="fas fa-poll"></i>
+                                <span th:text="${result_title} + ':'"></span>&nbsp;
+                                <span
+                                    th:if="${interview.result != null && interview.result.toLowerCase().contains('pass')}"
+                                    class="result-badge result-passed" th:text="${passed_title}"></span>
+                                <span
+                                    th:if="${interview.result != null && interview.result.toLowerCase().contains('fail')}"
+                                    class="result-badge result-failed" th:text="${failed_title}"></span>
+                                <span
+                                    th:if="${interview.result == null || (!interview.result.toLowerCase().contains('pass') && !interview.result.toLowerCase().contains('fail'))}"
+                                    class="result-badge result-na">N/A</span>
+                            </div>
+                        </div>
+
+                        <div class="interview-card-footer">
+                            <div class="d-flex gap-2">
+                                <!-- View button - available to all -->
+                                <a class="btn btn-sm btn-info action-tooltip"
+                                    th:href="@{/interview/interviewDetail(id=${interview.id})}">
+                                    <i class="fa fa-eye"></i>
+                                    <span class="tooltip-text" th:text="${view_interview_title}"></span>
+                                </a>
+
+                                <!-- Edit button - not for Interviewer -->
+                                <a class="btn btn-sm btn-warning action-tooltip"
+                                    th:if="${session.account != null && session.account.getRole().name() != 'ROLE_INTERVIEWER'}"
+                                    th:href="@{/interview/editInterviewView(id=${interview.id})}">
+                                    <i class="fa fa-edit"></i>
+                                    <span class="tooltip-text" th:text="${edit_interview_title}"></span>
+                                </a>
+
+                                <!-- Submit result - only for Interviewer and when status is not CANCELLED or INTERVIEWED -->
+                                <a class="btn btn-sm btn-success action-tooltip"
+                                    th:if="${session.account != null && session.account.getRole().name() == 'ROLE_INTERVIEWER' && interview.status.name() != 'CANCELLED' && interview.status.name() != 'INTERVIEWED'}"
+                                    th:href="@{/interview/submitResultView(id=${interview.id})}">
+                                    <i class="fa fa-check-circle"></i>
+                                    <span class="tooltip-text" th:text="${submit_result}"></span>
+                                </a>
+
+                                <!-- Send Reminder - for Recruiter/Manager/Admin when status is NEW -->
+                                <a class="btn btn-sm btn-secondary action-tooltip"
+                                    th:if="${session.account != null && (session.account.getRole().name() != 'ROLE_RECRUITER') && interview.status.name() == 'NEW'}"
+                                    th:href="@{/interview/reminder(interviewId=${interview.id})}">
+                                    <i class="fa fa-bell"></i>
+                                    <span class="tooltip-text" th:text="${send_reminder}"></span>
+                                </a>
+
+                                <!-- Cancel button - for Recruiter/Manager/Admin when status is not CANCELLED or INTERVIEWED -->
+                                <a class="btn btn-sm btn-danger action-tooltip"
+                                    th:if="${session.account != null && (session.account.getRole().name() != 'ROLE_INTERVIEWER') && interview.status.name() != 'CANCELLED' && interview.status.name() != 'INTERVIEWED'}"
+                                    th:href="@{/interview/cancelInterview(id=${interview.id})}"
+                                    onclick="return confirm('Are you sure you want to cancel this interview?')">
+                                    <i class="fa fa-times-circle"></i>
+                                    <span class="tooltip-text" th:text="${cancelBtn}"></span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Table View of Interviews (hidden by default) -->
+            <div id="tableView" class="table-container animate__animated animate__fadeIn" style="display: none;">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th th:text="${id_label}"></th>
+                                <th th:text="${title_label}"></th>
+                                <th th:text="${candidate}"></th>
+                                <th th:text="${interviewerTitle}"></th>
+                                <th th:text="${schedule_time_title}"></th>
+                                <th th:text="${location_label}"></th>
+                                <th th:text="${job_title}"></th>
+                                <th th:text="${result_title}"></th>
+                                <th th:text="${statusTitle}"></th>
+                                <th th:text="${action}"></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="interview, iterStat : ${interviewPage.content}"
+                                th:data-status="${interview.status}" th:data-result="${interview.result}">
+                                <td th:text="${interview.id}"></td>
+                                <td>
+                                    <span th:text="${interview.title}" class="fw-medium"></span>
+                                </td>
+                                <td th:text="${interview.candidateName}"></td>
+                                <td th:text="${interview.interviewerNames}"></td>
+                                <td>
+                                    <i class="far fa-calendar-alt me-1"></i>
+                                    <span th:text="${#temporals.format(interview.scheduleTime, 'dd/MM/yyyy') + ' ' +
+                                        interview.startTime + ' - ' + interview.endTime}"></span>
+                                </td>
+                                <td>
+                                    <i class="fas fa-map-marker-alt me-1 text-danger"></i>
+                                    <span th:text="${interview.locations}"></span>
+                                </td>
+                                <td th:text="${interview.jobTitle}"></td>
+
+                                <td>
+                                    <span
+                                        th:if="${interview.result != null && interview.result.toLowerCase().contains('pass')}"
+                                        class="result-badge result-passed" th:text="${passed_title}"></span>
+                                    <span
+                                        th:if="${interview.result != null && interview.result.toLowerCase().contains('fail')}"
+                                        class="result-badge result-failed" th:text="${failed_title}"></span>
+                                    <span
+                                        th:if="${interview.result == null || (!interview.result.toLowerCase().contains('pass') && !interview.result.toLowerCase().contains('fail'))}"
+                                        class="result-badge result-na">N/A</span>
+                                </td>
+
+                                <td>
+                                    <span th:if="${interview.status == new_title}" class="badge badge-new"
+                                        th:text="${new_title}"></span>
+                                    <span th:if="${interview.status == invited_title}" class="badge badge-invited"
+                                        th:text="${invited_title}"></span>
+                                    <span th:if="${interview.status == interviewed_title}"
+                                        class="badge badge-interviewed" th:text="${interviewed_title}"></span>
+                                    <span th:if="${interview.status == canceled_title}" class="badge badge-cancelled"
+                                        th:text="${canceled_title}"></span>
+                                </td>
+
+                                <td>
+                                    <div class="d-flex gap-2">
+                                        <!-- View button - available to all -->
+                                        <a class="btn btn-sm btn-info action-tooltip"
+                                            th:href="@{/interview/interviewDetail(id=${interview.id})}">
+                                            <i class="fa fa-eye"></i>
+                                            <span class="tooltip-text" th:text="${view_interview_title}"></span>
+                                        </a>
+
+                                        <!-- Edit button - not for Interviewer -->
+                                        <a class="btn btn-sm btn-warning action-tooltip"
+                                            th:if="${session.account != null && session.account.getRole().name() != 'ROLE_INTERVIEWER'}"
+                                            th:href="@{/interview/editInterviewView(id=${interview.id})}">
+                                            <i class="fa fa-edit"></i>
+                                            <span class="tooltip-text" th:text="${edit_interview_title}"></span>
+                                        </a>
+
+                                        <!-- Submit result - only for Interviewer and when status is not CANCELLED or INTERVIEWED -->
+                                        <a class="btn btn-sm btn-success action-tooltip"
+                                            th:if="${session.account != null && session.account.getRole().name() == 'ROLE_INTERVIEWER' && interview.status.name() != 'CANCELLED' && interview.status.name() != 'INTERVIEWED'}"
+                                            th:href="@{/interview/submitResultView(id=${interview.id})}">
+                                            <i class="fa fa-check-circle"></i>
+                                            <span class="tooltip-text" th:text="${submit_result}"></span>
+                                        </a>
+
+                                        <!-- Send Reminder - for Recruiter/Manager/Admin when status is NEW -->
+                                        <a class="btn btn-sm btn-secondary action-tooltip"
+                                            th:if="${session.account != null && (session.account.getRole().name() != 'ROLE_INTERVIEWER') && interview.status.name() == 'NEW'}"
+                                            th:href="@{/interview/reminder(interviewId=${interview.id})}">
+                                            <i class="fa fa-bell"></i>
+                                            <span class="tooltip-text" th:text="${send_reminder}"></span>
+                                        </a>
+
+                                        <!-- Cancel button - for Recruiter/Manager/Admin when status is not CANCELLED or INTERVIEWED -->
+                                        <a class="btn btn-sm btn-danger action-tooltip"
+                                            th:if="${session.account != null && (session.account.getRole().name() != 'ROLE_INTERVIEWER') && interview.status.name() != 'CANCELLED' && interview.status != 'INTERVIEWED'}"
+                                            th:href="@{/interview/cancelInterview(id=${interview.id})}"
+                                            onclick="return confirm('Are you sure you want to cancel this interview?')">
+                                            <i class="fa fa-times-circle"></i>
+                                            <span class="tooltip-text" th:text="${cancelBtn}"></span>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- No results message -->
+            <div th:if="${interviewPage.content.empty}" class="no-results animate__animated animate__fadeIn">
+                <i class="fas fa-search"></i>
+                <h4 th:text="${no_job_found}"></h4>
+                <p th:text="${no_item_matches}"></p>
+            </div>
+
+            <!-- Pagination controls -->
+            <nav th:if="${interviewPage.totalPages} > 1" class="animate__animated animate__fadeInUp"
+                style="animation-delay: 0.5s;">
                 <ul class="pagination">
-                    <li class="page-item"
-                        th:classappend="${interviewPage.number == 0}? 'disabled'">
-                        <a class="page-link"
-                           th:href="@{/interview/list(page=${interviewPage.number}-1,
-                                                     size=${interviewPage.size},
-                                                     search=${param.search},
-                                                     status=${param.status},
-                                                     employeeId=${param.employeeId})}"
-                           aria-label="Previous">
+                    <li class="page-item" th:classappend="${interviewPage.number == 0}? 'disabled'">
+                        <a class="page-link" th:href="@{/interview/list(page=${interviewPage.number}-1,
+                                            size=${interviewPage.size},
+                                            search=${param.search},
+                                            status=${param.status},
+                                            employeeId=${param.employeeId})}" aria-label="Previous">
                             <span aria-hidden="true">&laquo;</span>
                         </a>
                     </li>
 
-                    <li class="page-item"
-                        th:each="pg : ${#numbers.sequence(0, ${interviewPage.getTotalPages() - 1})}"
+                    <li class="page-item" th:each="pg : ${#numbers.sequence(0, ${interviewPage.getTotalPages() - 1})}"
                         th:classappend="${pg == interviewPage.number}? 'active'">
-                        <a class="page-link"
-                           th:href="@{/interview/list(page=${pg},
-                                                     size=${interviewPage.size},
-                                                     search=${param.search},
-                                                     status=${param.status},
-                                                     employeeId=${param.employeeId})}"
-                           th:text="${pg + 1}"></a>
+                        <a class="page-link" th:href="@{/interview/list(page=${pg},
+                                            size=${interviewPage.size},
+                                            search=${param.search},
+                                            status=${param.status},
+                                            employeeId=${param.employeeId})}" th:text="${pg + 1}"></a>
                     </li>
 
                     <li class="page-item"
                         th:classappend="${interviewPage.number == ${interviewPage.getTotalPages() - 1}}? 'disabled'">
-                        <a class="page-link"
-                           th:href="@{/interview/list(page=${interviewPage.number}+1,
-                                                     size=${interviewPage.size},
-                                                     search=${param.search},
-                                                     status=${param.status},
-                                                     employeeId=${param.employeeId})}"
-                           aria-label="Next">
+                        <a class="page-link" th:href="@{/interview/list(page=${interviewPage.number}+1,
+                                            size=${interviewPage.size},
+                                            search=${param.search},
+                                            status=${param.status},
+                                            employeeId=${param.employeeId})}" aria-label="Next">
                             <span aria-hidden="true">&raquo;</span>
                         </a>
                     </li>
                 </ul>
             </nav>
-
-            <div class="mt-4">
-                <!-- Button to create new interview (for Recruiter/Manager/Admin) -->
-                <a class="btn btn-success" th:href="@{/interview/createInterviewView}">
-                    <i class="fa fa-plus"></i> Create New Interview
-                </a>
-            </div>
         </div>
     </div>
-</div>
 
-<script>
-    function logout() {
-        window.location.href = "/logout";
-    }
-</script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script th:src="@{/js/index.js}"></script>
 </body>
+
 </html>
