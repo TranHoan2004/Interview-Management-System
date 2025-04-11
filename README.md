@@ -1,7 +1,7 @@
-Interview Management System (IMS)
-🚀 Đây là dự án nhằm giúp cho quá trình tuyển dụng của công ty trở nên dễ dàng, tiện lợi và chuyên nghiệp hơn
-🚀 Dự án thuộc về đội phát triển gồm 6 thành viên tại FSA
-🚀 Công nghệ: Java, Spring Boot, Python
+Interview Management System (IMS)  
+🚀 Đây là dự án nhằm giúp cho quá trình tuyển dụng của công ty trở nên dễ dàng, tiện lợi và chuyên nghiệp hơn.  
+🚀 Dự án thuộc về đội phát triển gồm 6 thành viên tại FSA.  
+🚀 Công nghệ: Java, Spring Boot, Python.  
 
 ⭐ Thành viên:
 - Trần Xuân Hoàn (HoanTX): Nhóm trưởng, chịu trách nhiệm thiết kế DB, làm rõ nghiệp vụ hệ thống, phân chia, quản lý công việc, đôn đốc các thành viên hoàn thành nhiệm vụ;
