@@ -4,6 +4,8 @@ import com.ims_team4.model.Employee;
 import com.ims_team4.model.Users;
 import com.ims_team4.model.utils.HrRole;
 import org.jetbrains.annotations.NotNull;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -45,23 +47,60 @@ public interface EmployeeRepository extends JpaRepository<Employee, Long> {
     Optional<Employee> findByUserId(@Param("userId") Long userId);
 
     @Query("SELECT e FROM Employee e WHERE e.position.id = :positionId")
-    List<Employee> findByPositionId(@Param("positionId") long positionId);
+    Page<Employee> findByPositionId(@Param("positionId") long positionId, Pageable pageable);
+
 
     @Query(value = """
             SELECT e.* 
             FROM employee e
-            JOIN users u ON e.id = u.id  -- Employee.id chính là Users.id
+            JOIN users u ON e.id = u.id
             WHERE (:title IS NULL OR u.fullname LIKE CONCAT('%', :title, '%')) 
             AND (:positionId IS NULL OR e.position_id = :positionId)
-            """, nativeQuery = true)
-    List<Employee> findByUserInAndPositionId(@Param("title") String title, @Param("positionId") Long positionId);
+            """,
+            countQuery = """
+                    SELECT COUNT(*) 
+                    FROM employee e
+                    JOIN users u ON e.id = u.id
+                    WHERE (:title IS NULL OR u.fullname LIKE CONCAT('%', :title, '%')) 
+                    AND (:positionId IS NULL OR e.position_id = :positionId)
+                    """,
+            nativeQuery = true)
+    Page<Employee> findByUserInAndPositionId(
+            @Param("title") String title,
+            @Param("positionId") Long positionId,
+            Pageable pageable
+    );
 
-    @Query("SELECT e FROM Employee e JOIN e.user u WHERE u.fullname LIKE %:fullname%")
+
+    @Query("SELECT e FROM Employee e JOIN e.user u WHERE u.fullname LIKE CONCAT('%', :fullname, '%')")
+    Page<Employee> findByName(@Param("fullname") String fullname, Pageable pageable);
+
+
+
+    @Query(value = """
+        SELECT e.* 
+        FROM employee e
+        JOIN users u ON e.id = u.id
+        WHERE (:title IS NULL OR u.fullname LIKE CONCAT('%', :title, '%')) 
+        AND (:positionId IS NULL OR e.position_id = :positionId)
+        """,
+            nativeQuery = true)
+    List<Employee> findByUserInAndPositionId(
+            @Param("title") String title,
+            @Param("positionId") Long positionId
+    );
+
+    @Query("SELECT e FROM Employee e JOIN e.user u WHERE u.fullname LIKE CONCAT('%', :fullname, '%')")
     List<Employee> findByName(@Param("fullname") String fullname);
+
+    @Query("SELECT e FROM Employee e WHERE e.position.id = :positionId")
+    List<Employee> findByPositionId(@Param("positionId") long positionId);
+
+
 
     @Modifying
     @Query(value = "INSERT INTO employee (id, department_id, position_id, password, working_name, role) " +
-            "VALUES (:userId, :deptId, :posId, :password, :workingName, :role)", nativeQuery = true)
+                   "VALUES (:userId, :deptId, :posId, :password, :workingName, :role)", nativeQuery = true)
     void insertEmployee(@Param("userId") Long userId,
                         @Param("deptId") Long deptId,
                         @Param("posId") Long posId,
@@ -71,16 +110,21 @@ public interface EmployeeRepository extends JpaRepository<Employee, Long> {
 
     @Modifying
     @Query("UPDATE Employee e SET e.user = (SELECT u FROM Users u WHERE u.id = :userId), " +
-            "e.department.id = :deptId, e.position.id = :posId, e.role = :role, e.password = :password " +
-            "WHERE e.user.id = :oldUserId")
+           "e.department.id = :deptId, e.position.id = :posId, e.role = :role, e.password = :password " +
+           "WHERE e.user.id = :oldUserId")
     void updateEmployee(@Param("oldUserId") Long oldUserId,
                         @Param("userId") Long userId,
                         @Param("deptId") Long deptId,
                         @Param("posId") Long posId,
                         @Param("role") HrRole role,
                         @Param("password") String password);
-    @Query("SELECT e FROM Employee e JOIN e.user u WHERE u.status = true")
-    List<Employee> getActiveEmployees();
+
+    @Query("""
+                SELECT e
+                FROM Employee e
+                WHERE e.user.status=true AND e.user.id=:id
+            """)
+    Employee getActiveEmployees(@Param("id") Long id);
 
     @Query("from Employee e where e.user.email=:email")
     Employee findByEmail(@Param("email") String email);

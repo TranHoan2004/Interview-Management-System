@@ -7,59 +7,183 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <link rel="stylesheet" th:href="@{/css/offer.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{/css/styles.css}"/>
+    <style>
+        /* Mobile-first responsive styles */
+        .content {
+            padding-left: 15px;
+            padding-right: 15px;
+            transition: all 0.3s;
+        }
+
+        .info-card {
+            margin-top: 20px;
+            padding: 20px;
+        }
+
+        .offer-header {
+            flex-direction: column;
+            align-items: flex-start !important;
+        }
+
+        .offer-actions {
+            width: 100%;
+            margin-top: 15px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .offer-actions .btn {
+            flex: 1 1 150px;
+            min-width: 120px;
+            margin: 5px 0 !important;
+            white-space: normal;
+        }
+
+        .chat-button {
+            display: inline-flex;
+            align-items: center;
+            padding: 8px 12px;
+            background-color: #007bff;
+            color: white !important;
+            border-radius: 5px;
+            margin-right: 10px !important;
+        }
+
+        .info-icon {
+            min-width: 24px;
+            text-align: center;
+        }
+
+        .info-title {
+            display: flex;
+            align-items: center;
+        }
+
+        .offer-footer {
+            flex-direction: column-reverse;
+            gap: 10px;
+        }
+
+        .offer-footer .btn {
+            width: 100%;
+            margin: 5px 0 !important;
+        }
+
+        /* Chatbot styles */
+        #chatbot-icon {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 60px;
+            height: 60px;
+            background: white;
+            border-radius: 50%;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            cursor: pointer;
+            z-index: 1000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #chatbot-icon img {
+            width: 70%;
+            height: 70%;
+            object-fit: contain;
+        }
+
+        #chat-window {
+            position: fixed;
+            bottom: 90px;
+            right: 20px;
+            width: 350px;
+            height: 500px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+            display: none;
+            overflow: hidden;
+        }
+
+        #coze-bot {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        /* Tablet and larger */
+        @media (min-width: 768px) {
+            .content {
+                padding-left: 50px;
+            }
+
+            .offer-header {
+                flex-direction: row;
+                align-items: center !important;
+            }
+
+            .offer-actions {
+                width: auto;
+                margin-top: 0;
+                justify-content: flex-end;
+            }
+
+            .offer-footer {
+                flex-direction: row;
+                justify-content: flex-end;
+                align-items: center;
+            }
+
+            .offer-footer .btn {
+                width: auto;
+            }
+        }
+
+        /* Desktop */
+        @media (min-width: 992px) {
+            .offer-actions .btn {
+                flex: 0 1 auto;
+            }
+        }
+    </style>
 </head>
 <body>
+<div id="notification" class="custom-popup">
+    <div class="popup-content">
+        <i class="fa-solid fa-circle-check text-success fa-2x"></i>
+        <span id="notification-text"></span>
+        <button type="button" class="btn-close-custom"
+                style="background-color: red !important; color: white !important; border-radius: 50% !important; width: 10%"
+                onclick="closeNotification()">
+            <i class="fa-solid fa-mark"></i>
+        </button>
+    </div>
+</div>
+
+
+<div th:replace="~{recruiter-features/navbar :: mobile-menu}"></div>
 
 <!-- Sidebar -->
 <div class="sidebar" th:replace="~{component/left-sidebar::leftSidebar}"></div>
 
-<div class="content" style="padding-left: 50px;">
-    <div class="d-flex justify-content-between align-items-center mb-0">
-        <div class="container py-1 flex-grow-1" style="flex-basis: 66%;">
-            <h3 class="page-title fw-bold text-dark">
-                <i class="fa-solid fa-clipboard-list text-primary"></i>
-                <span th:text="${offer_list}"></span>
-            </h3>
-            <nav aria-label="breadcrumb">
-                <ol class="breadcrumb bg-white shadow-sm p-2 rounded">
-                    <li class="breadcrumb-item">
-                        <th:block th:if="${session.account.getRole().name().equals('ROLE_RECRUITER')}">
-                            <a th:href="@{/offer/offer/{rid}(rid=${T(com.ims_team4.controller.utils.UrlIdEncoder).encodeId(rid)})}"
-                               class="text-decoration-none text-primary fw-bold">
-                                <i class="fas fa-list me-1"></i>
-                                <span th:text="${offer_list}"></span>
-                            </a>
-                        </th:block>
+<div class="content">
+    <th:block th:with="offerUrl=${session.account.getRole().name().equals('ROLE_ADMINISTRATOR')
+                ? '/offer/adminOffer/' + T(com.ims_team4.controller.utils.UrlIdEncoder).encodeId(session.account.userID)
+                : session.account.getRole().name().equals('ROLE_MANAGER')
+                    ? '/offer/managerOffer/' + T(com.ims_team4.controller.utils.UrlIdEncoder).encodeId(session.account.userID)
+                    : '/offer/offer/' + T(com.ims_team4.controller.utils.UrlIdEncoder).encodeId(session.account.userID)}">
 
-                        <th:block th:if="${session.account.getRole().name().equals('ROLE_MANAGER')}">
-                            <a th:href="@{/offer/managerOffer/{rid}(rid=${T(com.ims_team4.controller.utils.UrlIdEncoder).encodeId(rid)})}"
-                               class="text-decoration-none text-primary fw-bold">
-                                <i class="fas fa-list me-1"></i>
-                                <span th:text="${offer_list}"></span>
-                            </a>
-                        </th:block>
-
-                        <th:block th:if="${session.account.getRole().name().equals('ROLE_ADMINISTRATOR')}">
-                            <a th:href="@{/offer/adminOffer/{rid}(rid=${T(com.ims_team4.controller.utils.UrlIdEncoder).encodeId(rid)})}"
-                               class="text-decoration-none text-primary fw-bold">
-                                <i class="fas fa-list me-1"></i>
-                                <span th:text="${offer_list}"></span>
-                            </a>
-                        </th:block>
-                    </li>
-                    <li class="breadcrumb-item active text-secondary" aria-current="page">
-                        <i class="fas fa-info-circle me-1"></i>
-                        <span th:text="${offer_detail_title}"></span>
-                    </li>
-                </ol>
-            </nav>
-        </div>
-        <div th:replace="~{component/top-sidebar::topSidebar}"></div>
-    </div>
+        <div th:replace="~{component/new-top-sidebar::newTopSidebar(
+        ${offer_list},
+        @{${offerUrl}},
+        ${offer_detail_title})}"></div>
+    </th:block>
 
     <!-- Candidate Offer -->
     <div class="info-card mt-0 p-4 shadow-lg rounded bg-white">
-        <div class="offer-info">
+        <div class="offer-info mb-3">
             <i class="far fa-calendar-alt me-1"></i><span th:text="${created_on}"></span>&nbsp;
             <span th:text="${#temporals.format(offer.getCreateAt(), 'dd/MM/yyyy') == #temporals.format(#temporals.createToday(), 'dd/MM/yyyy') ? 'today' : #temporals.format(offer.getCreateAt(), 'dd/MM/yyyy')}"></span>,&nbsp;
             <span th:text="${last_updated_by}"></span>&nbsp;
@@ -67,25 +191,25 @@
                   th:text="${user.getFullname()}"></span>
         </div>
 
-        <div class="d-flex justify-content-between align-items-center">
+        <div class="d-flex justify-content-between align-items-center offer-header">
             <h4 class="text-primary fw-bold">
                 <i class="fas fa-file-contract me-2"></i>
                 <span th:text="${offer_detail_title}"></span>
             </h4>
 
-            <div class="d-flex align-items-center justify-content-center">
+            <div class="d-flex align-items-center justify-content-center offer-actions">
                 <th:block th:if="${roleR == 'ROLE_RECRUITER'}">
-                    <a th:href="@{/chat(rid=${session.account.userID}, mid=${offer.getEmployeeId()}, role=${session.account.role})}"
-                       class="chat-button fw-bold text-decoration-none me-3">
-                        <i class="fa-brands fa-facebook-messenger"></i>
+                    <a th:href="@{/chat(rid=${T(com.ims_team4.controller.utils.UrlIdEncoder).encodeId(session.account.getUserID())}, mid=${T(com.ims_team4.controller.utils.UrlIdEncoder).encodeId(offer.getEmployeeId())}, role=${session.account.role})}"
+                       class="chat-button fw-bold text-decoration-none">
+                        <i class="fa-brands fa-facebook-messenger me-1"></i>
                         <span th:text="${chat_with_manager}"></span>
                     </a>
                 </th:block>
 
                 <th:block th:if="${roleR == 'ROLE_MANAGER'}">
-                    <a th:href="@{/chat(mid=${session.account.userID}, rid=${offer.getRecruiterOwner()}, role=${session.account.role})}"
-                       class="chat-button fw-bold text-decoration-none me-3">
-                        <i class="fa-brands fa-facebook-messenger"></i>
+                    <a th:href="@{/chat(mid=${T(com.ims_team4.controller.utils.UrlIdEncoder).encodeId(session.account.getUserID())}, rid=${T(com.ims_team4.controller.utils.UrlIdEncoder).encodeId(offer.getRecruiterOwner())}, role=${session.account.role})}"
+                       class="chat-button fw-bold text-decoration-none">
+                        <i class="fa-brands fa-facebook-messenger me-1"></i>
                         <span th:text="${chat_with_recruiter}"></span>
                     </a>
                 </th:block>
@@ -93,13 +217,13 @@
                 <th:block th:if="${offer.getStatusOfferId()} == 1">
                     <th:block th:if="${roleR == 'ROLE_MANAGER'}">
                         <a th:href="@{/offer/approveoffer/{id}(id=${offer.getId()}, rid=${session.account.getUserID()})}"
-                           class="btn btn-success px-3 me-1">
+                           class="btn btn-success px-3">
                             <i class="fas fa-check-circle me-1"></i>
                             <span th:text="${approve_link}"></span>
                         </a>
 
                         <a th:href="@{/offer/rejectoffer/{id}(id=${offer.getId()}, rid=${session.account.getUserID()})}"
-                           class="btn btn-danger px-3 me-1">
+                           class="btn btn-danger px-3">
                             <i class="fas fa-times-circle me-1"></i>
                             <span th:text="${reject_link}"></span>
                         </a>
@@ -114,13 +238,13 @@
 
                     <th:block th:if="${roleR == 'ROLE_ADMINISTRATOR'}">
                         <a th:href="@{/offer/approveoffer/{id}(id=${offer.getId()}, rid=${session.account.getUserID()})}"
-                           class="btn btn-success px-3 me-1">
+                           class="btn btn-success px-3">
                             <i class="fas fa-check-circle me-1"></i>
                             <span th:text="${approve_link}"></span>
                         </a>
 
                         <a th:href="@{/offer/rejectoffer/{id}(id=${offer.getId()}, rid=${session.account.getUserID()})}"
-                           class="btn btn-danger px-3 me-1">
+                           class="btn btn-danger px-3">
                             <i class="fas fa-times-circle me-1"></i>
                             <span th:text="${reject_link}"></span>
                         </a>
@@ -145,8 +269,8 @@
 
                 <th:block th:if="${offer.getStatusOfferId()} == 2">
                     <a th:href="@{/offer/mark/{id}(id=${offer.getId()}, rid=${session.account.getUserID()}, cid=${offer.getCandidateId()})}"
-                       class="btn btn-primary px-3 me-1"
-                       style="width: 300px !important; border-radius: 9px !important;">
+                       class="btn btn-primary px-3"
+                       style="border-radius: 9px !important;">
                         <i class="fas fa-paper-plane me-1"></i>
                         <span th:text="${mark_as_sent}"></span>
                     </a>
@@ -161,13 +285,13 @@
 
                 <th:block th:if="${offer.getStatusOfferId()} == 4">
                     <a th:href="@{/offer/acceptoffer/{id}(id=${offer.getId()}, rid=${session.account.getUserID()})}"
-                       class="btn btn-success px-3 me-1">
+                       class="btn btn-success px-3">
                         <i class="fas fa-check-circle me-1"></i>
                         <span th:text="${accept_link}"></span>
                     </a>
 
                     <a th:href="@{/offer/declineoffer/{id}(id=${offer.getId()}, rid=${session.account.getUserID()})}"
-                       class="btn btn-danger px-3 me-1"
+                       class="btn btn-danger px-3"
                        onclick="return confirm('Are you sure you want to cancel this offer?');">
                         <i class="fas fa-times-circle me-1"></i>
                         <span th:text="${decline_link}"></span>
@@ -194,58 +318,56 @@
         <hr>
         <div class="row">
             <div class="col-md-6">
-                <p>
-                    <i class="fas fa-user info-icon"></i>
+                <p class="mb-3">
+                    <i class="fas fa-user info-icon me-2"></i>
                     <strong th:text="${candidate} + ':'"></strong>
                     <span th:each="user : ${listU}" th:if="${user.getId() == offer.getCandidateId()}"
                           th:text="${user.getFullname()}"></span>
                 </p>
 
-                <p>
-                    <i class="fas fa-briefcase info-icon"></i>
+                <p class="mb-3">
+                    <i class="fas fa-briefcase info-icon me-2"></i>
                     <strong th:text="${positionTitle} + ':'"></strong>
                     <span th:each="position : ${listP}" th:if="${position.getId() == offer.getPosition()}"
                           th:text="${position.getName()}"></span>
                 </p>
 
-                <p>
-                    <i class="fas fa-user-check info-icon"></i>
+                <p class="mb-3">
+                    <i class="fas fa-user-check info-icon me-2"></i>
                     <strong th:text="${approver_title} + ':'"></strong>
                     <span th:each="user : ${listU}" th:if="${user.getId() == offer.getEmployeeId()}"
                           th:text="${user.getFullname()}"></span>
                 </p>
 
-                <div class="d-flex mb-3">
-                    <div class="info-title me-1" style="white-space: nowrap;">
-                        <i class="fas fa-calendar-check info-icon"></i>
-                        <span th:text="${interview_info} + ':'"></span>
-                    </div>
-
-                    <div>
+                <div class="mb-3">
+                    <div class="d-flex">
+                        <div class="info-title me-2">
+                            <i class="fas fa-calendar-check info-icon me-2"></i>
+                            <span th:text="${interview_info} + ':'"></span>
+                        </div>
                         <div th:text="${offer.getInterviewTitle()}"></div>
-                        <div class="d-flex">
-                            <div class="info-title me-1" style="white-space: nowrap;">
-                                <i class="fas fa-users info-icon"></i>
-                                <span th:text="${interviewerTitle} + ':'"></span>
-                            </div>
-
-                            <div>
-                                <span th:each="interview : ${listI}"
-                                      th:if="${offer.getInterviewId() == interview.getId()}">
-                                    <span th:each="eid, iter : ${interview.getEmployeeIds()}">
-                                        <span th:each="employee : ${listE}" th:if="${eid == employee.getUserID()}">
-                                            <span th:text="${employee.getWorkingName()}"></span>
-                                            <span th:if="${!iter.last}">, </span>
-                                        </span>
+                    </div>
+                    <div class="d-flex mt-2">
+                        <div class="info-title me-2">
+                            <i class="fas fa-users info-icon me-2"></i>
+                            <span th:text="${interviewerTitle} + ':'"></span>
+                        </div>
+                        <div>
+                            <span th:each="interview : ${listI}"
+                                  th:if="${offer.getInterviewId() == interview.getId()}">
+                                <span th:each="eid, iter : ${interview.getEmployeeIds()}">
+                                    <span th:each="employee : ${listE}" th:if="${eid == employee.getUserID()}">
+                                        <span th:text="${employee.getWorkingName()}"></span>
+                                        <span th:if="${!iter.last}">, </span>
                                     </span>
                                 </span>
-                            </div>
+                            </span>
                         </div>
                     </div>
                 </div>
 
-                <p>
-                    <i class="far fa-calendar-alt info-icon"></i>
+                <p class="mb-3">
+                    <i class="far fa-calendar-alt info-icon me-2"></i>
                     <strong th:text="${contract_period} + ':'"></strong>&nbsp;
                     <span th:text="${from_label}"></span>&nbsp;
                     <span th:text="${#temporals.format(offer.getContractPeriodFrom(), 'dd/MM/yyyy')}"></span>&nbsp;
@@ -253,8 +375,8 @@
                     <span th:text="${#temporals.format(offer.getContractPeriodTo(), 'dd/MM/yyyy')}"></span>
                 </p>
 
-                <p>
-                    <i class="far fa-comment-dots info-icon"></i>
+                <p class="mb-3">
+                    <i class="far fa-comment-dots info-icon me-2"></i>
                     <strong th:text="${interviewerTitle} + ' ' + ${note} + ':'"></strong>
                     <th:block th:each="interview : ${listI}">
                         <span th:if="${interview.getId() == offer.getInterviewId()}" th:text="${interview.getNote()}"
@@ -262,48 +384,48 @@
                     </th:block>
                 </p>
 
-                <div>
-                    <i class="fas fa-info-circle info-icon"></i>
+                <div class="mb-3">
+                    <i class="fas fa-info-circle info-icon me-2"></i>
                     <strong th:text="${status} + ':'"></strong>
                     <span>
                         <span th:if="${offer.getStatusOfferId()} == 1"
-                              class="rounded-pill px-2 py-2 fw-bold" style="background-color: #FFD700; color: #000000">
+                              class="rounded-pill px-2 py-1 fw-bold" style="background-color: #FFD700; color: #000000">
                             <i class="fas fa-clock status-icon"></i>
                             <span th:text="${offer.getStatusOfferName()}"></span>
                         </span>
 
                         <span th:if="${offer.getStatusOfferId()} == 2"
-                              class="rounded-pill px-2 py-2 fw-bold" style="background-color: #90EE90; color: #006400">
+                              class="rounded-pill px-2 py-1 fw-bold" style="background-color: #90EE90; color: #006400">
                             <i class="fas fa-check status-icon"></i>
                             <span th:text="${offer.getStatusOfferName()}"></span>
                         </span>
 
                         <span th:if="${offer.getStatusOfferId()} == 3"
-                              class="rounded-pill px-2 py-2 fw-bold" style="background-color: #FF6347; color: #8B0000">
+                              class="rounded-pill px-2 py-1 fw-bold" style="background-color: #FF6347; color: #8B0000">
                             <i class="fas fa-times status-icon"></i>
                             <span th:text="${offer.getStatusOfferName()}"></span>
                         </span>
 
                         <span th:if="${offer.getStatusOfferId()} == 4"
-                              class="rounded-pill px-2 py-2 fw-bold" style="background-color: #87CEEB; color: #00008B">
+                              class="rounded-pill px-2 py-1 fw-bold" style="background-color: #87CEEB; color: #00008B">
                             <i class="fas fa-envelope status-icon"></i>
                             <span th:text="${offer.getStatusOfferName()}"></span>
                         </span>
 
                         <span th:if="${offer.getStatusOfferId()} == 5"
-                              class="rounded-pill px-2 py-2 fw-bold" style="background-color: #32CD32; color: #FFFFFF">
+                              class="rounded-pill px-2 py-1 fw-bold" style="background-color: #32CD32; color: #FFFFFF">
                             <i class="fas fa-check-double status-icon"></i>
                             <span th:text="${offer.getStatusOfferName()}"></span>
                         </span>
 
                         <span th:if="${offer.getStatusOfferId()} == 6"
-                              class="rounded-pill px-2 py-2 fw-bold" style="background-color: #FF4500; color: #FFFFFF">
+                              class="rounded-pill px-2 py-1 fw-bold" style="background-color: #FF4500; color: #FFFFFF">
                             <i class="fas fa-thumbs-down status-icon"></i>
                             <span th:text="${offer.getStatusOfferName()}"></span>
                         </span>
 
                         <span th:if="${offer.getStatusOfferId()} == 7"
-                              class="rounded-pill px-2 py-2 fw-bold" style="background-color: #808080; color: #FFFFFF">
+                              class="rounded-pill px-2 py-1 fw-bold" style="background-color: #808080; color: #FFFFFF">
                             <i class="fas fa-ban status-icon"></i>
                             <span th:text="${offer.getStatusOfferName()}"></span>
                         </span>
@@ -312,77 +434,88 @@
             </div>
 
             <div class="col-md-6">
-                <p>
-                    <i class="fas fa-file-signature info-icon"></i>
+                <p class="mb-3">
+                    <i class="fas fa-file-signature info-icon me-2"></i>
                     <strong th:text="${contract_type} + ':'"></strong>
                     <span th:text="${offer.getContractTypeName()}"></span>
                 </p>
 
-                <p>
-                    <i class="fas fa-layer-group info-icon"></i>
+                <p class="mb-3">
+                    <i class="fas fa-layer-group info-icon me-2"></i>
                     <strong th:text="${level_title} + ':'"></strong>
                     <span th:text="${offer.getLevelName()}"></span>
                 </p>
 
-                <p>
-                    <i class="fas fa-building info-icon"></i>
+                <p class="mb-3">
+                    <i class="fas fa-building info-icon me-2"></i>
                     <strong th:text="${departmentTitle} + ':'"></strong>
                     <span th:text="${offer.getDepartmentName()}"></span>
                 </p>
 
-                <p>
-                    <i class="fas fa-user-tie info-icon"></i>
+                <p class="mb-3">
+                    <i class="fas fa-user-tie info-icon me-2"></i>
                     <strong th:text="${recruiter_owner} + ':'"></strong>
                     <span th:each="user : ${listU}" th:if="${user.id == offer.getRecruiterOwner()}"
                           th:text="${user.fullname}"></span>
                 </p>
 
-                <p>
-                    <i class="far fa-clock info-icon"></i>
+                <p class="mb-3">
+                    <i class="far fa-clock info-icon me-2"></i>
                     <strong th:text="${due_date} + ':'"></strong>
                     <span th:text="${#temporals.format(offer.getDueDate(), 'dd/MM/yyyy')}"></span>
                 </p>
 
-                <p>
-                    <i class="fas fa-money-bill-wave info-icon"></i>
+                <p class="mb-3">
+                    <i class="fas fa-money-bill-wave info-icon me-2"></i>
                     <strong th:text="${basic_salary} + ':'"></strong>
                     <span class="text-success fw-bold" th:text="${offer.getBasicSalary()}"></span>
                 </p>
 
-                <p>
-                    <i class="far fa-sticky-note info-icon"></i>
+                <p class="mb-3">
+                    <i class="far fa-sticky-note info-icon me-2"></i>
                     <strong th:text="${note} + ':'"></strong>
                     <span th:text="${offer.getNote()}" class="text-muted"></span>
                 </p>
             </div>
         </div>
         <hr>
-        <div class="d-flex justify-content-end">
+        <div class="d-flex justify-content-end offer-footer">
             <th:block th:if="${roleR == 'ROLE_RECRUITER'}">
-                <a th:href="@{/offer/offer/{rid}(rid=${T(com.ims_team4.controller.utils.UrlIdEncoder).encodeId(rid)})}" class="btn btn-outline-secondary me-2">
+                <a th:href="@{/offer/offer/{rid}(rid=${T(com.ims_team4.controller.utils.UrlIdEncoder).encodeId(rid)})}"
+                   class="btn btn-outline-secondary">
                     <i class="fas fa-arrow-left me-1"></i>
                     <span th:text="${back_link}"></span>
                 </a>
+                <th:block th:if="${offer.getStatusOfferId() == 1}">
+                    <a class="btn btn-primary"
+                       th:href="@{/offer/remindOffer/{offerId}(offerId=${offer.id}, employeeId=${offer.employeeId})}">
+                        <i class="fas fa-bell"></i> Remind
+                    </a>
+                </th:block>
             </th:block>
 
             <th:block th:if="${roleR == 'ROLE_MANAGER'}">
-                <a th:href="@{/offer/managerOffer/{rid}(rid=${T(com.ims_team4.controller.utils.UrlIdEncoder).encodeId(rid)})}" class="btn btn-outline-secondary me-2">
+                <a th:href="@{/offer/managerOffer/{rid}(rid=${T(com.ims_team4.controller.utils.UrlIdEncoder).encodeId(rid)})}"
+                   class="btn btn-outline-secondary">
                     <i class="fas fa-arrow-left me-1"></i>
                     <span th:text="${back_link}"></span>
                 </a>
             </th:block>
 
-            <th:block th:if="${roleR == 'ROLE_ADMINSTRATOR'}">
-                <a th:href="@{/offer/adminOffer/{rid}(rid=${T(com.ims_team4.controller.utils.UrlIdEncoder).encodeId(rid)})}" class="btn btn-outline-secondary me-2">
+            <th:block th:if="${roleR == 'ROLE_ADMINISTRATOR'}">
+                <a th:href="@{/offer/adminOffer/{rid}(rid=${T(com.ims_team4.controller.utils.UrlIdEncoder).encodeId(rid)})}"
+                   class="btn btn-outline-secondary">
                     <i class="fas fa-arrow-left me-1"></i>
                     <span th:text="${back_link}"></span>
                 </a>
             </th:block>
 
-            <form th:action="@{/offer/editoffer/{id}(id=${T(com.ims_team4.controller.utils.UrlIdEncoder).encodeId(offer.getId())})}" method="get">
-                <input type="hidden" name="rid" th:value="${T(com.ims_team4.controller.utils.UrlIdEncoder).encodeId(offer.getRecruiterOwner())}">
+            <form th:action="@{/offer/editoffer/{id}(id=${T(com.ims_team4.controller.utils.UrlIdEncoder).encodeId(offer.getId())})}"
+                  method="get">
+                <input type="hidden" name="rid"
+                       th:value="${T(com.ims_team4.controller.utils.UrlIdEncoder).encodeId(offer.getRecruiterOwner())}">
                 <th:block th:if="${offer.getStatusOfferId() == 1}">
-                    <button type="submit" class="btn btn-primary" style="min-width: 150px; white-space: nowrap;">
+                    <button type="submit" class="btn btn-primary">
                         <i class="fas fa-edit me-1"></i>
                         <span th:text="${editBtn}"></span>
                     </button>
@@ -394,8 +527,8 @@
         <img src="https://cdn-icons-png.flaticon.com/512/4712/4712035.png" alt="Chatbot">
     </div>
 
-    <!-- Cửa sổ chat -->
-    <div id="chat-window" style="position: relative;">
+    <!-- Chat window -->
+    <div id="chat-window">
         <iframe
                 src="https://www.coze.com/store/agent/7488646243938762753?bot_id=true"
                 allow="microphone"
@@ -406,4 +539,62 @@
 
 </body>
 <script src="/js/recruiter-offer.js"></script>
+<script>
+    function toggleMobileMenu() {
+        const mobileMenu = document.getElementById('mobileMenu');
+        mobileMenu.classList.toggle('show');
+
+        const menuIcon = document.querySelector('.menu-toggle i');
+        if (mobileMenu.classList.contains('show')) {
+            menuIcon.classList.remove('fa-bars');
+            menuIcon.classList.add('fa-times');
+        } else {
+            menuIcon.classList.remove('fa-times');
+            menuIcon.classList.add('fa-bars');
+        }
+    }
+
+    document.addEventListener('click', function (event) {
+        const mobileMenu = document.getElementById('mobileMenu');
+        const menuToggle = document.querySelector('.menu-toggle');
+
+        if (!menuToggle.contains(event.target) &&
+            !mobileMenu.contains(event.target) &&
+            mobileMenu.classList.contains('show')) {
+            toggleMobileMenu();
+        }
+    });
+
+    function toggleChatBot() {
+        const chatWindow = document.getElementById('chat-window');
+        if (chatWindow.style.display === 'block') {
+            chatWindow.style.display = 'none';
+        } else {
+            chatWindow.style.display = 'block';
+        }
+    }
+
+    document.addEventListener("DOMContentLoaded", function () {
+        var msg = `[[${success}]]`;
+        if (msg && msg !== "null") {
+            showNotification(msg);
+        }
+    });
+
+    function showNotification(message) {
+        var notification = document.getElementById("notification");
+        var notificationText = document.getElementById("notification-text");
+        notificationText.innerText = message;
+        notification.style.display = "block";
+
+        setTimeout(() => {
+            closeNotification();
+        }, 3000);
+    }
+
+    function closeNotification() {
+        var notification = document.getElementById("notification");
+        notification.style.display = "none";
+    }
+</script>
 </html>

@@ -31,4 +31,6 @@ public interface OfferRepository extends CrudRepository<Offer, Long> {
     boolean createOffer(int salary, LocalDate from, LocalDate to, LocalDate duedate, String interviewNote, int interviewId, String note, int recruiterOwner, int cid, int coid, int did, int eid, int lid, int pid, int updateBy);
 
     List<Offer> getAllOfferFromToOfEid(LocalDate from, LocalDate to, int eid);
+
+    List<Offer> getAllOfferByDuedateAndStatus(LocalDate dueDate, int status );
 }

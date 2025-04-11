@@ -6,7 +6,6 @@ import com.ims_team4.config.Constants;
 import com.ims_team4.controller.utils.SessionController;
 import com.ims_team4.dto.EmployeeDTO;
 import com.ims_team4.dto.UserDTO;
-import com.ims_team4.dto.authentication_entities.FacebookAccount;
 import com.ims_team4.dto.authentication_entities.GoogleAccount;
 import com.ims_team4.service.EmployeeService;
 import com.ims_team4.service.UserService;
@@ -15,12 +14,10 @@ import com.ims_team4.service.impl.UserServiceImpl;
 import com.ims_team4.utils.RandomCode;
 import com.ims_team4.utils.email.EmailService;
 import com.ims_team4.utils.email.EmailServiceImpl;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import org.apache.http.client.fluent.Form;
 import org.apache.http.client.fluent.Request;
 import org.jetbrains.annotations.NotNull;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -30,7 +27,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Locale;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -51,72 +47,44 @@ public class LoginController implements Constants.GoogleAndFacebookAuthenticatio
     }
 
     /**
-     * Login by Facebook or Google module. <br/>
-     * Args: {@code code}, {@code error}, {@code type}
+     * Login by Facebook or Google module. <br/> Args: {@code code}, {@code error}, {@code type}
      * <p>
-     * When we send authorization request to Facebook and Google (in the login
-     * page), we will receive authorization
+     * When we send authorization request to Facebook and Google (in the login page), we will receive authorization
      * grant uri contains authorized {@code code} and value of state.
      * </p>
      * <p>
-     * We use this {@code code} value to send an authorization grant uri to get an
-     * access token.
+     * We use this {@code code} value to send an authorization grant uri to get an access token.
      * </p>
      * <p>
-     * After having an access token, we send it to resource server to get account
-     * information. Finally, they will send
+     * After having an access token, we send it to resource server to get account information. Finally, they will send
      * us back all information of log in account.
      * </p>
      * <p>
-     * If login process has {@code error}, we will throw that {@code error} to login
-     * page that do not solve anything
+     * If login process has {@code error}, we will throw that {@code error} to login page that do not solve anything
      * with OAuth2 authentication system.
      * </p>
      */
     @GetMapping("/login")
     public String login(@RequestParam(name = "code", required = false) String code,
-            @RequestParam(value = "error", required = false) boolean error,
-            @RequestParam(name = "state", required = false) String type,
-            Model model, HttpSession session, Locale locale, HttpServletRequest request) {
+                        @RequestParam(value = "error", required = false) boolean error,
+                        Model model, HttpSession session) {
         logger.info("login get method");
-        String email = "";
-        String accessToken;
         render(model);
         try {
             if (error) {
                 throw new Exception("Error occurred");
             }
-            if (code != null && type != null) {
-                switch (type) {
-                    case LOGIN_TYPE_FACEBOOK -> {
-                        accessToken = getFacebookToken(code);
-                        email = getFacebookUserInfo(accessToken).getEmail();
-                    }
-                    case LOGIN_TYPE_GOOGLE -> {
-                        accessToken = getGoogleToken(code);
-                        email = getGoogleUserInfo(accessToken).getEmail();
-                    }
-                }
-                logger.info("email: " + email);
-            } else {
+            if (code == null) {
                 return "login-logout-features/login";
             }
-            EmployeeDTO emp = empSrv.getEmployeeDTOByEmail(email);
-            if (emp == null) {
-                throw new UsernameNotFoundException("User not found");
-            }
-            session.setAttribute("account", emp);
-            details.setAtributeForSecurityContext(emp, session);
-            logger.info("session: " + session.getAttribute("account"));
-        } catch (UsernameNotFoundException u) {
-            logger.log(Level.SEVERE, u.getMessage(), u);
-            model.addAttribute("error", u.getMessage());
-            return "login-logout-features/login";
+            String accessToken = getGoogleToken(code);
+            String email = getGoogleUserInfo(accessToken).getEmail();
+            setupSession(session, email);
         } catch (Exception e) {
             logger.log(Level.SEVERE, e.getMessage(), e);
+            model.addAttribute("error", e.getMessage());
             return "login-logout-features/login";
         }
-        logger.info("Go to dashboard");
         return "redirect:/dashboard";
     }
 
@@ -138,7 +106,7 @@ public class LoginController implements Constants.GoogleAndFacebookAuthenticatio
             if (!isEmailExisting(email, list)) {
                 throw new Exception("Email not found");
             }
-            UserDTO userDTO = userService.getUserByEmail(email).getFirst();
+            UserDTO userDTO = userService.getUserByEmail(email);
             employeeDTO = empSrv.getEmployeeById(Math.toIntExact(userDTO.getId()));
             sendEmail(email);
             model.addAttribute("status", false);
@@ -188,8 +156,11 @@ public class LoginController implements Constants.GoogleAndFacebookAuthenticatio
     @NotNull
     private static String getGoogleToken(String code) throws Exception {
         String response = Request.Post(GOOGLE_LINK_GET_TOKEN)
-                .bodyForm(Form.form().add("client_id", GOOGLE_CLIENT_ID).add("client_secret", GOOGLE_CLIENT_SECRET)
-                        .add("redirect_uri", GOOGLE_REDIRECT_URI).add("code", code).add("grant_type", GOOGLE_GRANT_TYPE)
+                .bodyForm(Form
+                        .form().add("client_id", GOOGLE_CLIENT_ID)
+                        .add("client_secret", GOOGLE_CLIENT_SECRET)
+                        .add("redirect_uri", GOOGLE_REDIRECT_URI)
+                        .add("code", code).add("grant_type", GOOGLE_GRANT_TYPE)
                         .build())
                 .execute().returnContent().asString();
         JsonObject obj = new Gson().fromJson(response, JsonObject.class);
@@ -206,27 +177,6 @@ public class LoginController implements Constants.GoogleAndFacebookAuthenticatio
     }
     // </editor-fold>
 
-    // <editor-fold> desc="Facebook Login utils"
-    @NotNull
-    private static String getFacebookToken(String code) throws Exception {
-        String response = Request.Post(FACEBOOK_LINK_GET_TOKEN)
-                .bodyForm(Form.form().add("client_id", FACEBOOK_CLIENT_ID).add("client_secret", FACEBOOK_CLIENT_SECRET)
-                        .add("redirect_uri", FACEBOOK_REDIRECT_URI).add("code", code).build())
-                .execute().returnContent().asString();
-        JsonObject obj = new Gson().fromJson(response, JsonObject.class);
-        if (!obj.has("access_token")) {
-            throw new IOException("Failed to retrieve access token from Facebook");
-        }
-        return obj.get("access_token").toString().replaceAll("\"", "");
-    }
-
-    private static FacebookAccount getFacebookUserInfo(final String accessToken) throws Exception {
-        String link = FACEBOOK_LINK_GET_USER_INFO + accessToken;
-        String response = Request.Get(link).execute().returnContent().asString();
-        return new Gson().fromJson(response, FacebookAccount.class);
-    }
-    // </editor-fold>
-
     private boolean isEmailExisting(@NotNull String email, @NotNull List<String> list) {
         logger.info("verify email: " + email);
         return list.stream().anyMatch(email::equals);
@@ -237,63 +187,71 @@ public class LoginController implements Constants.GoogleAndFacebookAuthenticatio
         randomCode = RandomCode.generateSixRandomCodes();
         logger.info("random code: " + randomCode);
         String subject = """
-                <!DOCTYPE html>
-                <html lang="en">
-                <head>
-                    <meta charset="UTF-8">
-                    <title>Interview Manager System - Verification Code</title>
-                </head>
-                <body style="margin: 0; padding: 0; background-color: #f4f4f4; font-family: Arial, sans-serif;">
-                    <table border="0" cellpadding="0" cellspacing="0" width="100%">
-                        <tr>
-                            <td align="center" style="padding: 20px 0;">
-                                <table border="0" cellpadding="0" cellspacing="0" width="600"
-                                       style="background-color: #ffffff; border-radius: 8px; overflow: hidden;\s
-                                              box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
-                                    <tr style="background-color: #ff6600;">
-                                        <td align="center" style="padding: 20px 10px;">
-                                            <h2 style="margin: 0; color: #ffffff;">Interview Manager System</h2>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td style="padding: 30px 40px; text-align: center; color: #333;">
-                                            <h3 style="margin-top: 0; margin-bottom: 10px;">Hello,</h3>
-                                            <p style="margin: 0; font-size: 16px;">
-                                                This is the verify code of <b>Interview Manager System</b>.
-                                            </p>
-                                            <div style="font-size: 28px; font-weight: bold; color: #ff6600;\s
-                                                        margin: 20px 0;">
-                                               \s""" + randomCode
-                + """
-                                                            </div>
-                                                            <p style="margin-top: 20px; font-size: 14px; color: #555;">
-                                                                If you do not ask to reset your password, please ignore this email.
-                                                            </p>
-                                                        </td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td style="background-color: #f4f4f4; padding: 10px; text-align: center;">
-                                                            <p style="margin: 0; font-size: 12px; color: #999;">
-                                                                © 2023 Interview Manager System. All rights reserved.
-                                                            </p>
-                                                        </td>
-                                                    </tr>
-                                                </table>
-                                            </td>
-                                        </tr>
-                                    </table>
-                                </body>
-                                </html>
-                        """;
+                                 <!DOCTYPE html>
+                                 <html lang="en">
+                                 <head>
+                                     <meta charset="UTF-8">
+                                     <title>Interview Manager System - Verification Code</title>
+                                 </head>
+                                 <body style="margin: 0; padding: 0; background-color: #f4f4f4; font-family: Arial, sans-serif;">
+                                     <table border="0" cellpadding="0" cellspacing="0" width="100%">
+                                         <tr>
+                                             <td align="center" style="padding: 20px 0;">
+                                                 <table border="0" cellpadding="0" cellspacing="0" width="600"
+                                                        style="background-color: #ffffff; border-radius: 8px; overflow: hidden;\s
+                                                               box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
+                                                     <tr style="background-color: #ff6600;">
+                                                         <td align="center" style="padding: 20px 10px;">
+                                                             <h2 style="margin: 0; color: #ffffff;">Interview Manager System</h2>
+                                                         </td>
+                                                     </tr>
+                                                     <tr>
+                                                         <td style="padding: 30px 40px; text-align: center; color: #333;">
+                                                             <h3 style="margin-top: 0; margin-bottom: 10px;">Hello,</h3>
+                                                             <p style="margin: 0; font-size: 16px;">
+                                                                 This is the verify code of <b>Interview Manager System</b>.
+                                                             </p>
+                                                             <div style="font-size: 28px; font-weight: bold; color: #ff6600;\s
+                                                                         margin: 20px 0;">
+                                                                \s""" + randomCode
+                         + """
+                                                                     </div>
+                                                                     <p style="margin-top: 20px; font-size: 14px; color: #555;">
+                                                                         If you do not ask to reset your password, please ignore this email.
+                                                                     </p>
+                                                                 </td>
+                                                             </tr>
+                                                             <tr>
+                                                                 <td style="background-color: #f4f4f4; padding: 10px; text-align: center;">
+                                                                     <p style="margin: 0; font-size: 12px; color: #999;">
+                                                                         © 2023 Interview Manager System. All rights reserved.
+                                                                     </p>
+                                                                 </td>
+                                                             </tr>
+                                                         </table>
+                                                     </td>
+                                                 </tr>
+                                             </table>
+                                         </body>
+                                         </html>
+                                 """;
         service.sendNormalEmail(email, "[Interview Management System] Verify Code", subject);
     }
 
-    private void render(Model model) {
+    private void render(@NotNull Model model) {
         model.addAttribute("client_id", GOOGLE_CLIENT_ID);
         model.addAttribute("client_secret", GOOGLE_CLIENT_SECRET);
-        model.addAttribute("url", OAUTH2_URL);
-        model.addAttribute("type", LOGIN_TYPE_GOOGLE);
         model.addAttribute("redirect_uri", GOOGLE_REDIRECT_URI);
+    }
+
+    private void setupSession(HttpSession session, String email) throws Exception {
+        EmployeeDTO emp = empSrv.getEmployeeDTOByEmail(email);
+        if (emp == null) {
+            throw new Exception("User not found");
+        }
+        session.setAttribute("account", emp);
+        details.setAttributeForSecurityContext(emp, session);
+        logger.info("session: " + session.getAttribute("account"));
     }
     // </editor-fold>
 }

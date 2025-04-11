@@ -1,0 +1,460 @@
+/* Candidate detail */
+.filter-bar {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.filter-bar .form-control, .filter-bar .form-select {
+    max-width: 220px;
+}
+
+/* Bảng dữ liệu */
+.table-container {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.table th {
+    background-color: #2c3e50;
+    color: white;
+    text-align: center;
+}
+
+.table td {
+    vertical-align: middle;
+}
+
+.table a {
+    color: #2c3e50;
+    transition: color 0.3s;
+}
+
+.table a:hover {
+    color: #1abc9c;
+}
+
+/* Tiêu đề */
+.page-title {
+    font-size: 35px;
+    font-weight: bold;
+    color: #2c3e50;
+}
+
+/* Nút bấm */
+.btn-primary:hover {
+    background-color: #16a085;
+}
+
+
+.btn-secondary:hover {
+    background-color: #2c3e50;
+}
+
+.search {
+    width: 24% !important;
+}
+
+.status {
+    margin-right: 6rem;
+}
+
+.title {
+    margin-bottom: -10px;
+}
+
+/* Popup container */
+.custom-popup {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: rgba(255, 255, 255, 0.95);
+    padding: 15px 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    display: none;
+    z-index: 1050;
+    min-width: 250px;
+    max-width: 300px;
+    animation: fadeInSlideDown 0.5s ease-out;
+}
+
+/* Nội dung popup */
+.popup-content {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 16px;
+    color: #333;
+}
+
+/* Nút đóng */
+.btn-close {
+    background: none;
+    border: none;
+    font-size: 16px;
+    cursor: pointer;
+    margin-left: auto;
+}
+
+/* Hiệu ứng xuất hiện */
+@keyframes fadeInSlideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.badge-male {
+    background-color: #007bff;
+}
+
+.badge-female {
+    background-color: #e83e8c;
+}
+
+.badge-other {
+    background-color: #6c757d;
+}
+
+/* Class chung cho tất cả nút trong action group */
+.btn-custom {
+    padding: 8px 16px;
+    font-size: 14px;
+    font-weight: 600;
+    border-radius: 8px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    text-transform: uppercase;
+    border: none;
+    transition: 0.2s ease;
+}
+
+.btn-custom:hover {
+    transform: scale(1.05);
+}
+
+/* Style từng loại nút */
+.btn-details {
+    background-color: #f7dc6f !important;
+    color: white !important;
+}
+
+.btn-edit {
+    background-color: #0acce6 !important;
+    color: white !important;
+}
+
+.delete-btn {
+    background-color: #ff69b4 !important;
+    color: white !important;
+}
+
+.ban-btn {
+    background-color: #e67e22 !important;
+    color: white !important;
+}
+
+.unban-btn {
+    background-color: #2ecc71 !important;
+    color: white !important;
+}
+
+.btn-cancel {
+    background-color: #cccccc !important;
+    color: white !important;
+}
+
+
+
+.container-detail {
+    width: calc(100% - 48px); /* Điều chỉnh để khớp với top sidebar */
+    margin: 0 auto; /* Canh giữa container */
+}
+
+/*Candidate list*/
+.module-title {
+    color: var(--primary-dark);
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+}
+
+.submodule-title {
+    color: var(--gray);
+    font-weight: 500;
+    font-size: 1.1rem;
+    margin-bottom: 1.5rem;
+}
+
+/* Nội dung chính */
+.content {
+    margin-left: 300px;
+    padding: 30px;
+    font-family: 'Poppins', sans-serif;
+}
+
+/* Định dạng bảng */
+.table-container {
+    background: white;
+    border-radius: var(--card-border-radius);
+    box-shadow: var(--box-shadow);
+    overflow: hidden;
+    padding: 20px;
+}
+
+.table {
+    width: 100%;
+    border-collapse: separate; /* Đảm bảo không có viền vuông */
+    border-spacing: 0; /* Giữ lại đường kẻ giữa các hàng và cột */
+}
+
+.table th {
+    background-color: var(--primary);
+    color: white;
+    text-transform: uppercase;
+    font-weight: 600;
+    padding: 15px;
+}
+
+/* Bo tròn góc trên */
+.table thead tr:first-child th:first-child {
+    border-top-left-radius: var(--card-border-radius);
+}
+
+.table thead tr:first-child th:last-child {
+    border-top-right-radius: var(--card-border-radius);
+}
+
+/* Giữ lại viền giữa hàng và cột */
+.table th,
+.table td {
+    border: 1px solid var(--gray-light); /* Đảm bảo các ô có đường kẻ */
+}
+
+/* Hiệu ứng hover */
+.table tbody tr:hover {
+    background-color: #f8fbff;
+    transition: all 0.3s;
+}
+
+/* Đảm bảo khi chuyển trang, bảng vẫn giữ nguyên thiết kế */
+.pagination + .table-container {
+    border-radius: var(--card-border-radius);
+    box-shadow: var(--box-shadow);
+}
+
+/* Hiệu ứng hover */
+.action-group a:hover,
+.action-group button:hover {
+    background-color: var(--accent);
+    color: white;
+    box-shadow: var(--box-shadow);
+}
+
+/* Phân trang */
+.pagination .page-link {
+    color: var(--primary);
+    border-radius: var(--element-border-radius);
+    margin: 0 5px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+}
+
+.pagination .page-item.active .page-link {
+    background: var(--gradient-primary);
+    border: none;
+}
+
+/* create candidate */
+h2, h3 {
+    color: #212529;
+    font-weight: bold;
+    margin-bottom: 10px; /* Giảm khoảng cách dưới tiêu đề */
+    font-size: 20px; /* Thu nhỏ kích thước chữ */
+}
+
+h2 {
+    padding-bottom: 5px; /* Giảm padding dưới */
+}
+
+.form-group {
+    margin-bottom: 10px; /* Thu nhỏ khoảng cách giữa các ô */
+}
+
+.form-group label {
+    font-weight: bold;
+    margin-bottom: 3px; /* Thu hẹp khoảng cách giữa label và input */
+    font-size: 14px;
+}
+
+input, select {
+    width: 100%;
+    padding: 8px; /* Giảm padding */
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    background-color: #fff;
+    font-size: 14px; /* Thu nhỏ chữ */
+    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
+    transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+input:focus, select:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 4px rgba(0, 123, 255, 0.5);
+    outline: none;
+}
+
+.form-actions {
+    text-align: center;
+    margin-top: 20px; /* Thu hẹp khoảng cách trên */
+}
+
+.btn-submit {
+    background-color: #007bff;
+    color: white;
+    padding: 8px 20px; /* Thu nhỏ kích thước nút */
+    border: none;
+    cursor: pointer;
+    border-radius: 4px;
+    font-size: 14px; /* Giảm chữ */
+    transition: background-color 0.3s ease;
+}
+
+.btn-submit:hover {
+    background-color: #0056b3;
+}
+
+.btn-cancel {
+    background-color: #f8f9fa;
+    color: #495057;
+    padding: 8px 20px; /* Thu nhỏ kích thước nút */
+    border: 1px solid #ced4da;
+    cursor: pointer;
+    border-radius: 4px;
+    font-size: 14px; /* Giảm chữ */
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.btn-cancel:hover {
+    background-color: #e2e6ea;
+    color: #212529;
+}
+
+.skill-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px; /* Thu gọn khoảng cách giữa các thẻ */
+    border: 1px solid #ced4da;
+    padding: 8px; /* Giảm padding */
+<!-- Toàn bộ thông tin chỉ hiển thị nếu người dùng có một trong các role --> < div class = "d-flex" > <!-- Left sidebar --> < div class = "sidebar" th: replace = "~{component/left-sidebar::leftSidebar}" > < / div > <!-- Nội dung chính --> < div class = "content flex-grow-1" > < div class = "main-content" > < div class = "top-sidebar" > < div class = "top-sidebar-container" > < div class = "breadcrumb-section" > < nav aria-label = "breadcrumb" > < ol class = "breadcrumb mb-0" > < li class = "breadcrumb-item" > < a href = "/dashboard" > < i class = "fas fa-home" > < / i > < span th: text = "${home_page}" > < / span > < / a > < / li > < li class = "breadcrumb-item" > < a th: href = "@{/candidate/list}" > < span th: text = "${candidate_list_title}" > < / span > < / a > < / li > < li class = "breadcrumb-item active" aria-current = "page" th: text = "${candidate_details}" > < / li > < / ol > < / nav > < / div > < div class = "top-sidebar-actions" > <!-- Notifications --> < div class = "dropdown" > < button class = "btn action-btn" type = "button" data-bs-toggle = "dropdown" aria-expanded = "false" > < i class = "fas fa-bell" > < / i > < span class = "notification-badge" > 3 < / span > < / button > < ul class = "dropdown-menu dropdown-menu-end notification-menu" > < li class = "dropdown-header" > < h6 class = "mb-0" > Notifications < / h6 > < span class = "text-muted small" > You have 3 unread messages < / span > < / li > < li > < hr class = "dropdown-divider" > < / li > < li > < a class = "dropdown-item notification-item unread" href = "#" > < div class = "notification-icon bg-primary" > < i class = "fas fa-calendar-check text-white" > < / i > < / div > < div class = "notification-text" > < p class = "mb-0" > New interview scheduled < / p > < span class = "text-muted small" > 15 minutes ago < / span > < / div > < / a > < / li > < li > < a class = "dropdown-item notification-item unread" href = "#" > < div class = "notification-icon bg-success" > < i class = "fas fa-user-check text-white" > < / i > < / div > < div class = "notification-text" > < p class = "mb-0" > Candidate profile updated < / p > < span class = "text-muted small" > 1 hour ago < / span > < / div > < / a > < / li > < li > < a class = "dropdown-item notification-item unread" href = "#" > < div class = "notification-icon bg-warning" > < i class = "fas fa-clock text-white" > < / i > < / div > < div class = "notification-text" > < p class = "mb-0" > Interview reminder < / p > < span class = "text-muted small" > Tomorrow, 10: 00 AM < / span > < / div > < / a > < / li > < li > < hr class = "dropdown-divider" > < / li > < li > < a class = "dropdown-item text-center small" href = "#" > View all notifications < / a > < / li > < / ul > < / div > <!-- Settings --> < div class = "dropdown" > < button class = "btn action-btn" type = "button" data-bs-toggle = "dropdown" aria-expanded = "false" > < i class = "fas fa-cog" > < / i > < / button > < ul class = "dropdown-menu dropdown-menu-end" > < li > < a class = "dropdown-item" href = "#" > < i class = "fas fa-user-cog me-2" > < / i > Account Settings < / a > < / li > < li > < a class = "dropdown-item" href = "#" > < i class = "fas fa-palette me-2" > < / i > Appearance < / a > < / li > < li > < a class = "dropdown-item" href = "#" > < i class = "fas fa-bell me-2" > < / i > Notification Settings < / a > < / li > < li > < hr class = "dropdown-divider" > < / li > < li > < a class = "dropdown-item" href = "#" > < i class = "fas fa-question-circle me-2" > < / i > Help Center < / a > < / li > < / ul > < / div > <!-- User Profile - REDESIGNED --> < div class = "dropdown" > < div class = "user-profile" data-bs-toggle = "dropdown" > < div class = "user-avatar-container" > < img th: src = "${session.account != null ? 'https://ui-avatars.com/api/?name=' + session.account.getFullname() + '&background=random' : 'https://ui-avatars.com/api/?name=User&background=random'}" alt = "User" class = "user-avatar" > < span class = "user-status" > < / span > < / div > < div class = "user-info d-none d-md-flex" > < span class = "user-name" th: text = "${session.account != null ? session.account.getFullname() : 'User Name'}" > User Name < / span > < span class = "user-role" th: text = "${session.account != null ? session.account.getDepartmentName() : 'Department'}" > Department < / span > < / div > < button class = "user-dropdown-btn" > < i class = "fas fa-chevron-down" > < / i > < / button > < / div > < ul class = "dropdown-menu dropdown-menu-end" > < li > < a class = "dropdown-item" href = "#" > < i class = "fas fa-user me-2" > < / i > My Profile < / a > < / li > < li > < a class = "dropdown-item" href = "#" > < i class = "fas fa-history me-2" > < / i > Activity Log < / a > < / li > < li > < hr class = "dropdown-divider" > < / li > < li > < a class = "dropdown-item" href = "#" onclick = "logout()" > < i class = "fas fa-sign-out-alt me-2" > < / i > Logout < / a > < / li > < / ul > < / div > < / div > < / div > < / div > min-height: 36 px; /* Giảm chiều cao tối thiểu */
+    align-items: center;
+    background-color: #fff;
+    border-radius: 4px;
+    transition: border-color 0.3s ease;
+}
+
+.skill-container:hover {
+    border-color: #007bff;
+}
+
+.skill-tag {
+    background-color: #007bff;
+    color: white;
+    padding: 6px 12px; /* Thu nhỏ padding */
+    border-radius: 15px;
+    display: flex;
+    align-items: center;
+    gap: 5px; /* Thu gọn khoảng cách trong thẻ */
+    font-size: 12px; /* Giảm kích thước chữ */
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.skill-tag:hover {
+    background-color: #0056b3;
+}
+
+.skill-tag .remove-skill {
+    display: inline;
+    font-weight: bold;
+    color: #ffc107;
+    cursor: pointer;
+    transition: color 0.3s ease;
+}
+
+.skill-tag:hover .remove-skill {
+    color: #ffeb3b;
+}
+
+.error-message {
+    font-size: 13px;
+    margin-top: 5px;
+    display: none; /* Ẩn mặc định */
+}
+
+select {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    padding: 10px;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    background-color: #fff;
+    font-size: 14px;
+    background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="gray"><path d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" /></svg>');
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+}
+
+/* edit candidate */
+.error-message {
+    font-size: 13px;
+    margin-top: 5px;
+    display: none;
+    color: red;
+}
+
+.skill-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    min-height: 40px;
+    align-items: center;
+    background-color: #fff;
+    border: 1px solid #ced4da;
+    border-radius: 5px;
+    padding: 8px;
+}
+
+.skill-badge {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 14px;
+    padding: 8px 12px;
+    border-radius: 20px;
+    cursor: default;
+}
+
+.remove-skill {
+    font-weight: bold;
+    color: #ffcc00;
+    cursor: pointer;
+    transition: color 0.3s ease;
+}
+
+.remove-skill:hover {
+    color: #ff6600;
+}
+
+#skillSelect {
+    max-width: 300px;
+    border-radius: 5px;
+    border: 1px solid #ced4da;
+}

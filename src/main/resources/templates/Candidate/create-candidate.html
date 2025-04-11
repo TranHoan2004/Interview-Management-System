@@ -7,10 +7,8 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
           rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <link rel="stylesheet" type="text/css" th:href="@{/css/styles.css}"/>
     <style>
-
         h2, h3 {
             color: #212529;
             font-weight: bold;
@@ -19,7 +17,6 @@
         }
 
         h2 {
-            border-bottom: 2px solid #007bff; /* Đường viền mỏng hơn */
             padding-bottom: 5px; /* Giảm padding dưới */
         }
 
@@ -163,132 +160,9 @@
     <!-- Nội dung chính -->
     <div class="content flex-grow-1">
         <div class="main-content">
-            <div class="top-sidebar">
-                <div class="top-sidebar-container">
-                    <div class="breadcrumb-section">
-                        <nav aria-label="breadcrumb">
-                            <ol class="breadcrumb mb-0">
-                                <li class="breadcrumb-item">
-                                    <a href="/dashboard">
-                                        <i class="fas fa-home"></i>
-                                        <span th:text="${home_page}"></span>
-                                    </a>
-                                </li>
-                                <li class="breadcrumb-item">
-                                    <a th:href="@{/candidate/list}">
-                                        <span th:text="${candidate_list_title}"></span>
-                                    </a>
-                                </li>
-                                <li class="breadcrumb-item active" aria-current="page"
-                                    th:text="${create_candidate_title}"></li>
-                            </ol>
-                        </nav>
-                    </div>
-
-                    <div class="top-sidebar-actions">
-                        <!-- Notifications -->
-                        <div class="dropdown">
-                            <button class="btn action-btn" type="button" data-bs-toggle="dropdown"
-                                    aria-expanded="false">
-                                <i class="fas fa-bell"></i>
-                                <span class="notification-badge">3</span>
-                            </button>
-                            <ul class="dropdown-menu dropdown-menu-end notification-menu">
-                                <li class="dropdown-header">
-                                    <h6 class="mb-0">Notifications</h6>
-                                    <span class="text-muted small">You have 3 unread messages</span>
-                                </li>
-                                <li>
-                                    <hr class="dropdown-divider">
-                                </li>
-                                <li><a class="dropdown-item notification-item unread" href="#">
-                                    <div class="notification-icon bg-primary">
-                                        <i class="fas fa-calendar-check text-white"></i>
-                                    </div>
-                                    <div class="notification-text">
-                                        <p class="mb-0">New interview scheduled</p>
-                                        <span class="text-muted small">15 minutes ago</span>
-                                    </div>
-                                </a></li>
-                                <li><a class="dropdown-item notification-item unread" href="#">
-                                    <div class="notification-icon bg-success">
-                                        <i class="fas fa-user-check text-white"></i>
-                                    </div>
-                                    <div class="notification-text">
-                                        <p class="mb-0">Candidate profile updated</p>
-                                        <span class="text-muted small">1 hour ago</span>
-                                    </div>
-                                </a></li>
-                                <li><a class="dropdown-item notification-item unread" href="#">
-                                    <div class="notification-icon bg-warning">
-                                        <i class="fas fa-clock text-white"></i>
-                                    </div>
-                                    <div class="notification-text">
-                                        <p class="mb-0">Interview reminder</p>
-                                        <span class="text-muted small">Tomorrow, 10:00 AM</span>
-                                    </div>
-                                </a></li>
-                                <li>
-                                    <hr class="dropdown-divider">
-                                </li>
-                                <li><a class="dropdown-item text-center small" href="#">View all notifications</a></li>
-                            </ul>
-                        </div>
-
-                        <!-- Settings -->
-                        <div class="dropdown">
-                            <button class="btn action-btn" type="button" data-bs-toggle="dropdown"
-                                    aria-expanded="false">
-                                <i class="fas fa-cog"></i>
-                            </button>
-                            <ul class="dropdown-menu dropdown-menu-end">
-                                <li><a class="dropdown-item" href="#"><i class="fas fa-user-cog me-2"></i>Account
-                                    Settings</a></li>
-                                <li><a class="dropdown-item" href="#"><i class="fas fa-palette me-2"></i>Appearance</a>
-                                </li>
-                                <li><a class="dropdown-item" href="#"><i class="fas fa-bell me-2"></i>Notification
-                                    Settings</a></li>
-                                <li>
-                                    <hr class="dropdown-divider">
-                                </li>
-                                <li><a class="dropdown-item" href="#"><i class="fas fa-question-circle me-2"></i>Help
-                                    Center</a></li>
-                            </ul>
-                        </div>
-
-                        <!-- User Profile - REDESIGNED -->
-                        <div class="dropdown">
-                            <div class="user-profile" data-bs-toggle="dropdown">
-                                <div class="user-avatar-container">
-                                    <img th:src="${session.account != null ? 'https://ui-avatars.com/api/?name=' + session.account.getFullname() + '&background=random' : 'https://ui-avatars.com/api/?name=User&background=random'}"
-                                         alt="User" class="user-avatar">
-                                    <span class="user-status"></span>
-                                </div>
-                                <div class="user-info d-none d-md-flex">
-                                    <span class="user-name"
-                                          th:text="${session.account != null ? session.account.getFullname() : 'User Name'}">User
-                                        Name</span>
-                                    <span class="user-role"
-                                          th:text="${session.account != null ? session.account.getDepartmentName() : 'Department'}">Department</span>
-                                </div>
-                                <button class="user-dropdown-btn">
-                                    <i class="fas fa-chevron-down"></i>
-                                </button>
-                            </div>
-                            <ul class="dropdown-menu dropdown-menu-end">
-                                <li><a class="dropdown-item" href="#"><i class="fas fa-user me-2"></i>My Profile</a>
-                                </li>
-                                <li><a class="dropdown-item" href="#"><i class="fas fa-history me-2"></i>Activity
-                                    Log</a></li>
-                                <li>
-                                    <hr class="dropdown-divider">
-                                </li>
-                                <li><a class="dropdown-item" href="#" onclick="logout()"><i
-                                        class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
+            <!-- Top Sidebar / Header -->
+            <div
+                    th:replace="~{component/new-top-sidebar::newTopSidebar(${candidate_list_title}, '/candidate/list', ${create_candidate_title})}">
             </div>
 
             <div class="stats-section">
@@ -298,8 +172,7 @@
                 </div>
             </div>
 
-
-
+<div class="card shadow-lg p-4 mb-4 bg-white rounded">
             <form id="candidateForm" th:action="@{/candidate/add}" method="post" enctype="multipart/form-data">
                 <h3 th:text="${personal_information_title}"></h3>
                 <div class="row">
@@ -319,13 +192,13 @@
                                 <span th:text="${dob}"></span>
                                 <span style="color: red;">*</span>
                             </label>
-                            <input type="date" name="dob" id="dob" class="form-control" onchange="calculateAge()">
+                            <input type="date" name="dob" id="dob" class="form-control" onchange="calculateAge()" >
                             <small id="dobError" class="error-message text-danger"></small>
                         </div>
 
                         <!-- Trường hiển thị tuổi (readonly) -->
                         <div class="form-group">
-                            <label>Age: </label>
+                            <label th:text="${age_title} + ':'"></label>
                             <input type="number" id="age" class="form-control" readonly>
                             <small id="ageError" class="error-message text-danger"></small>
                         </div>
@@ -406,7 +279,6 @@
                         <div class="form-group">
                             <label>
                                 <span th:text="${skill}"></span>
-                                <span style="color: red;">*</span>
                             </label>
                             <div id="selectedSkills" class="skill-container"></div>
                             <select id="skillSelect" class="form-control">
@@ -451,7 +323,7 @@
                                 <span style="color: red;">*</span>
                             </label>
                             <input type="number" name="experience" id="experience" class="form-control"
-                                   th:placeholder="${input_yoe}" oninput="validateExperience()">
+                                   th:placeholder="${input_yoe}" oninput="validateExperience()" min="0">
                             <small id="experienceError" class="error-message text-danger"></small>
                         </div>
 
@@ -473,13 +345,14 @@
                 </div>
 
                 <div class="form-actions">
-                    <button type="submit" class="btn-submit" th:text="${submitBtn}"></button>
-                    <button type="button" class="btn-cancel" onclick="confirmNavigation(event, 'list')"
+                    <button type="submit" class="btn btn-primary btn-submit rounded" th:text="${submitBtn}"></button>
+                    <button type="button" class="btn btn-secondary btn-cancel rounded" onclick="confirmNavigation(event, 'list')"
                             th:text="${cancelBtn}"></button>
                 </div>
             </form>
         </div>
     </div>
+</div>
 </div>
 <script>
     document.addEventListener("DOMContentLoaded", function () {
@@ -576,7 +449,7 @@
             // Danh sách các trường cần kiểm tra
             const requiredFields = [
                 "fullName", "email", "gender", "position",
-                "status", "address", "highestEducation", "experience"
+                "status", "address", "highestEducation", "experience","dob", "experience"
             ];
 
             requiredFields.forEach(fieldId => {
@@ -645,22 +518,29 @@
                 age--;
             }
 
-            if (dobValue >= today) {
-                dobErrorMessage.textContent = "Date of Birth must be in the past.";
+            if (dobField.value === "") {
+                dobErrorMessage.textContent = "Date of Birth is required.";
                 dobErrorMessage.style.display = "block";
                 isValid = false;
-            } else {
-                dobErrorMessage.style.display = "none";
             }
+            else {
+                if (dobValue >= today) {
+                    dobErrorMessage.textContent = "Date of Birth must be in the past.";
+                    dobErrorMessage.style.display = "block";
+                    isValid = false;
+                } else {
+                    dobErrorMessage.style.display = "none";
+                }
 
-            ageInput.value = age;
+                ageInput.value = age;
 
-            if (age < 18 || age > 55) {
-                ageError.textContent = "Age must be between 18 and 55!";
-                ageError.style.display = "block";
-                isValid = false;
-            } else {
-                ageError.style.display = "none";
+                if (age < 18 || age > 55) {
+                    ageError.textContent = "Age must be between 18 and 55!";
+                    ageError.style.display = "block";
+                    isValid = false;
+                } else {
+                    ageError.style.display = "none";
+                }
             }
 
             // Kiểm tra số năm kinh nghiệm không được lớn hơn tuổi
@@ -668,8 +548,12 @@
             const experienceError = document.getElementById("experienceError");
             let experience = parseInt(experienceField.value);
 
-            if (!isNaN(experience) && experience > age) {
-                experienceError.textContent = "The number of years of experience cannot be greater than your age!";
+            if (experienceField.value === "") {
+                experienceError.textContent = "Year of Experience is required.";
+                experienceError.style.display = "block";
+                isValid = false;
+            } else if (!isNaN(experience) && experience > age) {
+                experienceError.textContent = "The number of years of experience cannot be greater than age!";
                 experienceError.style.display = "block";
                 isValid = false;
             } else {
@@ -700,7 +584,7 @@
         const ageField = document.getElementById("age");
         const dobError = document.getElementById("dobError");
         const ageError = document.getElementById("ageError");
-
+        c
         if (!dobField.value) {
             dobError.textContent = "Please select your date of birth.";
             ageField.value = ""; // Xóa tuổi nếu không có ngày sinh
@@ -754,21 +638,20 @@
     </div>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
 <!-- Modal xác nhận -->
 <div class="modal fade" id="confirmationModalAdd" tabindex="-1" aria-labelledby="confirmationModalLabel"
      aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="confirmationModalLabel">Confirm Submission</h5>
+                <h5 class="modal-title" id="confirmationModalLabel" th:text="${confirm_submit}"></h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <div class="modal-body">
-                Are you sure you want to create this candidate's information?
-            </div>
+            <div class="modal-body" th:text="${confirm_create_candidate}"></div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No</button>
-                <button type="button" class="btn btn-primary" id="confirmSubmit">Yes</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" th:text="${no_btn}"></button>
+                <button type="button" class="btn btn-primary" id="confirmSubmit" th:text="${yes_btn}"></button>
             </div>
         </div>
     </div>
@@ -789,7 +672,6 @@
 </script>
 <!-- SweetAlert2 Delete & Ban & Create Candidate -->
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
 
 </body>
 </html>

@@ -1,25 +1,137 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
-
 <head>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
 </head>
-
 <body>
-    <div class="d-flex justify-content-between align-items-center mb-0" th:fragment="topSidebar">
-        <div class="mb-1 p-3 bg-white rounded shadow-sm flex-grow-1 d-flex align-items-center" style="flex-basis: 35%;">
-            <div class="d-flex align-items-center me-3">
-                <img src="https://anhanime.me/wp-content/uploads/2024/03/anh-conan_5.jpg" alt="Avatar"
-                    class="rounded-circle border border-2" width="45" height="45">
-                <div class="ms-2">
-                    <span class="fw-bold text-dark d-block" th:text="${session.account.getFullname()}"></span>
-                    <small class="text-muted" th:text="${session.account.getDepartmentName()}"></small>
-                </div>
+<div class="top-sidebar"  th:fragment="topSidebar">
+    <div class="top-sidebar-container">
+        <div class="breadcrumb-section">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb mb-0">
+                    <li class="breadcrumb-item"><a href="/dashboard"><i class="fas fa-home"></i> Home
+                        Page</a>
+                    </li>
+                    <li class="breadcrumb-item active" aria-current="page">Job List</li>
+                </ol>
+            </nav>
+        </div>
+
+        <div class="top-sidebar-actions">
+            <!-- Notifications -->
+            <div class="dropdown">
+                <button class="btn action-btn" type="button" data-bs-toggle="dropdown"
+                        aria-expanded="false">
+                    <i class="fas fa-bell"></i>
+                    <span class="notification-badge">3</span>
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end notification-menu">
+                    <li class="dropdown-header">
+                        <h6 class="mb-0">Notifications</h6>
+                        <span class="text-muted small">You have 3 unread messages</span>
+                    </li>
+                    <li>
+                        <hr class="dropdown-divider">
+                    </li>
+                    <li><a class="dropdown-item notification-item unread" href="#">
+                        <div class="notification-icon bg-primary">
+                            <i class="fas fa-calendar-check text-white"></i>
+                        </div>
+                        <div class="notification-text">
+                            <p class="mb-0">New interview scheduled</p>
+                            <span class="text-muted small">15 minutes ago</span>
+                        </div>
+                    </a></li>
+                    <li><a class="dropdown-item notification-item unread" href="#">
+                        <div class="notification-icon bg-success">
+                            <i class="fas fa-user-check text-white"></i>
+                        </div>
+                        <div class="notification-text">
+                            <p class="mb-0">Candidate profile updated</p>
+                            <span class="text-muted small">1 hour ago</span>
+                        </div>
+                    </a></li>
+                    <li><a class="dropdown-item notification-item unread" href="#">
+                        <div class="notification-icon bg-warning">
+                            <i class="fas fa-clock text-white"></i>
+                        </div>
+                        <div class="notification-text">
+                            <p class="mb-0">Interview reminder</p>
+                            <span class="text-muted small">Tomorrow, 10:00 AM</span>
+                        </div>
+                    </a></li>
+                    <li>
+                        <hr class="dropdown-divider">
+                    </li>
+                    <li><a class="dropdown-item text-center small" href="#">View all notifications</a></li>
+                </ul>
             </div>
-            <span th:replace="~{login-logout-features/logoutPopup::logout}"></span>
+
+            <!-- Settings -->
+            <div class="dropdown">
+                <button class="btn action-btn" type="button" data-bs-toggle="dropdown"
+                        aria-expanded="false">
+                    <i class="fas fa-cog"></i>
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end">
+                    <li><a class="dropdown-item" href="#"><i class="fas fa-user-cog me-2"></i>Account
+                        Settings</a></li>
+                    <li><a class="dropdown-item" href="#"><i class="fas fa-palette me-2"></i>Appearance</a>
+                    </li>
+                    <li><a class="dropdown-item" href="#"><i class="fas fa-bell me-2"></i>Notification
+                        Settings</a>
+                    </li>
+                    <li>
+                        <hr class="dropdown-divider">
+                    </li>
+                    <li><a class="dropdown-item" href="#"><i class="fas fa-question-circle me-2"></i>Help
+                        Center</a>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- User Profile -->
+            <div class="dropdown">
+                <div class="user-profile" data-bs-toggle="dropdown">
+                    <div class="user-avatar-container">
+                        <img th:src="${session.account != null ? 'https://ui-avatars.com/api/?name=' + session.account.getFullname() + '&background=random' : 'https://ui-avatars.com/api/?name=User&background=random'}"
+                             alt="User" class="user-avatar">
+                        <span class="user-status"></span>
+                    </div>
+                    <div class="user-info d-none d-md-flex">
+                                    <span class="user-name"
+                                          th:text="${session.account != null ? session.account.getFullname() : 'User Name'}">User
+                                        Name</span>
+                        <span class="user-role">
+                                        <span
+                                                th:text="${session.account != null ? session.account.getDepartmentName() : 'Department'}">Department
+                                        </span>
+                                        <span class="role-badge" th:if="${session.account != null}"
+                                              th:text="${session.account.getRole()}">Role
+                                        </span>
+                                    </span>
+                    </div>
+                    <button class="user-dropdown-btn">
+                        <i class="fas fa-chevron-down"></i>
+                    </button>
+                </div>
+                <ul class="dropdown-menu dropdown-menu-end">
+                    <li><a class="dropdown-item" href="#"><i class="fas fa-user me-2"></i>My Profile</a>
+                    </li>
+                    <li><a class="dropdown-item" href="#"><i class="fas fa-history me-2"></i>Activity
+                        Log</a>
+                    </li>
+                    <li>
+                        <hr class="dropdown-divider">
+                    </li>
+                    <li><a class="dropdown-item" href="#" onclick="logout()"><i
+                            class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
+                </ul>
+            </div>
         </div>
     </div>
+</div>
 </body>
 
 </html>

@@ -5,106 +5,12 @@
     <title th:text="${candidate_list_title}"></title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
-          rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <link rel="stylesheet" type="text/css" th:href="@{/css/styles.css}" />
+    <link rel="stylesheet" type="text/css" th:href="@{/css/styles.css}"/>
+    <link rel="stylesheet" type="text/css" th:href="@{/css/candidate.css}"/>
 </head>
-
-<style>
-    /* Tổng thể */
-
-    .module-title {
-        color: var(--primary-dark);
-        font-weight: 700;
-        margin-bottom: 0.5rem;
-    }
-    .submodule-title {
-        color: var(--gray);
-        font-weight: 500;
-        font-size: 1.1rem;
-        margin-bottom: 1.5rem;
-    }
-    /* Nội dung chính */
-    .content {
-        margin-left: 300px;
-        padding: 30px;
-        font-family: 'Poppins', sans-serif;
-    }
-
-    /* Định dạng bảng */
-    .table-container {
-        background: white;
-        border-radius: var(--card-border-radius);
-        box-shadow: var(--box-shadow);
-        overflow: hidden;
-        padding: 20px;
-    }
-
-    .table {
-        width: 100%;
-        border-collapse: separate; /* Đảm bảo không có viền vuông */
-        border-spacing: 0; /* Giữ lại đường kẻ giữa các hàng và cột */
-    }
-
-    .table th {
-        background-color: var(--primary);
-        color: white;
-        text-transform: uppercase;
-        font-weight: 600;
-        padding: 15px;
-    }
-
-    /* Bo tròn góc trên */
-    .table thead tr:first-child th:first-child {
-        border-top-left-radius: var(--card-border-radius);
-    }
-    .table thead tr:first-child th:last-child {
-        border-top-right-radius: var(--card-border-radius);
-    }
-
-    /* Giữ lại viền giữa hàng và cột */
-    .table th,
-    .table td {
-        border: 1px solid var(--gray-light); /* Đảm bảo các ô có đường kẻ */
-    }
-
-    /* Hiệu ứng hover */
-    .table tbody tr:hover {
-        background-color: #f8fbff;
-        transition: all 0.3s;
-    }
-
-    /* Đảm bảo khi chuyển trang, bảng vẫn giữ nguyên thiết kế */
-    .pagination + .table-container {
-        border-radius: var(--card-border-radius);
-        box-shadow: var(--box-shadow);
-    }
-
-    /* Hiệu ứng hover */
-    .action-group a:hover,
-    .action-group button:hover {
-        background-color: var(--accent);
-        color: white;
-        box-shadow: var(--box-shadow);
-    }
-
-    /* Phân trang */
-    .pagination .page-link {
-        color: var(--primary);
-        border-radius: var(--element-border-radius);
-        margin: 0 5px;
-        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
-    }
-
-    .pagination .page-item.active .page-link {
-        background: var(--gradient-primary);
-        border: none;
-    }
-
-</style>
-
 <body>
+
 <!-- Nội dung chi tiết ứng viên ở đây -->
 <div class="d-flex">
     <!-- Left sidebar -->
@@ -113,133 +19,15 @@
     <!-- Nội dung chính -->
     <div class="content flex-grow-1">
         <div class="main-content">
-            <div class="top-sidebar">
-                <div class="top-sidebar-container">
-                    <div class="breadcrumb-section">
-                        <nav aria-label="breadcrumb">
-                            <ol class="breadcrumb mb-0">
-                                <li class="breadcrumb-item">
-                                    <a href="/dashboard">
-                                        <i class="fas fa-home"></i>
-                                        <span th:text="${home_page}"></span>
-                                    </a>
-                                </li>
-                                <li class="breadcrumb-item active" aria-current="page" th:text="${candidate_list_title}">
-                                </li>
-                            </ol>
-                        </nav>
-                    </div>
-
-                    <div class="top-sidebar-actions">
-                        <!-- Notifications -->
-                        <div class="dropdown">
-                            <button class="btn action-btn" type="button" data-bs-toggle="dropdown"
-                                    aria-expanded="false">
-                                <i class="fas fa-bell"></i>
-                                <span class="notification-badge">3</span>
-                            </button>
-                            <ul class="dropdown-menu dropdown-menu-end notification-menu">
-                                <li class="dropdown-header">
-                                    <h6 class="mb-0">Notifications</h6>
-                                    <span class="text-muted small">You have 3 unread messages</span>
-                                </li>
-                                <li>
-                                    <hr class="dropdown-divider">
-                                </li>
-                                <li><a class="dropdown-item notification-item unread" href="#">
-                                    <div class="notification-icon bg-primary">
-                                        <i class="fas fa-calendar-check text-white"></i>
-                                    </div>
-                                    <div class="notification-text">
-                                        <p class="mb-0">New interview scheduled</p>
-                                        <span class="text-muted small">15 minutes ago</span>
-                                    </div>
-                                </a></li>
-                                <li><a class="dropdown-item notification-item unread" href="#">
-                                    <div class="notification-icon bg-success">
-                                        <i class="fas fa-user-check text-white"></i>
-                                    </div>
-                                    <div class="notification-text">
-                                        <p class="mb-0">Candidate profile updated</p>
-                                        <span class="text-muted small">1 hour ago</span>
-                                    </div>
-                                </a></li>
-                                <li><a class="dropdown-item notification-item unread" href="#">
-                                    <div class="notification-icon bg-warning">
-                                        <i class="fas fa-clock text-white"></i>
-                                    </div>
-                                    <div class="notification-text">
-                                        <p class="mb-0">Interview reminder</p>
-                                        <span class="text-muted small">Tomorrow, 10:00 AM</span>
-                                    </div>
-                                </a></li>
-                                <li>
-                                    <hr class="dropdown-divider">
-                                </li>
-                                <li><a class="dropdown-item text-center small" href="#">View all notifications</a></li>
-                            </ul>
-                        </div>
-
-                        <!-- Settings -->
-                        <div class="dropdown">
-                            <button class="btn action-btn" type="button" data-bs-toggle="dropdown"
-                                    aria-expanded="false">
-                                <i class="fas fa-cog"></i>
-                            </button>
-                            <ul class="dropdown-menu dropdown-menu-end">
-                                <li><a class="dropdown-item" href="#"><i class="fas fa-user-cog me-2"></i>Account
-                                    Settings</a></li>
-                                <li><a class="dropdown-item" href="#"><i class="fas fa-palette me-2"></i>Appearance</a>
-                                </li>
-                                <li><a class="dropdown-item" href="#"><i class="fas fa-bell me-2"></i>Notification
-                                    Settings</a></li>
-                                <li>
-                                    <hr class="dropdown-divider">
-                                </li>
-                                <li><a class="dropdown-item" href="#"><i class="fas fa-question-circle me-2"></i>Help
-                                    Center</a></li>
-                            </ul>
-                        </div>
-
-                        <!-- User Profile - REDESIGNED -->
-                        <div class="dropdown">
-                            <div class="user-profile" data-bs-toggle="dropdown">
-                                <div class="user-avatar-container">
-                                    <img th:src="${session.account != null ? 'https://ui-avatars.com/api/?name=' + session.account.getFullname() + '&background=random' : 'https://ui-avatars.com/api/?name=User&background=random'}"
-                                         alt="User" class="user-avatar">
-                                    <span class="user-status"></span>
-                                </div>
-                                <div class="user-info d-none d-md-flex">
-                                    <span class="user-name"
-                                          th:text="${session.account != null ? session.account.getFullname() : 'User Name'}">User
-                                        Name</span>
-                                    <span class="user-role"
-                                          th:text="${session.account != null ? session.account.getDepartmentName() : 'Department'}">Department</span>
-                                </div>
-                                <button class="user-dropdown-btn">
-                                    <i class="fas fa-chevron-down"></i>
-                                </button>
-                            </div>
-                            <ul class="dropdown-menu dropdown-menu-end">
-                                <li><a class="dropdown-item" href="#"><i class="fas fa-user me-2"></i>My Profile</a>
-                                </li>
-                                <li><a class="dropdown-item" href="#"><i class="fas fa-history me-2"></i>Activity
-                                    Log</a></li>
-                                <li>
-                                    <hr class="dropdown-divider">
-                                </li>
-                                <li><a class="dropdown-item" href="#" onclick="logout()"><i
-                                        class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
+            <!-- Top Sidebar / Header -->
+            <div
+                    th:replace="~{component/new-top-sidebar::newTopSidebar(${candidate_list_title}, null, null)}">
             </div>
 
             <!-- Page Header -->
             <div class="d-flex flex-column mb-4 animate__animated animate__fadeInUp">
-                <h1 class="module-title">Candidate</h1>
-                <p class="submodule-title">Candidate List</p>
+                <h1 class="module-title" th:text="${candidate_title}"></h1>
+                <p class="submodule-title" th:text="${candidate_list_title}"></p>
             </div>
 
             <!-- Candidate Dashboard Stats Section -->
@@ -247,58 +35,55 @@
                 <div class="stats-section animate__animated animate__fadeInUp" style="animation-delay: 0.1s;">
                     <div class="stat-card">
                         <i class="fas fa-users stat-card-bg-icon"></i>
-                        <div class="stat-card-title">Total Candidates</div>
-                        <div class="stat-card-value" th:text="${totalCandidates}">50</div>
-                        <div class="stat-card-info positive">
-                            <i class="fas fa-arrow-up"></i> 10% from last month
-                        </div>
+                        <div class="stat-card-title" th:text="${total_candidate}"></div>
+                        <div class="stat-card-value" th:text="${totalCandidates}" ></div>
+<!--                        <div class="stat-card-info positive">-->
+<!--                            <i class="fas fa-arrow-up"></i> 10% from last month-->
+<!--                        </div>-->
                     </div>
 
                     <div class="stat-card">
                         <i class="fas fa-user-check stat-card-bg-icon"></i>
-                        <div class="stat-card-title">Open Candidates</div>
-                        <div class="stat-card-value" th:text="${openCandidates}">0</div>
-                        <div class="stat-card-info positive">
-                            <i class="fas fa-arrow-up"></i> 5% from last month
-                        </div>
+                        <div class="stat-card-title" th:text="${open_candidate}"></div>
+                        <div class="stat-card-value" th:text="${openCandidates}"></div>
+<!--                        <div class="stat-card-info positive">-->
+<!--                            <i class="fas fa-arrow-up"></i> 5% from last month-->
+<!--                        </div>-->
                     </div>
 
                     <div class="stat-card">
                         <i class="fas fa-user-clock stat-card-bg-icon"></i>
-                        <div class="stat-card-title">Waiting for Interview Candidates</div>
-                        <div class="stat-card-value" th:text="${waitingForInterviewCandidates}">0</div>
-                        <div class="stat-card-info negative">
-                            <i class="fas fa-arrow-down"></i> 2% from last month
-                        </div>
+                        <div class="stat-card-title" th:text="${waiting_for_interview}"></div>
+                        <div class="stat-card-value" th:text="${waitingForInterviewCandidates}"></div>
+<!--                        <div class="stat-card-info negative">-->
+<!--                            <i class="fas fa-arrow-down"></i> 2% from last month-->
+<!--                        </div>-->
                     </div>
 
                     <div class="stat-card">
                         <i class="fas fa-user-tie stat-card-bg-icon"></i>
-                        <div class="stat-card-title">Passed Interview Candidates</div>
-                        <div class="stat-card-value" th:text="${passedInterviewCandidates}">0%</div>
-                        <div class="stat-card-info positive">
-                            <i class="fas fa-arrow-up"></i> 4% from last month
-                        </div>
+                        <div class="stat-card-title" th:text="${pass_interview_candidate}"></div>
+                        <div class="stat-card-value" th:text="${passedInterviewCandidates}"></div>
+<!--                        <div class="stat-card-info positive">-->
+<!--                            <i class="fas fa-arrow-up"></i> 4% from last month-->
+<!--                        </div>-->
                     </div>
                 </div>
             </div>
 
-
-
-
-
             <div class="tab-container animate__animated animate__fadeInUp" style="animation-delay: 0.2s;">
 
-            <!-- Thanh tìm kiếm + Lọc trạng thái -->
+                <!-- Thanh tìm kiếm + Lọc trạng thái -->
                 <div class="search-section slide-in mb-4">
                     <div class="row g-3">
                         <div class="col-md-3">
                             <label for="searchInput" class="form-label" th:text="${search}"></label>
                             <div class="input-group">
-                <span class="input-group-text">
-                    <i class="fas fa-search"></i>
-                </span>
-                                <input class="form-control" id="searchInput" type="text" th:placeholder="${search} + '...'">
+                                <span class="input-group-text">
+                                    <i class="fas fa-search"></i>
+                                </span>
+                                <input class="form-control" id="searchInput" type="text"
+                                       th:placeholder="${search} + '...'">
                             </div>
                         </div>
 
@@ -358,34 +143,34 @@
                                 <div class="action-group d-none">
                                     <!-- Nút Chi tiết - Vàng -->
                                     <a th:href="@{/candidate/details/{userId}(userId=${candidate.userId})}"
-                                       class="btn btn-details" th:text="'ℹ️ ' + ${details_title}"></a>
+                                       class="btn btn-custom btn-details border" th:text="'ℹ️ ' + ${details_title}"></a>
 
                                     <!-- Chỉnh sửa -->
                                     <a th:href="@{/candidate/edit/{userId}(userId=${candidate.userId})}"
-                                       class="btn btn-edit"
+                                       class="btn btn-custom btn-edit border"
                                        th:if="${!session.get('account').getRole().name().equals('ROLE_INTERVIEWER')}"
                                        th:text="'✏️ ' + ${editBtn}"></a>
 
                                     <!-- Delete -->
                                     <button type="button"
-                                            class="btn delete-btn btn-sm"
+                                            class="btn btn-custom delete-btn border"
                                             th:attr="data-user-id=${candidate.userId}, data-delete-url=@{/candidate/delete/{userId}(userId=${candidate.userId})}"
                                             th:if="${!session.get('account').getRole().name().equals('ROLE_INTERVIEWER') && candidate.status == 'OPEN'}"
                                             th:text="'🗑️ ' + ${deleteBtn}">
                                     </button>
+
                                     <!-- Ban/Unban -->
-                                    <button type="button"
-                                            class="btn btn-sm ban-btn"
+                                    <button type="button" class="btn btn-custom ban-btn border"
                                             th:classappend="${candidate.status == 'BANNED'} ? 'unban-btn' : 'ban-btn'"
-                                            th:attr="data-user-id=${candidate.userId}, data-status=${candidate.status}, data-ban-url=@{/candidate/ban/{userId}(userId=${candidate.userId})}">
-    <span th:if="${candidate.status == 'BANNED'}"
-          th:text="${unban_title}"></span>
+                                            th:attr="data-user-id=${candidate.userId}, data-status=${candidate.status}, data-ban-url=@{/candidate/ban/{userId}(userId=${candidate.userId})}"
+                                            th:if="${!session.get('account').getRole().name().equals('ROLE_INTERVIEWER')}">
+                                        <span th:if="${candidate.status == 'BANNED'}" th:text="${unban_title}"></span>
                                         <span th:unless="${candidate.status == 'BANNED'}"
                                               th:text="'🚫 ' + ${ban_title}"></span>
                                     </button>
 
                                     <!-- Hủy  -->
-                                    <button class="btn btn-cancel" th:text="'❌ ' + ${cancelBtn}"></button>
+                                    <button class="btn btn-custom btn-cancel border" th:text="'❌ ' + ${cancelBtn}"></button>
                                 </div>
                             </div>
                         </td>
@@ -406,11 +191,45 @@
         </div>
     </div>
 </div>
-
+<script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.6.1/sockjs.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.js"></script>
 <script th:inline="javascript">
+    var stompClient = null;
+
+    var socket = new SockJS('/ws');
+    // Mở cổng socket
+    stompClient = Stomp.over(socket);
+    //Connect socket với backend
+    stompClient.connect({}, function (frame) {
+        console.log(frame);
+        //Lắng nghe cổng socket có đường link là /topic/messages ở phía bên backend
+        stompClient.subscribe('/topic/messages', function (result) {
+            //Show message
+            show(JSON.parse(result.body));
+        });
+    });
+
+    function sendMessage(text, from, to, userId, title, link) {
+        // Bắn request tới backend thông qua socket
+        stompClient.send("/app/application", {}, JSON.stringify({
+            // Object gửi qua backend
+            message: {
+                from: from,
+                to: to,
+                content: {
+                    message: text,
+                    link: link,
+                    userID: userId,
+                }
+            },
+
+            title: title
+        }));
+    }
+
     const rowsPerPage = 5;
     let currentPage = 1;
-    const language = /*[[${lang}]]*/ {}
+    const language = /*[[${language}]]*/ {}
     const langConfig = {
 
         en: (currentPage, totalPages) => `Page ${currentPage} of ${totalPages}`,
@@ -692,9 +511,6 @@
             });
         });
     });
-
-
-
 </script>
 <script>
     document.addEventListener("DOMContentLoaded", function () {
@@ -758,7 +574,8 @@
         const showInterviewModal = "[[${showInterviewModal}]]";
         const candidateUserId = "[[${candidateUserId}]]"; // lưu trữ giá trị của candidateUserId vào một biến JavaScript
         const candidateName = "[[${candidateName}]]"; // lưu trữ giá trị của candidateName vào một biến JavaScript
-
+        const userId = "[[${userId}]]";
+        const positionId = "[[${jobId}]]";
         if (editMessage && editMessage.trim() !== "" && editMessage !== "null") {
             Swal.fire({
                 icon: 'success',
@@ -784,7 +601,17 @@
                                 showConfirmButton: false,
                                 allowOutsideClick: false
                             });
-                            document.getElementById("sendInvitationForm").action = "/candidate/" + candidateUserId + "/send-invitation";
+
+                            sendMessage(
+                                `${candidateName} is waiting for interview`,       // text
+                                "candidate",                                       // from
+                                userId.toString(),                                 // to (người nhận → ID dạng string)
+                                userId,                                            // userID (Long - để lưu vào Notification)
+                                "New interviewer",                                 // title
+                                `/interview/createInterviewView?candidateId=${candidateUserId}&jobId=${positionId}` // link
+                            );
+                            // Thực hiện gửi email
+                            document.getElementById("sendInvitationForm").action = "/candidate/send-invitation/" + candidateUserId;
                             document.getElementById("sendInvitationForm").submit();
                         }
                     });
@@ -810,11 +637,10 @@
 
 <!-- Modal xác nhận gửi mail -->
 <!-- Form gửi invitation -->
-<form id="sendInvitationForm" method="post" action="/candidate/${candidateUserId}/send-invitation">
+<form id="sendInvitationForm" method="post" action="/candidate/send-invitation/${candidateUserId}">
     <input type="hidden" name="candidateUserId" value="${candidateUserId}">
     <input type="hidden" name="candidateName" value="${candidateName}">
 </form>
-
 
 <script>
     document.addEventListener("DOMContentLoaded", function () {
@@ -822,6 +648,7 @@
         const emailStatus = "[[${emailStatus}]]";    // Nhận trạng thái (thành công/lỗi)
 
         if (emailMessage && emailMessage.trim() !== "" && emailMessage !== "null") {
+
             Swal.fire({
                 icon: emailStatus === "success" ? "success" : "error",
                 title: emailStatus === "success" ? "Send email successfully!" : "Lỗi!",
@@ -851,14 +678,13 @@
     });
 </script>
 
-
 <script>
     // Lấy dữ liệu từ backend
     $.ajax({
         type: "GET",
         url: "/candidate/list",
         dataType: "html",
-        success: function(data) {
+        success: function (data) {
             // Tìm kiếm các phần tử cần tính toán
             var totalCandidates = $(data).find(".candidate-list").length;
             var openCandidates = $(data).find(".candidate-list .status-OPEN").length;

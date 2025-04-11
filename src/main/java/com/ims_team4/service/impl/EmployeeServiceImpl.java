@@ -8,6 +8,8 @@ import com.ims_team4.service.EmployeeService;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import org.jetbrains.annotations.NotNull;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -47,33 +49,22 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
-    public List<EmployeeDTO> search(String title, Long positionId) {
-        // Trường hợp 1: Có cả title và positionId -> Tìm theo cả hai
+    public Page<EmployeeDTO> search(String title, Long positionId, Pageable pageable) {
+        Page<Employee> employeePage;
+
         if ((title != null && !title.isEmpty()) && positionId != null) {
-            List<Employee> employees = employeeRepository.findByUserInAndPositionId(title, positionId);
-            return employees.stream()
-                    .map(this::convertToDTO)
-                    .collect(Collectors.toList());
+            employeePage = employeeRepository.findByUserInAndPositionId(title, positionId, pageable);
+        } else if (title != null && !title.isEmpty()) {
+            employeePage = employeeRepository.findByName(title, pageable);
+        } else if (positionId != null) {
+            employeePage = employeeRepository.findByPositionId(positionId, pageable);
+        } else {
+            employeePage = employeeRepository.findAll(pageable);
         }
-        // Trường hợp 2: Có title -> Tìm theo title
-        else if (title != null && !title.isEmpty()) {
-            List<Employee> employees = employeeRepository.findByName(title);
-            return employees.stream()
-                    .map(this::convertToDTO)
-                    .collect(Collectors.toList());
-        }
-        // Trường hợp 3: Có positionId -> Tìm theo positionId
-        else if (positionId != null) {
-            List<Employee> employees = employeeRepository.findByPositionId(positionId);
-            return employees.stream()
-                    .map(this::convertToDTO)
-                    .collect(Collectors.toList());
-        }
-        // Trường hợp 4: Không có điều kiện nào -> Trả về tất cả nhân viên
-        return employeeRepository.findAll().stream()
-                .map(this::convertToDTO)
-                .collect(Collectors.toList());
+
+        return employeePage.map(this::convertToDTO);
     }
+
 
     @Override
     @Transactional
@@ -143,7 +134,6 @@ public class EmployeeServiceImpl implements EmployeeService {
     private EmployeeDTO convertToDTO(@NotNull Employee employee) {
         byte[] avatarBytes = employee.getUser().getAvatar();
         String avatar = avatarBytes != null ? new String(avatarBytes) : "";
-        System.out.println(avatar);
         return EmployeeDTO.builder()
                 .userID(employee.getId())
                 .dob(employee.getUser().getDob())
@@ -188,8 +178,25 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
-    public List<EmployeeDTO> getActiveEmployees() {
-        return employeeRepository.getActiveEmployees().stream()
+    public EmployeeDTO getActiveEmployeesByID(Long id) {
+        return convertToDTO(employeeRepository.getActiveEmployees(id));
+    }
+
+    @Override
+    public List<EmployeeDTO> search(String title, Long positionId) {
+        List<Employee> employees;
+
+        if ((title != null && !title.isEmpty()) && positionId != null) {
+            employees = employeeRepository.findByUserInAndPositionId(title, positionId);
+        } else if (title != null && !title.isEmpty()) {
+            employees = employeeRepository.findByName(title);
+        } else if (positionId != null) {
+            employees = employeeRepository.findByPositionId(positionId);
+        } else {
+            employees = employeeRepository.findAll();
+        }
+
+        return employees.stream()
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
     }

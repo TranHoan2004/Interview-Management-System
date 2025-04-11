@@ -8,39 +8,17 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <link rel="stylesheet" th:href="@{/css/offer.css}">
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
 </head>
 
 <body>
-<div class="navbar">
-    <div class="logo">DEV IMS</div>
-    <div class="menu-icon" onclick="toggleSidebar()">
-        <i class="fa-solid fa-bars"></i>
-    </div>
-</div>
+<div th:replace="~{recruiter-features/navbar :: mobile-menu}"></div>
+
 <!-- Sidebar -->
 <div class="sidebar" th:replace="~{component/left-sidebar::leftSidebar}"></div>
 
 <div class="content" style="padding-left: 50px">
-    <div class="d-flex justify-content-between align-items-center mb-0">
-        <div class="container py-1 flex-grow-1" style="flex-basis: 66%;">
-            <h3 class="page-title fw-bold text-dark">
-                <i class="fa-solid fa-clipboard-list text-primary"></i>
-                <span th:text="${create_offer_title}"></span>
-                <!-- Edit Offer-->
-            </h3>
-            <nav aria-label="breadcrumb">
-                <ol class="breadcrumb bg-white shadow-sm p-2 rounded">
-                    <li class="breadcrumb-item">
-                        <a th:href="@{/offer/offer/{rid}(rid=${T(com.ims_team4.controller.utils.UrlIdEncoder).encodeId(rid)})}" class="text-decoration-none text-primary fw-bold"
-                           th:text="${offer_list}"></a>
-                    </li>
-                    <li class="breadcrumb-item active text-secondary" aria-current="page"
-                        th:text="${create_offer_title}"></li>
-                </ol>
-            </nav>
-        </div>
-        <div th:replace="~{component/top-sidebar::topSidebar}"></div>
-    </div>
+    <div th:replace="~{component/new-top-sidebar::newTopSidebar(${offer_list}, @{/offer/offer/{rid}(rid=${T(com.ims_team4.controller.utils.UrlIdEncoder).encodeId(session.account.userID)})}, ${create_offer_title})}"></div>
 
     <form th:action="@{/offer/create}" method="get" class="info-card mt-2">
         <div class="d-flex justify-content-between align-items-center">
@@ -53,7 +31,7 @@
                 <div class="form-group">
                     <label class="info-title" th:text="${candidate} + ':'"></label>
                     <label>
-                        <select class="form-select" name="candidate" required>
+                        <select class="edit-offer form-select" name="candidate" required>
                             <option th:value="0" th:text="${select_candidate_name}"></option>
                             <th:block th:each="candidate : ${listC}">
                                 <option th:each="user : ${listU}"
@@ -68,7 +46,7 @@
                 <div class="form-group">
                     <label class="info-title" th:text="${positionTitle} + ':'"></label>
                     <label>
-                        <select class="form-select" name="position" required>
+                        <select class="edit-offer form-select" name="position" required>
                             <option th:value="0" th:text="${select_position_name}"></option>
                             <option th:each="position : ${listP}" th:value="${position.getId()}"
                                     th:text="${position.getName()}"></option>
@@ -79,7 +57,7 @@
                 <div class="form-group">
                     <label class="info-title" th:text="${approver_title} + ':'"></label>
                     <label>
-                        <select class="form-select" name="approver" required>
+                        <select class="edit-offer form-select" name="approver" required>
                             <option th:value="0" th:text="${select_approver_name}"></option>
                             <th:block th:each="employee : ${listE}">
                                 <option th:each="user : ${listU}" th:value="${employee.getUserID()}"
@@ -98,7 +76,7 @@
                 <div class="form-group">
                     <label class="info-title" th:text="${interview_info} + ':'"></label>
                     <label>
-                        <select class="form-select" name="interviewId" id="interviewSelect" required>
+                        <select class="edit-offer form-select" name="interviewId" id="interviewSelect" required>
                             <option value="0" data-note="" th:text="${select_interview_schedule}"></option>
                             <th:block th:each="interview : ${listI}">
                                 <option th:value="${interview.getId()}" th:text="${interview.getTitle()}"
@@ -130,7 +108,7 @@
                 <div class="form-group">
                     <label class="info-title" th:text="${contract_type} + ':'"></label>
                     <label>
-                        <select class="form-select" name="contractType" required>
+                        <select class="edit-offer form-select" name="contractType" required>
                             <option th:value="0" th:text="${select_type_contract}"></option>
                             <option th:each="contractType : ${listCo}" th:value="${contractType.getId()}"
                                     th:text="${contractType.getName()}"></option>
@@ -141,7 +119,7 @@
                 <div class="form-group">
                     <label class="info-title" th:text="${level_title} + ':'"></label>
                     <label>
-                        <select class="form-select" name="level" required>
+                        <select class="edit-offer form-select" name="level" required>
                             <option th:value="0" th:text="${select_level}"></option>
                             <option th:each="level : ${listL}" th:value="${level.getId()}"
                                     th:text="${level.getName()}"></option>
@@ -152,7 +130,7 @@
                 <div class="form-group">
                     <label class="info-title" th:text="${departmentTitle}"></label>
                     <label>
-                        <select class="form-select" name="department" required>
+                        <select class="edit-offer form-select" name="department" required>
                             <option th:value="0" th:text="${select_department}"></option>
                             <option th:each="department : ${listD}" th:value="${department.getId()}"
                                     th:text="${department.getName()}"></option>
@@ -163,7 +141,7 @@
                 <div class="form-group">
                     <label class="info-title" th:text="${recruiter} + ':'"></label>
                     <label>
-                        <select class="form-select" name="recruiterOwner" id="userSelect" required>
+                        <select class="edit-offer form-select" name="recruiterOwner" id="userSelect" required>
                             <option th:value="0" th:text="${select_recruiter}"></option>
                             <th:block th:each="employee : ${listR}">
                                 <option th:each="user : ${listU}" th:value="${employee.getUserID()}"
@@ -209,7 +187,8 @@
         <iframe
                 src="https://www.coze.com/store/agent/7488646243938762753?bot_id=true"
                 allow="microphone"
-                id="coze-bot">
+                id="coze-bot"
+                style="height: 80%; border: none;">
         </iframe>
     </div>
 </div>
@@ -217,6 +196,31 @@
 </body>
 <script src="/js/recruiter-offer.js"></script>
 <script>
+    function toggleMobileMenu() {
+        const mobileMenu = document.getElementById('mobileMenu');
+        mobileMenu.classList.toggle('show');
+
+        const menuIcon = document.querySelector('.menu-toggle i');
+        if (mobileMenu.classList.contains('show')) {
+            menuIcon.classList.remove('fa-bars');
+            menuIcon.classList.add('fa-times');
+        } else {
+            menuIcon.classList.remove('fa-times');
+            menuIcon.classList.add('fa-bars');
+        }
+    }
+
+    document.addEventListener('click', function (event) {
+        const mobileMenu = document.getElementById('mobileMenu');
+        const menuToggle = document.querySelector('.menu-toggle');
+
+        if (!menuToggle.contains(event.target) &&
+            !mobileMenu.contains(event.target) &&
+            mobileMenu.classList.contains('show')) {
+            toggleMobileMenu();
+        }
+    });
+
     document.getElementById('salary').addEventListener('input', function () {
         const salary = this.value;
         const salaryHelp = document.getElementById('salaryHelp');
@@ -231,8 +235,7 @@
     });
 
     document.getElementById("assignButton").addEventListener("click", function () {
-        const path = window.location.pathname.split("/");
-        const idSelect = path[path.length - 1];
+        const idSelect = `[[${rid}]]`;
 
         if (idSelect) {
             const select = document.getElementById("userSelect");

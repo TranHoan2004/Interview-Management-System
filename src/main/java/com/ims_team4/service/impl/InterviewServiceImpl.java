@@ -55,8 +55,6 @@ public class InterviewServiceImpl implements InterviewService {
         Pageable pageable = PageRequest.of(page, size, Sort.by("scheduleTime").descending());
         Page<Interview> interviewPage = interviewRepository.searchInterviews(search, status, employeeId, pageable);
 
-        log.info("searchInterviews begin");
-
         List<InterviewDTO> dtoList = interviewPage.getContent()
                 .stream()
                 .map(this::mapEntity)
@@ -80,7 +78,7 @@ public class InterviewServiceImpl implements InterviewService {
     // UC18 - View interview schedule details
     @Override
     public InterviewDTO getInterviewById(Long interviewId) {
-        Interview interview = interviewRepository.findInterviewDetails(interviewId)
+        Interview interview = interviewRepository.findById(interviewId)
                 .orElseThrow(() -> new RuntimeException("Interview not found with ID=" + interviewId));
         return mapEntity(interview);
     }
@@ -164,7 +162,7 @@ public class InterviewServiceImpl implements InterviewService {
 
     // HoanTX
     @Override
-    public List<InterviewDTO> getUpcomingInterviewDTOs(String schedule, LocalTime startTime) {
+    public List<InterviewDTO> getUpcomingInterviewDTOs(String schedule, String startTime) {
         List<Interview> interviews = interviewRepository.findInterviewsByStartTimeAndScheduleTime(Date.valueOf(schedule), startTime);
         return interviews.stream().map(this::mapEntity).collect(Collectors.toList());
     }

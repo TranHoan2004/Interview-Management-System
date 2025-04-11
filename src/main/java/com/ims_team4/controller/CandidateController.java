@@ -9,9 +9,15 @@ import com.ims_team4.model.utils.HrRole;
 import com.ims_team4.repository.UserRepository;
 import com.ims_team4.service.*;
 import com.ims_team4.service.impl.CandidateServiceImpl;
+import com.ims_team4.utils.email.EmailService;
+import jakarta.servlet.http.HttpSession;
 import jakarta.transaction.Transactional;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
-import org.springframework.http.*;
+import org.springframework.http.ContentDisposition;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -20,7 +26,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-import com.ims_team4.utils.email.EmailService;
+
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -38,12 +44,12 @@ public class CandidateController {
     private final Logger log = Logger.getLogger(CandidateController.class.getName());
     private final CandidateServiceImpl candidateServiceImpl;
     private final UserRepository userRepository;
-    private EmailService emailService;
+    private final EmailService emailService;
 
     public CandidateController(CandidateService candidateService, EmployeeService employeeService,
-            UserService userService, HighestLevelService highestLevelService, PositionService positionService,
-            SkillService skillService, CandidateServiceImpl candidateServiceImpl, UserRepository userRepository,
-            EmailService emailService) {
+                               UserService userService, HighestLevelService highestLevelService, PositionService positionService,
+                               SkillService skillService, CandidateServiceImpl candidateServiceImpl, UserRepository userRepository,
+                               EmailService emailService) {
         this.candidateService = candidateService;
         this.employeeService = employeeService;
         this.userService = userService;
@@ -64,7 +70,7 @@ public class CandidateController {
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication != null && authentication.isAuthenticated()
-                && !"anonymousUser".equals(authentication.getPrincipal())) {
+            && !"anonymousUser".equals(authentication.getPrincipal())) {
             Object principal = authentication.getPrincipal();
             if (principal instanceof UserDetails) {
                 model.addAttribute("user", principal);
@@ -105,9 +111,7 @@ public class CandidateController {
         return "Candidate/candidate-details";
     }
 
-    /*
-     * UC08: Create candidate.
-     */
+    // UC08: Create candidate.
     @GetMapping("/add")
     public String showCreateCandidateForm(Model model) {
         // ✅ Gọi đúng phương thức từ Service (Lấy danh sách DTO thay vì Entity)
@@ -122,9 +126,9 @@ public class CandidateController {
 
     @PostMapping("/add")
     public String addCandidate(@ModelAttribute CandidateDTO candidateDTO,
-            @RequestParam("cvFile") MultipartFile cvFile,
-            @RequestParam(value = "skills", required = false) List<String> skillNames,
-            Model model, RedirectAttributes redirectAttributes) {
+                               @RequestParam("cvFile") MultipartFile cvFile,
+                               @RequestParam(value = "skills", required = false) List<String> skillNames,
+                               Model model, RedirectAttributes redirectAttributes) {
         try {
             // ✅ Kiểm tra email & số điện thoại trùng lặp
             boolean emailExists = userRepository.existsByEmail(candidateDTO.getEmail());
@@ -220,10 +224,7 @@ public class CandidateController {
         }
     }
 
-    /*
-     * UC09: Delete candidate
-     */
-
+    // UC09: Delete candidate
     @Transactional
     @GetMapping("/delete/{userId}")
     public String deleteCandidate(@PathVariable("userId") Long userId, RedirectAttributes redirectAttributes) {
@@ -253,9 +254,7 @@ public class CandidateController {
         return "redirect:/candidate/list";
     }
 
-    /*
-     * UC10: Ban candidate
-     */
+    // UC10: Ban candidate
     @PostMapping("/ban/{userId}")
     public String toggleBanCandidate(@PathVariable("userId") Long userId, RedirectAttributes redirectAttributes) {
         try {
@@ -316,9 +315,7 @@ public class CandidateController {
                 .build();
     }
 
-    /*
-     * UC7: Edit candidate
-     */
+    // UC7: Edit candidate
     @GetMapping("/edit/{userId}")
     public String showEditCandidateForm(@PathVariable Long userId, Model model) {
         CandidateDTO candidate = candidateService.getCandidateById2(userId);
@@ -350,8 +347,8 @@ public class CandidateController {
 
     @PostMapping("/edit")
     public String updateCandidate(@ModelAttribute CandidateDTO candidateDTO,
-            @RequestParam(value = "cvFile", required = false) MultipartFile cvFile,
-            RedirectAttributes redirectAttributes) {
+                                  @RequestParam(value = "cvFile", required = false) MultipartFile cvFile,
+                                  RedirectAttributes redirectAttributes, HttpSession session) {
         try {
 
             boolean emailExists = userRepository.existsByEmailAndUserIdNot(candidateDTO.getEmail(),
@@ -361,11 +358,15 @@ public class CandidateController {
 
             if (emailExists && phoneExists) {
                 redirectAttributes.addFlashAttribute("error", "Phone number and Email already exist.");
+                redirectAttributes.addFlashAttribute("editCandidateFailed", "Edit candidate failed!");
             } else if (emailExists) {
                 redirectAttributes.addFlashAttribute("error", "Email already exists.");
+                redirectAttributes.addFlashAttribute("editCandidateFailed", "Edit candidate failed!");
             } else if (phoneExists) {
                 redirectAttributes.addFlashAttribute("error", "Phone number already exists.");
+                redirectAttributes.addFlashAttribute("editCandidateFailed", "Edit candidate failed!");
             }
+
 
             if (emailExists || phoneExists) {
                 return "redirect:/candidate/edit/" + candidateDTO.getUserId();
@@ -437,16 +438,19 @@ public class CandidateController {
             if (isUpdated) {
                 log.info("✅ [SUCCESS] Candidate updated successfully!");
                 redirectAttributes.addFlashAttribute("editSuccess", "Candidate updated successfully!"); // ✅ Thêm thông
-                                                                                                        // báo flash
+                // báo flash
 
                 // ✅ Kiểm tra nếu status được cập nhật thành "Waiting for Interview"
                 if ("WAITING_FOR_INTERVIEW".equals(candidateDTO.getStatus())) {
                     log.info("📌 Candidate status received from form: " + candidateDTO.getStatus());
                     redirectAttributes.addFlashAttribute("showInterviewModal", true);
                     log.info("📌 showInterviewModal flag set in controller: "
-                            + redirectAttributes.getFlashAttributes().get("showInterviewModal"));
+                             + redirectAttributes.getFlashAttributes().get("showInterviewModal"));
                     redirectAttributes.addFlashAttribute("candidateName", candidateDTO.getFullName());
                     redirectAttributes.addFlashAttribute("candidateUserId", candidateDTO.getUserId());
+                    redirectAttributes.addFlashAttribute("jobId", candidateDTO.getPositionId());
+                    EmployeeDTO emp = (EmployeeDTO) session.getAttribute("account");
+                    redirectAttributes.addFlashAttribute("userId", emp.getUserID());
                 }
                 return "redirect:/candidate/list"; // Trả về trang list để hiển thị thông báo "Edit thành công"
             }
@@ -459,7 +463,7 @@ public class CandidateController {
         return "redirect:/candidate/list";
     }
 
-    @PostMapping("/{userId}/send-invitation")
+    @PostMapping("send-invitation/{userId}")
     public String sendInterviewInvitation(@PathVariable Long userId, RedirectAttributes redirectAttributes) {
         Optional<Users> userOpt = userRepository.findById(userId);
         if (userOpt.isEmpty()) {
@@ -496,6 +500,8 @@ public class CandidateController {
     }
 
     // Nội dung email mời phỏng vấn
+    @NotNull
+    @Contract(pure = true)
     private String getEmailContent(String candidateName) {
         return String.format(
                 """
@@ -549,5 +555,4 @@ public class CandidateController {
                         """,
                 candidateName);
     }
-
 }

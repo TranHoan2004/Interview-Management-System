@@ -5,65 +5,57 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
-        integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+          integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css"
-        integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU" crossorigin="anonymous">
-    <link rel="icon" type="image/png" th:href="@{/images/icons/favicon.ico}" />
+          integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU" crossorigin="anonymous">
+    <link rel="icon" type="image/png" th:href="@{/images/icons/favicon.ico}"/>
     <link rel="stylesheet" type="text/css" th:href="@{/vendor/bootstrap/css/bootstrap.min.css}">
     <link rel="stylesheet" type="text/css" th:href="@{/fonts/font-awesome-4.7.0/css/font-awesome.min.css}">
     <link rel="stylesheet" type="text/css" th:href="@{/vendor/animate/animate.css}">
     <link rel="stylesheet" type="text/css" th:href="@{/vendor/css-hamburgers/hamburgers.min.css}">
     <link rel="stylesheet" type="text/css" th:href="@{/vendor/select2/select2.min.css}">
-    <link rel="stylesheet" type="text/css" th:href="@{/css/login.css}" />
+    <link rel="stylesheet" type="text/css" th:href="@{/css/login.css}"/>
     <title>Log in</title>
-    <style>
-        #langSelect {
-            max-width: 100px;
-            text-overflow: ellipsis;
-        }
-    </style>
 </head>
 
 <body>
-    <div class="container-login100">
-        <div class="lang-container">
-            <div th:replace="~{component/switch-language::switchLang}"></div>
+<div class="container-login100">
+    <div class="wrap-login100">
+        <div class="login100-pic js-tilt" data-tilt>
+            <img th:src="@{/images/img-01.png}" alt="IMG">
         </div>
-        <div class="wrap-login100">
-            <div class="login100-pic js-tilt" data-tilt>
-                <img th:src="@{/images/img-01.png}" alt="IMG">
-            </div>
-            <form class="form-signin" th:action="@{/login}" th:method="POST">
+        <div class="form-signin">
+            <form th:action="@{/login}" th:method="POST">
                 <span class="login100-form-title" th:text="${loginTitle}"></span>
 
                 <!--Input email-->
                 <div class="wrap-input100 validate-input" data-validate="Valid email is required: ex@abc.xyz">
                     <label for="inputEmail">
                         <input class="input100 form-control" type="text" id="inputEmail" name="username"
-                            th:placeholder="${username}" required="" autofocus="">
+                               th:placeholder="${username}" required="" autofocus="">
                     </label>
                     <span class="focus-input100"></span>
                     <span class="symbol-input100">
-                        <i class="fa fa-envelope" aria-hidden="true"></i>
-                    </span>
+                    <i class="fa fa-envelope" aria-hidden="true"></i>
+                </span>
                 </div>
 
                 <!--Input password-->
                 <div class="wrap-input100 validate-input" data-validate="Password is required">
                     <label for="inputPassword">
                         <input class="input100 form-control" type="password" name="password" id="inputPassword"
-                            required="" th:placeholder="${password}">
+                               required="" th:placeholder="${password}">
                     </label>
                     <span class="focus-input100"></span>
                     <span class="symbol-input100">
                         <i class="fa fa-lock" aria-hidden="true"></i>
                     </span>
                     <span>
-                        <i class="fa fa-fw fa-eye-slash field-icon toggle-password position-absolute"
-                            style="top: 42%; right: 10px; transform: translateY(-50%); cursor: pointer;"
-                            onclick="togglePassword()"></i>
-                    </span>
+                    <i class="fa fa-fw fa-eye-slash field-icon toggle-password position-absolute"
+                       style="top: 42%; right: 10px; transform: translateY(-50%); cursor: pointer;"
+                       onclick="togglePassword()"></i>
+                </span>
                 </div>
 
                 <!--Remember me-->
@@ -76,100 +68,75 @@
 
                 <div class="container-login100-form-btn">
                     <button class="login100-form-btn" type="submit" style="background: #57b846;"
-                        th:text="${loginButton}"></button>
+                            th:text="${loginButton}"></button>
                 </div>
                 <hr>
-
-                <p th:text="${otherLoginMethod}"></p>
-
-                <!--Login by Facebook and Google-->
-                <!--            <div>-->
-                <!--                <div class="container-login100-form-btn">-->
-                <!--                    <button class="login100-form-btn" type="submit" onclick="redirectToFacebook()"-->
-                <!--                            style="background: #ffffff; color: #0022ff; border-style: solid; border-color: black;border-width: 1px;">-->
-                <!--                        <img th:src="@{images/Facebook_Logo_(2019).png}" alt="IMG" width="20" height="20"/>&nbsp;-->
-                <!--                        Facebook-->
-                <!--                    </button>-->
-                <!--                </div>-->
-                <!--                <script>-->
-                <!--                    function redirectToFacebook() {-->
-                <!--                        window.location.href = "https://www.facebook.com/v19.0/dialog/oauth" +-->
-                <!--                            "?client_id=" +-->
-                <!--                            "&redirect_uri=" +-->
-                <!--                            "&scope=email,public_profile" +-->
-                <!--                            "&response_type=" +-->
-                <!--                            "&state=";-->
-                <!--                    }-->
-                <!--                </script>-->
-
-                <div class="container-login100-form-btn">
-                    <button class="login100-form-btn" type="submit" onclick="redirectToGoogle()"
-                        style="background: #ffffff; color: #ff0000; border-style: solid; border-color: black; border-width: 1px;">
-                        <img th:src="@{/images/Google.png}" alt="IMG" width="20" height="20" />&nbsp;
-                        <span th:text="${google_title}"></span>
-                    </button>
-                </div>
-                <script th:inline="javascript">
-                    function redirectToGoogle() {
-                        // redirect_uri: duong dan tra ve sau khi xac thuc thanh cong
-                        // response type: kieu tra ve
-                        const client_id = /*[[${client_id}]]*/ {}
-                        const url = /*[[${url}]]*/ {}
-                        const redirectUri = /*[[${redirect_uri}]]*/ {}
-                        const type = /*[[${type}]]*/ {}
-
-                        window.location.href = url +
-                            "?scope=email profile openid" +
-                            "&redirect_uri=" + redirectUri +
-                            "&response_type=code" +
-                            "&client_id=" + client_id +
-                            "&approval_prompt=force" +
-                            "&state=" + type +
-                            "&access_type=offline";
-                    }
-                </script>
-
-                <div class="text-center p-t-136">
-                    <a class="txt2" th:href="@{/forgotPassword}" th:text="${forgotPassword}"></a><br>
-                </div>
             </form>
+
+            <p th:text="${otherLoginMethod}"></p>
+
+            <!--Login by Google-->
+            <div class="container-login100-form-btn">
+                <button class="login100-form-btn" onclick="redirectToGoogle()"
+                        style="background: #ffffff; color: #ff0000; border-style: solid; border-color: black; border-width: 1px;">
+                    <img th:src="@{/images/Google.png}" alt="IMG" width="20" height="20"/>&nbsp;
+                    <span th:text="${google_title}"></span>
+                </button>
+            </div>
+            <script th:inline="javascript">
+                function redirectToGoogle() {
+                    // redirect_uri: duong dan tra ve sau khi xac thuc thanh cong
+                    // response type: kieu tra ve
+                    const client_id = /*[[${client_id}]]*/ {}
+                    const url = /*[[${url}]]*/ {}
+                    const redirectUri = /*[[${redirect_uri}]]*/ {}
+
+                    window.location.href = url +
+                        "?scope=email profile openid" +
+                        "&redirect_uri=" + redirectUri +
+                        "&response_type=code" +
+                        "&client_id=" + client_id +
+                        "&approval_prompt=force" +
+                        "&access_type=offline";
+                }
+            </script>
+
+            <div class="text-center p-t-136">
+                <a class="txt2" th:href="@{/forgotPassword}" th:text="${forgotPassword}"></a><br>
+            </div>
         </div>
     </div>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
         integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
         crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script th:src="@{/js/login.js}"></script>
-    <script th:src="@{/js/main.js}"></script>
-    <script th:src="@{/vendor/jquery/jquery-3.2.1.min.js}"></script>
-    <script th:src="@{/vendor/bootstrap/js/popper.js}"></script>
-    <script th:src="@{/vendor/bootstrap/js/bootstrap.min.js}"></script>
-    <script th:src="@{/vendor/select2/select2.min.js}"></script>
-    <script th:src="@{/vendor/tilt/tilt.jquery.min.js}"></script>
-    <script src="https://cdn.tiny.cloud/1/hefgety4vo82p3srbuyhpbnqah7jm895dnym14rks50rpbbl/tinymce/6/tinymce.min.js"
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script th:src="@{/js/login.js}"></script>
+<script th:src="@{/js/main.js}"></script>
+<script th:src="@{/vendor/jquery/jquery-3.2.1.min.js}"></script>
+<script th:src="@{/vendor/bootstrap/js/popper.js}"></script>
+<script th:src="@{/vendor/bootstrap/js/bootstrap.min.js}"></script>
+<script th:src="@{/vendor/select2/select2.min.js}"></script>
+<script th:src="@{/vendor/tilt/tilt.jquery.min.js}"></script>
+<script src="https://cdn.tiny.cloud/1/hefgety4vo82p3srbuyhpbnqah7jm895dnym14rks50rpbbl/tinymce/6/tinymce.min.js"
         referrerpolicy="origin"></script>
-    <script>
-        function togglePassword() {
-            let passwordField = document.getElementById("inputPassword");
-            let toggleIcon = document.querySelector(".toggle-password");
+<script>
+    function togglePassword() {
+        let passwordField = document.getElementById("inputPassword");
+        let toggleIcon = document.querySelector(".toggle-password");
 
-            if (passwordField.type === "password") {
-                passwordField.type = "text";
-                toggleIcon.classList.remove("fa-eye-slash");
-                toggleIcon.classList.add("fa-eye");
-            } else {
-                passwordField.type = "password";
-                toggleIcon.classList.remove("fa-eye");
-                toggleIcon.classList.add("fa-eye-slash");
-            }
+        if (passwordField.type === "password") {
+            passwordField.type = "text";
+            toggleIcon.classList.remove("fa-eye-slash");
+            toggleIcon.classList.add("fa-eye");
+        } else {
+            passwordField.type = "password";
+            toggleIcon.classList.remove("fa-eye");
+            toggleIcon.classList.add("fa-eye-slash");
         }
-
-        function changeLanguage() {
-            let lang = document.getElementById('langSelect');
-            window.location.href = '?lang=' + lang.value;
-        }
-    </script>
+    }
+</script>
 </body>
 
 </html>

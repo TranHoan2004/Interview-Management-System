@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${job_details_title}"></title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+          rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/jobs.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{/css/styles.css}" />
+</head>
+<body>
+<div class="d-flex">
+    <!-- Loading overlay -->
+    <div th:replace="~{component/load::load}"></div>
+
+    <!-- Left sidebar -->
+    <div class="sidebar" th:replace="~{component/left-sidebar::leftSidebar}"></div>
+
+    <!-- Main Content -->
+    <div class="content flex-grow-1">
+        <!-- Top sidebar -->
+        <div th:if="${session.account.getRole().name().equals('ROLE_MANAGER')}">
+            <div th:replace="~{component/new-top-sidebar :: newTopSidebar(${job_list}, '/jobs/manager/list/' + ${userId}, ${job_details_title})}"></div>
+        </div>
+        <div th:if="${session.account.getRole().name().equals('ROLE_ADMINISTRATOR')}">
+            <div th:replace="~{component/new-top-sidebar :: newTopSidebar(${job_list}, '/jobs/admin/listAllJob', ${job_details_title})}"></div>
+        </div>
+        <div th:if="${session.account.getRole().name().equals('ROLE_INTERVIEWER')}">
+            <div th:replace="~{component/new-top-sidebar :: newTopSidebar(${job_list}, '/jobs/interview/listJob', ${job_details_title})}"></div>
+        </div>
+
+        <!-- Page Header -->
+        <div class="d-flex flex-column mb-4 animate__animated animate__fadeInUp">
+            <h1 class="module-title" th:text="${job_list}"></h1>
+            <p class="submodule-title" th:text="${job_details_title}"></p>
+        </div>
+
+        <div class="bg-info bg-opacity-10 p-4 rounded">
+            <div class="row g-4">
+                <div class="col-md-6">
+                    <label class="form-label fw-bold">
+                        <i class="fa-solid fa-briefcase me-2"></i>
+                        <span th:text="${job_title}"></span>
+                    </label>
+                    <input class="form-control" th:value="${job.title}" disabled>
+                </div>
+
+                <div class="col-md-6">
+                    <label class="form-label fw-bold">
+                        <i class="fa-solid fa-lightbulb me-2"></i>
+                        <span th:text="${skillTitle}"></span>
+                    </label>
+                    <div class="d-flex flex-wrap gap-2">
+                        <div th:each="skill : ${job.skills}" class="badge bg-primary text-white px-3 py-2 rounded-pill">
+                            <span th:text="${skill.name}"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <label class="form-label fw-bold">
+                        <i class="fa-solid fa-calendar me-2"></i>
+                        <span th:text="${start_date_title}"></span>
+                    </label>
+                    <input class="form-control" th:value="${#temporals.format(job.startDate, 'dd-MM-yyyy')}" disabled>
+                </div>
+
+                <div class="col-md-6">
+                    <label class="form-label fw-bold">
+                        <i class="fa-solid fa-calendar me-2"></i>
+                        <span th:text="${end_date_title}"></span>
+                    </label>
+                    <input class="form-control" th:value="${#temporals.format(job.endDate, 'dd-MM-yyyy')}" disabled>
+                </div>
+
+                <div class="col-md-6">
+                    <label class="form-label fw-bold">
+                        <i class="fa-solid fa-dollar-sign me-2"></i>
+                        <span th:text="${salary_range_title}"></span>
+                    </label>
+                    <div class="d-flex gap-3">
+                        <input class="form-control" th:value="${job.salaryFrom}" disabled> To
+                        <input class="form-control" th:value="${job.salaryTo}" disabled>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <label class="form-label fw-bold">
+                        <i class="fa-solid fa-gift me-2"></i>
+                        <span th:text="${benefits_label}"></span>
+                    </label>
+                    <div class="d-flex flex-wrap gap-2">
+                        <div th:each="benefit : ${job.benefits}"
+                             class="badge bg-success text-white px-3 py-2 rounded-pill">
+                            <span th:text="${benefit.name}"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <label class="form-label fw-bold">
+                        <i class="fa-solid fa-map-marker-alt me-2"></i>
+                        <span th:text="${working_address_title}"></span>
+                    </label>
+                    <input class="form-control" th:value="${job.location}" disabled>
+                </div>
+
+                <div class="col-md-6">
+                    <label class="form-label fw-bold">
+                        <i class="fa-solid fa-user-graduate me-2"></i>
+                        <span th:text="${level_title}"></span>
+                    </label>
+                    <div class="d-flex flex-wrap gap-2">
+                        <div th:each="level : ${job.levels}"
+                             class="badge bg-secondary text-white px-3 py-2 rounded-pill">
+                            <span th:text="${level.name}"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <label class="form-label fw-bold">
+                        <i class="fa-solid fa-toggle-on me-2"></i>
+                        <span th:text="${statusTitle}"></span>
+                    </label>
+                    <div>
+                        <label class="form-check-label">
+                            <input class="form-check-input" type="radio" name="status" value="true"
+                                   th:checked="${job.status == true}" disabled>
+                            <span th:text="${open_title}"></span>
+                        </label>
+                        <label class="form-check-label ms-3">
+                            <input class="form-check-input" type="radio" name="status" value="false"
+                                   th:checked="${job.status == false}" disabled>
+                            <span th:text="${closed_option}"></span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="col-12">
+                    <label class="form-label fw-bold">
+                        <i class="fa-solid fa-file-alt me-2"></i>
+                        <span th:text="${description_title}"></span>
+                    </label>
+                    <textarea class="form-control" th:text="${job.description}" disabled></textarea>
+                </div>
+            </div>
+
+            <!-- Button Cancel and Edit-->
+            <div th:if="${session.account.getRole().name().equals('ROLE_MANAGER')}">
+                <div class="d-flex justify-content-end gap-3 mt-5">
+                    <a th:href="@{/jobs/manager/edit-job/{managerId}/{jobId}(managerId=${session.account.getUserID()}, jobId=${job.id})}"
+                       class="btn btn-primary border text-dark">
+                        <i class="fa-solid fa-pen-to-square me-1"></i>
+                        <span th:text="${editBtn}"></span>
+                    </a>
+                    <a th:href="@{/jobs/manager/list/{id}(id=${session.account.getUserID()})}" class="btn btn-danger"
+                       type="button">
+                        <i class="fa-solid fa-xmark me-1"></i>
+                        <span th:text="${cancelBtn}"></span>
+                    </a>
+                </div>
+            </div>
+
+            <div th:if="${session.account.getRole().name().equals('ROLE_ADMINISTRATOR')}">
+                <div class="d-flex justify-content-end gap-3 mt-5">
+                    <a th:href="@{/jobs/admin/edit-job/{jobId}(jobId=${job.id})}"
+                       class="btn btn-primary border text-white">
+                        <i class="fa-solid fa-pen-to-square me-1"></i>
+                        <span th:text="${editBtn}"></span>
+                    </a>
+                    <a th:href="@{/jobs/admin/listAllJob}" class="btn btn-danger"
+                       type="button">
+                        <i class="fa-solid fa-xmark me-1"></i>
+                        <span th:text="${cancelBtn}"></span>
+                    </a>
+                </div>
+            </div>
+
+            <div th:if="${session.account.getRole().name().equals('ROLE_INTERVIEWER')}">
+                <div class="d-flex justify-content-end gap-3 mt-5">
+                    <a href="/jobs/interview/listJob" class="btn btn-danger"
+                       type="button">
+                        <i class="fa-solid fa-xmark me-1"></i>
+                        <span th:text="${cancelBtn}"></span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        setTimeout(() => closePopup("successPopup"), 3000);
+        setTimeout(() => closePopup("errorPopup"), 3000);
+    });
+
+    function closePopup(id) {
+        let popup = document.getElementById(id);
+        if (popup) {
+            popup.style.display = "none";
+        }
+    }
+
+    document.addEventListener("DOMContentLoaded", function () {
+
+        let selectedForm = null; // Lưu form cần xóa
+
+        document.querySelectorAll(".delete-job-btn").forEach(button => {
+            button.addEventListener("click", function (event) {
+                event.preventDefault(); // ⛔ Ngăn form submit ngay lập tức
+                selectedForm = this.closest(".delete-form"); // Lưu lại form để xác nhận sau
+                let modalElement = document.getElementById('confirmDeleteModal');
+                if (modalElement) {
+                    let modal = new bootstrap.Modal(modalElement);
+                    modal.show();
+                }
+            });
+        });
+
+        document.getElementById("confirmDeleteBtn")?.addEventListener("click", function () {
+            if (selectedForm) {
+                fetch(selectedForm.action, {method: "POST"})
+                    .then(response => {
+                        if (response.ok) {
+                            let toastElement = document.getElementById('deleteToast');
+                            if (toastElement) {
+                                let toast = new bootstrap.Toast(toastElement);
+                                toast.show(); // Hiển thị thông báo
+                            }
+                            setTimeout(() => location.reload(), 1000);
+                        } else {
+                            alert("❌ Delete failed, please try again!");
+                        }
+                    })
+                    .catch(error => {
+                        alert("⚠️ An error occurred: " + error.message);
+                    });
+
+                let modalElement = document.getElementById('confirmDeleteModal');
+                if (modalElement) {
+                    let modal = bootstrap.Modal.getInstance(modalElement);
+                    if (modal) modal.hide();
+                }
+            }
+        });
+
+
+        const importBtn = document.getElementById('importBtn');
+        const importContainer = document.getElementById('importContainer');
+        const closeBtn = document.getElementById('closeBtn');
+
+        if (importBtn && importContainer && closeBtn) {
+            importBtn.addEventListener('click', function () {
+                importContainer.style.display = 'block';
+                importBtn.style.display = 'none';
+            });
+
+            closeBtn.addEventListener('click', function () {
+                importContainer.style.display = 'none';
+                importBtn.style.display = 'inline-block';
+            });
+        }
+    });
+</script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Initialize Bootstrap dropdowns
+        var dropdownElementList = [].slice.call(document.querySelectorAll('.dropdown-toggle'))
+        var dropdownList = dropdownElementList.map(function (dropdownToggleEl) {
+            return new bootstrap.Dropdown(dropdownToggleEl)
+        });
+
+        // Animate elements sequentially
+        const animateElements = (selector, delay = 100) => {
+            const elements = document.querySelectorAll(selector);
+            elements.forEach((element, index) => {
+                setTimeout(() => {
+                    element.classList.add('show');
+                }, index * delay);
+            });
+        };
+
+        // Stagger animations for different elements
+        setTimeout(() => animateElements('.page-title'), 100);
+        setTimeout(() => animateElements('.search-section'), 200);
+        setTimeout(() => animateElements('.interview-card, tbody tr'), 300);
+        setTimeout(() => animateElements('.pagination, .mt-4'), 500);
+
+        // View toggle functionality
+        const gridViewBtn = document.getElementById('gridViewBtn');
+        const tableViewBtn = document.getElementById('tableViewBtn');
+        const gridView = document.getElementById('gridView');
+        const tableView = document.getElementById('tableView');
+
+        if (gridViewBtn && tableViewBtn && gridView && tableView) {
+            gridViewBtn.addEventListener('click', function () {
+                gridView.style.display = 'grid';
+                tableView.style.display = 'none';
+                gridViewBtn.classList.add('active');
+                tableViewBtn.classList.remove('active');
+            });
+
+            tableViewBtn.addEventListener('click', function () {
+                gridView.style.display = 'none';
+                tableView.style.display = 'block';
+                gridViewBtn.classList.remove('active');
+                tableViewBtn.classList.add('active');
+            });
+        }
+
+        // Hide loading overlay
+        setTimeout(() => {
+            const loadingOverlay = document.getElementById('loadingOverlay');
+            loadingOverlay.style.opacity = '0';
+            setTimeout(() => {
+                loadingOverlay.style.display = 'none';
+            }, 300);
+        }, 500);
+
+        // Logout function
+        window.logout = function () {
+            if (confirm('Are you sure you want to logout?')) {
+                window.location.href = '/logout';
+            }
+        }
+    });
+</script>
+</html>

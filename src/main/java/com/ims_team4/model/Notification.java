@@ -15,12 +15,13 @@ import lombok.experimental.SuperBuilder;
 // HoanTX
 public class Notification {
     @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;
 
     @Column(nullable = false)
     private String link;
 
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "VARCHAR(5000)")
     private String message;
 
     @Column(nullable = false)
@@ -30,7 +31,7 @@ public class Notification {
     @Column(nullable = false, columnDefinition = "BOOLEAN DEFAULT FALSE")
     private boolean status;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.LAZY)
     private Users user;
 
     // test ai, do not use

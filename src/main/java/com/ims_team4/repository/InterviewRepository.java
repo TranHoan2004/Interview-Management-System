@@ -60,10 +60,12 @@ public interface InterviewRepository extends JpaRepository<Interview, Long> {
     // HoanTX
     @Query("""
             FROM Interview i
-            WHERE DATE(i.scheduleTime)=:scheduleTime AND i.startTime<=:startTime AND i.notificationSent=false
+            WHERE DATE(i.scheduleTime)=:scheduleTime AND
+                  DATE_FORMAT(i.startTime, '%H:%i')<=:startTime AND
+                  i.notificationSent=false
             """)
     List<Interview> findInterviewsByStartTimeAndScheduleTime(@Param("scheduleTime") Date schedule,
-                                                             @Param("startTime") LocalTime startTime);
+                                                             @Param("startTime") String startTime);
 
     @Modifying
     @Query("""

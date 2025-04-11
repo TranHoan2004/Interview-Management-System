@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${edit_job_title}"></title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link rel="stylesheet" th:href="@{/css/jobs.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{/css/styles.css}" />
+    <!-- Tom Select CSS -->
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/tom-select/2.2.2/css/tom-select.bootstrap5.min.css">
+</head>
+<body>
+<!-- Loading overlay -->
+<div th:replace="~{component/load::load}"></div>
+<div class="d-flex">
+    <!-- Left sidebar -->
+    <div class="sidebar" th:replace="~{component/left-sidebar::leftSidebar}"></div>
+
+    <!-- Main Content -->
+    <div class="content flex-grow-1">
+        <!-- Top sidebar -->
+        <div th:if="${session.account.getRole().name().equals('ROLE_ADMINISTRATOR')}">
+            <div th:replace="~{component/new-top-sidebar :: newTopSidebar(${job_list}, '/jobs/admin/listAllJob', ${edit_job_title})}"></div>
+        </div>
+        <div th:if="${session.account.getRole().name().equals('ROLE_MANAGER')}">
+            <div th:replace="~{component/new-top-sidebar :: newTopSidebar(${job_list}, '/jobs/manager/list/' + ${userId}, ${edit_job_title})}"></div>
+        </div>
+
+        <!-- Page Header -->
+        <div class="d-flex flex-column mb-4 animate__animated animate__fadeInUp">
+            <h1 class="module-title" th:text="${job_title}"></h1>
+            <p class="submodule-title" th:text="${edit_job_title}"></p>
+        </div>
+        <!-- Main -->
+        <div th:if="${session.account.getRole().name().equals('ROLE_ADMINISTRATOR') or session.account.getRole().name().equals('ROLE_MANAGER')}">
+            <div class="bg-white p-4 rounded">
+                <form th:action="${session.account.getRole().name().equals('ROLE_ADMINISTRATOR')} ?
+                         @{/jobs/admin/edit-job/{jobId}(jobId=${job.id})} :
+                         @{/jobs/manager/edit-job/{managerId}/{jobId}(managerId=${session.account.getUserID()}, jobId=${job.id})}"
+                      th:object="${job}" method="post" id="jobForm">
+
+                    <div class="bg-white p-4 rounded">
+                        <div class="row g-4">
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">
+                                    <i class="fa-solid fa-file-signature me-1"></i>
+                                    <span th:text="${job_title}"></span>
+                                </label>
+                                <input id="title" class="form-control" type="text" th:field="*{title}">
+                                <span class="text-danger error-msg" id="titleError"></span>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">
+                                    <i class="fa-solid fa-lightbulb me-1"></i>
+                                    <span th:text="${skillTitle}"></span>
+                                    <span class="text-danger">*</span>
+                                </label>
+                                <select id="skills" class="form-control" multiple th:field="*{skillNames}">
+                                    <option th:each="skill : ${skills}" th:value="${skill.name}"
+                                            th:text="${skill.name}"></option>
+                                </select>
+                                <span class="text-danger error-msg" id="skillsError"></span>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold"><i class="fa-solid fa-calendar-day me-1"></i> Start
+                                    <span th:text="${start_date_title}"></span>
+                                    <span class="text-danger">*</span>
+                                </label>
+                                <input type="date" class="form-control" name="startDate"
+                                       th:value="${#temporals.format(job.startDate, 'dd-MM-yyyy')}"
+                                       th:field="*{startDate}" id="startDate">
+                                <span class="text-danger error-msg" id="startDateError"></span>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold"><i class="fa-solid fa-calendar-xmark me-1"></i> End
+                                    <span th:text="${end_date_title}"></span>
+                                    <span class="text-danger">*</span>
+                                </label>
+                                <input type="date" class="form-control" name="endDate"
+                                       th:value="${#temporals.format(job.endDate, 'dd-MM-yyyy')}" th:field="*{endDate}"
+                                       id="endDate">
+                                <span class="text-danger error-msg" id="endDateError"></span>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold"><i class="fa-solid fa-money-bill-wave me-1"></i>
+                                    <span th:text="${salary_range_title}"></span>
+                                    <span class="text-danger">*</span>
+                                </label>
+                                <div class="d-flex gap-3">
+                                    <input type="number" class="form-control" name="salaryFrom" th:field="*{salaryFrom}"
+                                           min="0" id="salaryFrom">
+                                    <span th:text="${to_toUpperCase}"></span>
+                                    <input type="number" class="form-control" name="salaryTo" th:field="*{salaryTo}"
+                                           min="0" id="salaryTo">
+                                    <span class="text-danger error-msg" id="salaryError"></span>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">
+                                    <i class="fa-solid fa-gift me-1"></i>
+                                    <span th:text="${benefits_label}"></span>
+                                    <span class="text-danger">*</span>
+                                </label>
+                                <select id="benefits" class="form-control" multiple th:field="*{benefitNames}">
+                                    <option th:each="benefit : ${benefits}" th:value="${benefit.name}"
+                                            th:text="${benefit.name}"></option>
+                                </select>
+                                <span class="text-danger error-msg" id="benefitsError"></span>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold"><i class="fa-solid fa-location-dot me-1"></i> Working
+                                    <span th:text="${address}"></span>
+                                    <span class="text-danger">*</span>
+                                </label>
+                                <input type="text" class="form-control" name="location" th:field="*{location}"
+                                       id="workingAddress">
+                                <span class="text-danger error-msg" id="workingAddressError"></span>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">
+                                    <i class="fa-solid fa-user-tie me-1"></i>
+                                    <span th:text="${level_title}"></span>
+                                    <span class="text-danger">*</span>
+                                </label>
+                                <select id="levels" class="form-control" multiple th:field="*{levelNames}">
+                                    <option th:each="level : ${levels}" th:value="${level.name}"
+                                            th:text="${level.name}"></option>
+                                </select>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">
+                                    <i class="fa-solid fa-toggle-on me-1"></i>
+                                    <span th:text="${statusTitle}"></span>
+                                </label>
+                                <select class="form-control" name="status" th:field="*{status}">
+                                    <option value="true" th:text="${open_title}">\</option>
+                                    <option value="false" th:text="${closed_option}">\</option>
+                                </select>
+                            </div>
+
+                            <div class="col-12">
+                                <label class="form-label fw-bold"><i class="fa-solid fa-align-left me-1"></i>
+                                    <span th:text="${description_title}"></span>
+                                    <span class="text-danger">*</span>
+                                </label>
+                                <textarea class="form-control" name="description" th:field="*{description}"></textarea>
+                                <span class="text-danger error-msg" id="descError"></span>
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-end gap-3 mt-5">
+                            <button type="submit" class="btn btn-primary text-white">
+                                <i class="fa-solid fa-floppy-disk me-1"></i>
+                                <span th:text="${save_btn}"></span>
+                            </button>
+                            <a th:href="${session.account.getRole().name().equals('ROLE_ADMINISTRATOR')} ?
+                              @{/jobs/admin/listAllJob} :
+                              @{/jobs/manager/list/{id}(id=${session.account.getUserID()})}"
+                               class="btn btn-danger text-white" type="button">
+                                <i class="fa-solid fa-ban me-1"></i>
+                                <span th:text="${cancelBtn}"></span>
+                            </a>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/tom-select/2.2.2/js/tom-select.complete.min.js"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        new TomSelect("#skills", {plugins: ['remove_button'], create: false});
+        new TomSelect("#benefits", {plugins: ['remove_button'], create: false});
+        new TomSelect("#levels", {plugins: ['remove_button'], create: false});
+    });
+
+    document.getElementById("jobForm").addEventListener("submit", function (event) {
+        let isValid = true;
+
+        // Xoá các lỗi cũ
+        document.querySelectorAll(".error-msg").forEach(el => el.textContent = "");
+
+        // Lấy các giá trị
+        const title = document.getElementById("title").value.trim();
+        const skills = Array.from(document.getElementById("skills").selectedOptions);
+        const benefits = Array.from(document.getElementById("benefits").selectedOptions);
+        const levels = Array.from(document.getElementById("levels").selectedOptions);
+
+        const startDate = new Date(document.getElementById("startDate").value);
+        const endDate = new Date(document.getElementById("endDate").value);
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+
+        const salaryFrom = parseFloat(document.getElementById("salaryFrom").value);
+        const salaryTo = parseFloat(document.getElementById("salaryTo").value);
+
+        const workingAdress = document.getElementById("workingAddress").value.trim();
+
+        const description = document.getElementById("description").value.trim();
+
+        // Validate title
+        if (title === "") {
+            document.getElementById("titleError").textContent = "Vui lòng nhập tiêu đề công việc.";
+            isValid = false;
+        }
+
+        if (workingAdress === "") {
+            document.getElementById("workingAddressError").textContent = "Vui lòng nhập địa chỉ làm việc.";
+            isValid = false;
+        }
+
+        // Validate skills
+        if (skills.length === 0) {
+            document.getElementById("skillsError").textContent = "Vui lòng chọn ít nhất 1 kỹ năng.";
+            isValid = false;
+        }
+
+        // Validate benefits
+        if (benefits.length === 0) {
+            document.getElementById("benefitsError").textContent = "Vui lòng chọn ít nhất 1 phúc lợi.";
+            isValid = false;
+        }
+
+        // Validate levels
+        if (levels.length === 0) {
+            document.getElementById("levelsError").textContent = "Vui lòng chọn ít nhất 1 cấp bậc.";
+            isValid = false;
+        }
+
+        // Validate start date
+        if (isNaN(startDate)) {
+            document.getElementById("startDateError").textContent = "Vui lòng chọn ngày bắt đầu.";
+            isValid = false;
+        } else if (startDate < today) {
+            document.getElementById("startDateError").textContent = "Ngày bắt đầu phải từ hôm nay trở đi.";
+            isValid = false;
+        }
+
+        // Validate end date
+        if (isNaN(endDate)) {
+            document.getElementById("endDateError").textContent = "Vui lòng chọn ngày kết thúc.";
+            isValid = false;
+        } else if (endDate < startDate) {
+            document.getElementById("endDateError").textContent = "Ngày kết thúc không được nhỏ hơn ngày bắt đầu.";
+            isValid = false;
+        }
+
+        // Validate salary
+        if (isNaN(salaryFrom) || salaryFrom < 0 || isNaN(salaryTo) || salaryTo < 0) {
+            document.getElementById("salaryError").textContent = "Lương phải là số không âm.";
+            isValid = false;
+        } else if (salaryTo < salaryFrom) {
+            document.getElementById("salaryError").textContent = "Lương đến phải lớn hơn hoặc bằng lương từ.";
+            isValid = false;
+        }
+
+        // Validate description
+        if (description.length < 10) {
+            document.getElementById("descError").textContent = "Mô tả cần ít nhất 10 ký tự.";
+            isValid = false;
+        }
+
+        if (!isValid) {
+            event.preventDefault();
+        }
+    });
+    // Hide loading overlay
+    setTimeout(() => {
+        const loadingOverlay = document.getElementById('loadingOverlay');
+        loadingOverlay.style.opacity = '0';
+        setTimeout(() => {
+            loadingOverlay.style.display = 'none';
+        }, 300);
+    }, 500);
+</script>
+
+</html>

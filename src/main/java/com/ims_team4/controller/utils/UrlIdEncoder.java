@@ -2,6 +2,7 @@ package com.ims_team4.controller.utils;
 
 import java.util.Base64;
 
+// Duc Long
 public class UrlIdEncoder {
     public static String encodeId(int id) {
         return Base64.getUrlEncoder().encodeToString(String.valueOf(id).getBytes());

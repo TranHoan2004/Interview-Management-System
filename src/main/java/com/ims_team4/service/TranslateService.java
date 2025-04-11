@@ -1,11 +1,11 @@
-//package com.ims_team4.service;
-//
+package com.ims_team4.service;
+
 //import com.ims_team4.dto.EmployeeDTO;
 //import org.jetbrains.annotations.Contract;
 //import org.jetbrains.annotations.NotNull;
 //import org.json.JSONObject;
-//import org.springframework.stereotype.Service;
-//
+import org.springframework.stereotype.Service;
+
 //import java.io.BufferedReader;
 //import java.io.InputStreamReader;
 //import java.util.ArrayList;
@@ -13,11 +13,11 @@
 //import java.util.Locale;
 //import java.util.logging.Level;
 //import java.util.logging.Logger;
-//
-//@Service
-//public class TranslateService {
+
+@Service
+public class TranslateService {
 //    private final Logger logger = Logger.getLogger(this.getClass().getName());
-//
+
 //    public List<EmployeeDTO> translateUserDTOs(@NotNull List<EmployeeDTO> emps, Locale locale) {
 //        List<EmployeeDTO> list = new ArrayList<>();
 //        for (EmployeeDTO emp : emps) {
@@ -76,4 +76,4 @@
 //        emp.setDepartmentName(object.getString("departmentName"));
 //        return emp;
 //    }
-//}
+}

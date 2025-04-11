@@ -21,13 +21,11 @@ public class WebMvcConfig implements WebMvcConfigurer {
         LocaleChangeInterceptor localeChangeInterceptor = new LocaleChangeInterceptor();
         localeChangeInterceptor.setParamName("lang");
         registry.addInterceptor(localeChangeInterceptor);
-        logger.info(registry.toString());
         logger.info("Current Locale: " + LocaleContextHolder.getLocale());
     }
 
     @Bean
     public LocaleResolver localeResolver() {
-        logger.info("localeResolver");
         return new SessionLocaleResolver();
     }
 }

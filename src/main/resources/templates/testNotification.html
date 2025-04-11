@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+</head>
+
+<body>
+    test
+    <span id="notification"></span>
+    <span id="notificationSize"></span>
+<!--    Trang này dùng để kiểm tra cơ chế trả về thông báo tự động. Script bên dưới tự động chạy mỗi khi tải trang-->
+<!--    Server: phương thức renderAllNotifications của NotificationController-->
+    <script>
+        window.addEventListener("load", function loadNotification() {
+            $.ajax({
+                url: "/notification/list?id=2",
+                type: "post", //send it through get method
+                data: {},
+                success: function (responseData) {
+                    let render = "";
+                    responseData.forEach(function (noti) {
+                        render += '<p>' + noti.title + '</p>'
+                    });
+                    document.getElementById("notification").innerHTML =
+                        render;
+                    document.getElementById("notificationSize").innerHTML = responseData.length;
+                    console.log(responseData.length)
+                }
+            });
+        }, false);
+    </script>
+</body>
+
+</html>

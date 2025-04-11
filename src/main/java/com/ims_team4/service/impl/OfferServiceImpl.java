@@ -111,6 +111,13 @@ public class OfferServiceImpl implements OfferService {
                 .collect(Collectors.toList());
     }
 
+    @Override
+    public List<OfferDTO> getAllOfferByDueDateAndStatus(LocalDate dueDate, int status) {
+        return offerRepository.getAllOfferByDuedateAndStatus(dueDate, status).stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
+    }
+
 
     // </editor-fold>
 

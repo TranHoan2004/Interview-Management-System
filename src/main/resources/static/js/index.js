@@ -59,35 +59,35 @@ document.addEventListener('DOMContentLoaded', function () {
     }, 500);
 
     // Calculate stats for dashboard
-    const calculateStats = () => {
-        const interviews = document.querySelectorAll('[data-status]');
-        let completed = 0;
-        let upcoming = 0;
-        let succeeded = 0;
-        let total = interviews.length;
-
-        interviews.forEach(interview => {
-            const status = interview.getAttribute('data-status');
-            const result = interview.getAttribute('data-result');
-
-            if (status === 'INTERVIEWED') {
-                completed++;
-                if (result && result.toLowerCase().includes('pass')) {
-                    succeeded++;
-                }
-            } else if (status === 'NEW' || status === 'INVITED') {
-                upcoming++;
-            }
-        });
-
-        const successRate = total > 0 ? Math.round((succeeded / total) * 100) : 0;
-
-        document.getElementById('completedCount').textContent = completed;
-        document.getElementById('upcomingCount').textContent = upcoming;
-        document.getElementById('successRate').textContent = successRate + '%';
-    };
-
-    calculateStats();
+    // const calculateStats = () => {
+    //     const interviews = document.querySelectorAll('[data-status]');
+    //     let completed = 0;
+    //     let upcoming = 0;
+    //     let succeeded = 0;
+    //     let total = interviews.length;
+    //
+    //     interviews.forEach(interview => {
+    //         const status = interview.getAttribute('data-status');
+    //         const result = interview.getAttribute('data-result');
+    //
+    //         if (status === 'INTERVIEWED') {
+    //             completed++;
+    //             if (result && result.toLowerCase().includes('pass')) {
+    //                 succeeded++;
+    //             }
+    //         } else if (status === 'NEW' || status === 'INVITED') {
+    //             upcoming++;
+    //         }
+    //     });
+    //
+    //     const successRate = total > 0 ? Math.round((succeeded / total) * 100) : 0;
+    //
+    //     document.getElementById('completedCount').textContent = completed;
+    //     document.getElementById('upcomingCount').textContent = upcoming;
+    //     document.getElementById('successRate').textContent = successRate + '%';
+    // };
+    //
+    // calculateStats();
 
     // Tab functionality
     const allTab = document.getElementById('allTab');
@@ -178,32 +178,32 @@ document.addEventListener('DOMContentLoaded', function () {
     };
 
     // Set active tab
-    const setActiveTab = (activeTab) => {
-        [allTab, todayTab, upcomingTab, completedTab].forEach(tab => {
-            tab.classList.remove('active');
-        });
-        activeTab.classList.add('active');
-    };
+    // const setActiveTab = (activeTab) => {
+    //     [allTab, todayTab, upcomingTab, completedTab].forEach(tab => {
+    //         tab.classList.remove('active');
+    //     });
+    //     activeTab.classList.add('active');
+    // };
 
-    allTab.addEventListener('click', function () {
-        setActiveTab(this);
-        filterInterviews('all');
-    });
-
-    todayTab.addEventListener('click', function () {
-        setActiveTab(this);
-        filterInterviews('today');
-    });
-
-    upcomingTab.addEventListener('click', function () {
-        setActiveTab(this);
-        filterInterviews('upcoming');
-    });
-
-    completedTab.addEventListener('click', function () {
-        setActiveTab(this);
-        filterInterviews('completed');
-    });
+    // allTab.addEventListener('click', function () {
+    //     setActiveTab(this);
+    //     filterInterviews('all');
+    // });
+    //
+    // todayTab.addEventListener('click', function () {
+    //     setActiveTab(this);
+    //     filterInterviews('today');
+    // });
+    //
+    // upcomingTab.addEventListener('click', function () {
+    //     setActiveTab(this);
+    //     filterInterviews('upcoming');
+    // });
+    //
+    // completedTab.addEventListener('click', function () {
+    //     setActiveTab(this);
+    //     filterInterviews('completed');
+    // });
 
     // Show all interviews by default
     filterInterviews('all');
@@ -223,13 +223,6 @@ document.addEventListener('DOMContentLoaded', function () {
                 searchButton.disabled = false;
             }, 3000);
         });
-    }
-
-    // Logout function
-    window.logout = function () {
-        if (confirm('Are you sure you want to logout?')) {
-            window.location.href = '/logout';
-        }
     }
 });
 

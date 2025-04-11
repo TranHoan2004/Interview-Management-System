@@ -43,7 +43,7 @@ public interface InterviewService {
     InterviewDTO sendReminder(Long interviewId);
 
     // HoanTX
-    List<InterviewDTO> getUpcomingInterviewDTOs(String schedule, LocalTime startTime);
+    List<InterviewDTO> getUpcomingInterviewDTOs(String schedule, String startTime);
 
     void updateNotificationSent(Long id);
     // </editor-fold>

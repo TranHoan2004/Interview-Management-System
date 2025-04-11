@@ -161,6 +161,7 @@ public class JobServiceImpl implements JobService {
         Job job = jobRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Job not found: " + id));
 
+        jobRepository.removeJobCandidateLinks(job.getId());
         job.getLevels().clear();
         job.getSkills().clear();
         job.getBenefits().clear();
@@ -170,6 +171,7 @@ public class JobServiceImpl implements JobService {
         if (!job.getInterviews().isEmpty()) {
             throw new RuntimeException("Cannot delete job, interviews exist!");
         }
+
 
         jobRepository.deleteJobById(id);
     }
@@ -184,6 +186,32 @@ public class JobServiceImpl implements JobService {
     @Override
     public Optional<Job> getJobDetailForAdmin(Long jobId) {
         return jobRepository.findJobById(jobId);
+    }
+
+    @Override
+    public boolean editJobForAdmin(Long jobId, JobDTO jobDTO) {
+        Optional<Job> jobOptional = jobRepository.findJobById(jobId);
+
+        if (jobOptional.isPresent()) {
+            Job job = jobOptional.get();
+            job.setTitle(jobDTO.getTitle());
+            job.setStartDate(jobDTO.getStartDate());
+            job.setEndDate(jobDTO.getEndDate());
+            job.setSalaryFrom(jobDTO.getSalaryFrom());
+            job.setSalaryTo(jobDTO.getSalaryTo());
+            job.setLocation(jobDTO.getLocation());
+            job.setStatus(jobDTO.isStatus());
+            job.setDescription(jobDTO.getDescription());
+
+            // Cần ánh xạ từ List<String> sang List<Level>, List<Skill>, List<Benefit>
+            job.setLevels(levelService.getLevelsByName(jobDTO.getLevelNames()));
+            job.setSkills(skillService.getSkillsByName(jobDTO.getSkillNames()));
+            job.setBenefits(benefitService.getBenefitsByName(jobDTO.getBenefitNames()));
+
+            jobRepository.saveJob(job);
+            return true;
+        }
+        return false;
     }
 
 

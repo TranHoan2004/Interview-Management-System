@@ -2,35 +2,21 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 
 <head>
-    <meta charset="UTF-8" />
+    <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title th:text="${create_new_user}"></title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
           rel="stylesheet">
-    <link rel="stylesheet" type="text/css" th:href="@{/css/styles.css}" />
-    <style>
-        .avatar-preview {
-            width: 120px;
-            height: 120px;
-            border-radius: 50%;
-            object-fit: cover;
-            border: 3px solid #ddd;
-            padding: 2px;
-            margin: 0 auto; /* Căn giữa */
-            display: block;
-        }
-
-        .avatar-preview[src=""] {
-            visibility: hidden;
-            display: none !important;
-        }
-    </style>
-
+    <link rel="stylesheet" type="text/css" th:href="@{/css/styles.css}"/>
+    <link rel="stylesheet" type="text/css" th:href="@{/css/profile.css}"/>
+    <link rel="stylesheet" type="text/css" th:href="@{/css/user.css}"/>
 </head>
 
 <body>
+<!-- Loading overlay -->
+<div th:replace="~{component/load::load}"></div>
 <div class="d-flex">
     <!-- Left Sidebar -->
     <div class="sidebar" th:replace="~{component/left-sidebar::leftSidebar}"></div>
@@ -38,10 +24,15 @@
     <!-- Main Content -->
     <div class="content flex-grow-1">
         <!-- Top Sidebar / Header - REDESIGNED -->
-        <div th:replace="~{component/new-top-sidebar::newTopSidebar(${userH3}, '/user/list', null)}">
+        <div th:replace="~{component/new-top-sidebar::newTopSidebar(${userH3}, '/user/list', ${create_new_user})}">
+        </div>
+        <!--title-->
+        <div class="d-flex flex-column mb-4 animate__animated animate__fadeInUp">
+            <h1 class="module-title" th:text="${create_new_user}"></h1>
+            <p class="submodule-title" th:text="${create_new_user}"></p>
         </div>
         <!-- Content -->
-        <h3 th:text="${create_new_user}"></h3>
+
         <div class="container mt-3 bg-white p-4 rounded">
             <div th:if="${errorMessage}" class="alert alert-danger" th:text="${errorMessage}"></div>
             <form th:action="@{/user/create}" method="post" enctype="multipart/form-data">
@@ -57,6 +48,7 @@
                             <label for="avatar" class="form-label" th:text="${avatar_title}"></label>
                             <input type="file" class="form-control" id="avatar" name="avatar" accept="image/*"
                                    onchange="previewImage(event)">
+                            <small class="text-danger" th:if="${avatarError}" th:text="${avatarError}"></small>
                         </div>
 
                         <!-- Full Name -->

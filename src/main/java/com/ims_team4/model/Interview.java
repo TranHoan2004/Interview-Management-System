@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 import org.springframework.format.annotation.DateTimeFormat;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.Set;
@@ -33,8 +34,9 @@ public class Interview {
     @Column(columnDefinition = "TEXT")
     private String meetId;
 
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
     @Column(name = "schedule_time", nullable = false)
-    private LocalDateTime scheduleTime;
+    private LocalDate scheduleTime;
 
     @DateTimeFormat(iso = DateTimeFormat.ISO.TIME)
     @Column(nullable = false)

@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.Set;
@@ -19,7 +20,7 @@ public class InterviewDTO {
     private String title;
     private String note;
     private String meetId;
-    private LocalDateTime scheduleTime;
+    private LocalDate scheduleTime;
     private LocalTime startTime;
     private LocalTime endTime;
     private InterviewStatus status;

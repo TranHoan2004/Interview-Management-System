@@ -1,7 +1,7 @@
 package com.ims_team4.controller;
 
 import com.ims_team4.controller.utils.SessionController;
-import com.ims_team4.controller.utils.SetupSidebar;
+import com.ims_team4.controller.utils.SetupGlobalAttributes;
 import com.ims_team4.dto.EmployeeDTO;
 import jakarta.servlet.http.HttpSession;
 import org.jetbrains.annotations.NotNull;
@@ -13,16 +13,14 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.function.Consumer;
-import java.util.logging.Logger;
 
 @ControllerAdvice
 // HoanTX
 public class GlobalModelAttributes {
-    private final SetupSidebar sidebar;
+    private final SetupGlobalAttributes sidebar;
     private final SessionController sController;
-    private final Logger logger = Logger.getLogger(this.getClass().getName());
 
-    public GlobalModelAttributes(SetupSidebar sidebar, SessionController sController) {
+    public GlobalModelAttributes(SetupGlobalAttributes sidebar, SessionController sController) {
         this.sidebar = sidebar;
         this.sController = sController;
     }
@@ -33,14 +31,13 @@ public class GlobalModelAttributes {
         Map<String, Consumer<Model>> map = createAttributes(model, locale);
 
         for (Map.Entry<String, Consumer<Model>> key : map.entrySet()) {
-            logger.info("setup page's attributes: " + key.getKey());
+//            logger.info("setup page's attributes: " + key.getKey());
             key.getValue().accept(model);
         }
     }
 
     private void throwDataToTopSidebar(@NotNull HttpSession session) {
         EmployeeDTO employeeDTO = sController.getEntityFromSession(session);
-        logger.info("throwDataToTopSidebar: " + employeeDTO.toString());
         session.setAttribute("account", employeeDTO);
     }
 
@@ -61,6 +58,7 @@ public class GlobalModelAttributes {
         map.put("editUser", m -> sidebar.setupEditUserPage(model, locale));
         map.put("userDetails", m -> sidebar.setupUsersDetailPage(model, locale));
         map.put("userList", m -> sidebar.setupUserListPage(model, locale));
+        map.put("profile", m -> sidebar.setupUserProfilePage(model, locale));
 
         // offer
         map.put("adminOffer", m -> sidebar.setupAdminOfferPage(model, locale));
@@ -91,8 +89,11 @@ public class GlobalModelAttributes {
         map.put("interviewList", m -> sidebar.setupInterviewListPage(model, locale));
         map.put("createInterview", m -> sidebar.setupCreateInterviewPage(model, locale));
         map.put("interviewDetails", m -> sidebar.setupInterviewDetailPage(model, locale));
-        map.put("createInterview", m -> sidebar.setupEditInterviewPage(model, locale));
+        map.put("editInterview", m -> sidebar.setupEditInterviewPage(model, locale));
         map.put("submitResult", m -> sidebar.setupSubmitResultPage(model, locale));
+
+        // notification
+        map.put("notificationList", m -> sidebar.setupNotificationListPage(model, locale));
         return map;
     }
 }

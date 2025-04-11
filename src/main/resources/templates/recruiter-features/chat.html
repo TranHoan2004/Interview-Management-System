@@ -262,11 +262,11 @@
 <div class="bg-primary py-3">
     <div class="container d-flex justify-content-between align-items-center">
         <th:block th:if="${session.account.getRole().name().equals('ROLE_RECRUITER')}">
-            <a th:href="@{/offer/offer/{rid}(rid=${session.account.getUserID()})}" class="text-white fw-bold"
+            <a th:href="@{/offer/offer/{rid}(rid=${T(com.ims_team4.controller.utils.UrlIdEncoder).encodeId(session.account.userID)})}" class="text-white fw-bold"
                style="font-size: 30px;">IMS Messenger</a>
         </th:block>
         <th:block th:if="${session.account.getRole().name().equals('ROLE_MANAGER')}">
-            <a th:href="@{/offer/managerOffer/{rid}(rid=${session.account.getUserID()})}" class="text-white fw-bold"
+            <a th:href="@{/offer/managerOffer/{rid}(rid=${T(com.ims_team4.controller.utils.UrlIdEncoder).encodeId(session.account.userID)})}" class="text-white fw-bold"
                style="font-size: 30px;">IMS Messenger</a>
         </th:block>
         <a onclick="history.back()" class="text-white fw-bold" style="font-size: 30px; cursor: pointer" th:text="${back_link}"></a>
@@ -325,7 +325,7 @@
                                                     <th:block th:if="${liC.chatId eq liL.chatID}">
                                                         <th:block th:if="${liL.sender eq 'ROLE_RECRUITER'}">
                                                             <span th:text="${you_title}"></span>
-                                                            Bạn: <span th:text="${liL.message}"></span>
+                                                            <span th:text="${liL.message}"></span>
                                                         </th:block>
                                                         <th:block th:if="${liL.sender eq 'ROLE_MANAGER'}">
                                                             <span th:text="${liL.message}"></span>
@@ -482,7 +482,7 @@
                                                     <th:block th:if="${liC.chatId eq liL.chatID}">
                                                         <th:block th:if="${liL.sender eq 'ROLE_MANAGER'}">
                                                             <span th:text="${you_title}"></span>
-                                                            Bạn: <span th:text="${liL.message}"></span>
+                                                            <span th:text="${liL.message}"></span>
                                                         </th:block>
 
                                                         <th:block th:if="${liL.sender eq 'ROLE_RECRUITER'}">
@@ -582,179 +582,183 @@
         </div>
     </div>
 </th:block>
-<script>
-    function searchChat(input) {
-        const searchValue = input.value.toLowerCase();
-        const chatLists = document.querySelectorAll(".chat_list");
-
-        chatLists.forEach(chat => {
-            const workingNameElement = chat.querySelector(".col-lg-2 div");
-            if (workingNameElement) {
-                const workingName = workingNameElement.textContent.trim().toLowerCase();
-                chat.style.display = workingName.includes(searchValue) ? "" : "none";
-            }
-        });
-    }
-
-    document.addEventListener("DOMContentLoaded", function () {
-        // Lấy giá trị ID từ URL
-        const urlParams = new URLSearchParams(window.location.search);
-        const currentID = urlParams.get("mid"); // Lấy giá trị mid từ URL
-        console.log("cur: " + currentID);
-
-        // Lặp qua tất cả các phần tử có class "chat-container"
-        document.querySelectorAll(".chat-container").forEach(divElement => {
-            const anchor = divElement.querySelector("a");
-            const divHref = anchor.getAttribute("href");
-            const divParams = new URLSearchParams(divHref.split("?")[1]);
-            const divID = divParams.get("mid"); // Lấy giá trị mid từ href trong thẻ a
-            console.log("div: " + divID);
-            // So sánh ID và thêm class nếu trùng khớp
-            if (currentID === divID) {
-                divElement.classList.add("highlight"); // Thêm class mới
-            }
-        });
-    });
-
-    document.addEventListener("DOMContentLoaded", function () {
-        // Lấy giá trị ID từ URL
-        const urlParams = new URLSearchParams(window.location.search);
-        const currentID = urlParams.get("rid"); // Lấy giá trị mid từ URL
-        console.log("cur: " + currentID);
-
-        // Lặp qua tất cả các phần tử có class "chat-container"
-        document.querySelectorAll(".chat-container1").forEach(divElement => {
-            const anchor = divElement.querySelector("a");
-            const divHref = anchor.getAttribute("href");
-            const divParams = new URLSearchParams(divHref.split("?")[1]);
-            const divID = divParams.get("rid"); // Lấy giá trị mid từ href trong thẻ a
-            console.log("div: " + divID);
-            // So sánh ID và thêm class nếu trùng khớp
-            if (currentID === divID) {
-                divElement.classList.add("highlight"); // Thêm class mới
-            }
-        });
-    });
-
-    function toggleEmojiPicker() {
-        const picker = document.getElementById('emojiPicker');
-        picker.style.display = picker.style.display === 'none' ? 'block' : 'none';
-    }
-
-    // Đóng emoji picker khi click ra ngoài
-    document.addEventListener('click', function (event) {
-        const picker = document.getElementById('emojiPicker');
-        const emojiButton = document.querySelector('button[onclick="toggleEmojiPicker()"]');
-        if (!picker.contains(event.target) && event.target !== emojiButton) {
-            picker.style.display = 'none';
-        }
-    });
-
-    // Xử lý chọn emoji
-    const picker = document.getElementById('emojiPicker');
-    const input = document.getElementById('messageInput');
-    picker.addEventListener('emoji-click', event => {
-        input.value += event.detail.unicode;
-    });
-</script>
 <script th:inline="javascript">
     /*<![CDATA[*/
     var conversationId = [[${conversationId != null ? conversationId : 'null'}]];
     var role = [[${session.account != null && session.account.role != null ? session.account.role : 'null'}]];
+    var recruiterAvatar = [[${recruiter != null ? recruiter.getAvatar() : ''}]];
+    var managerAvatar = [[${manager != null ? manager.getAvatar() : ''}]];
     /*]]>*/
 </script>
-<script>
-    var ws; // Global WebSocket variable
+<script th:src="@{/js/chat.js}"></script>
+<!--<script>-->
+<!--    console.log("Web Socket đang chạy!")-->
+<!--    var ws; // Global WebSocket variable-->
 
-    function sendMessage() {
-        var messageInput = document.getElementById("messageInput");
-        var message = messageInput.value.trim();
-        if (message !== "") {
-            // Display the sent message
-            console.log("Gửi tin nhắn:", message);
-            displayMessage(message, 'sender');
-            ws.send(message);
-            messageInput.value = ""; // Clear input
-        }
-    }
+<!--    function sendMessage() {-->
+<!--        var messageInput = document.getElementById("messageInput");-->
+<!--        var message = messageInput.value.trim();-->
+<!--        if (message !== "") {-->
+<!--            // Display the sent message-->
+<!--            console.log("Gửi tin nhắn:", message);-->
+<!--            displayMessage(message, 'sender');-->
+<!--            ws.send(message);-->
+<!--            messageInput.value = ""; // Clear input-->
+<!--        }-->
+<!--    }-->
 
-    function displayMessage(message, senderType) {
-        var chatMessages = document.getElementById("chatMessages");
-        var messageDiv = document.createElement("div");
-        messageDiv.classList.add("message", senderType);
+<!--    function displayMessage(message, senderType) {-->
+<!--        var chatMessages = document.getElementById("chatMessages");-->
+<!--        var messageDiv = document.createElement("div");-->
+<!--        messageDiv.classList.add("message", senderType);-->
 
-        // Tạo avatar
-        var avatarImg = document.createElement("img");
-        avatarImg.classList.add("avatar");
+<!--        // Tạo avatar-->
+<!--        var avatarImg = document.createElement("img");-->
+<!--        avatarImg.classList.add("avatar");-->
 
-        // Xác định avatar dựa trên loại người gửi (sender hoặc receiver)
-        if(role == 'ROLE_RECRUITER') {
-            if (senderType === 'sender') {
-                avatarImg.src = "[[${recruiter.getAvatar()}]]"; // Avatar của người gửi (recruiter)
-                avatarImg.alt = "Sender Avatar";
-            } else {
-                avatarImg.src = "[[${manager.getAvatar()}]]"; // Avatar của người nhận (manager)
-                avatarImg.alt = "Receiver Avatar";
-            }
-        }
+<!--        // Xác định avatar dựa trên loại người gửi (sender hoặc receiver)-->
+<!--        if(role == 'ROLE_RECRUITER') {-->
+<!--            if (senderType === 'sender') {-->
+<!--                avatarImg.src = "[[${recruiter.getAvatar()}]]"; // Avatar của người gửi (recruiter)-->
+<!--                avatarImg.alt = "Sender Avatar";-->
+<!--            } else {-->
+<!--                avatarImg.src = "[[${manager.getAvatar()}]]"; // Avatar của người nhận (manager)-->
+<!--                avatarImg.alt = "Receiver Avatar";-->
+<!--            }-->
+<!--        }-->
 
-        if(role == 'ROLE_MANAGER') {
-            if (senderType === 'sender') {
-                avatarImg.src = "[[${manager.getAvatar()}]]"; // Avatar của người gửi (recruiter)
-                avatarImg.alt = "Sender Avatar";
-            } else {
-                avatarImg.src = "[[${recruiter.getAvatar()}]]"; // Avatar của người nhận (manager)
-                avatarImg.alt = "Receiver Avatar";
-            }
-        }
+<!--        if(role == 'ROLE_MANAGER') {-->
+<!--            if (senderType === 'sender') {-->
+<!--                avatarImg.src = "[[${manager.getAvatar()}]]"; // Avatar của người gửi (recruiter)-->
+<!--                avatarImg.alt = "Sender Avatar";-->
+<!--            } else {-->
+<!--                avatarImg.src = "[[${recruiter.getAvatar()}]]"; // Avatar của người nhận (manager)-->
+<!--                avatarImg.alt = "Receiver Avatar";-->
+<!--            }-->
+<!--        }-->
 
-        // Tạo nội dung tin nhắn
-        var messageSpan = document.createElement("span");
-        messageSpan.textContent = message;
+<!--        // Tạo nội dung tin nhắn-->
+<!--        var messageSpan = document.createElement("span");-->
+<!--        messageSpan.textContent = message;-->
 
-        // Thêm lớp CSS cho tin nhắn
-        if (senderType === 'sender') {
-            messageSpan.classList.add("sender-message");
-        } else {
-            messageSpan.classList.add("receiver-message");
-        }
+<!--        // Thêm lớp CSS cho tin nhắn-->
+<!--        if (senderType === 'sender') {-->
+<!--            messageSpan.classList.add("sender-message");-->
+<!--        } else {-->
+<!--            messageSpan.classList.add("receiver-message");-->
+<!--        }-->
 
-        // Thêm avatar và tin nhắn vào container
-        messageDiv.appendChild(avatarImg);
-        messageDiv.appendChild(messageSpan);
+<!--        // Thêm avatar và tin nhắn vào container-->
+<!--        messageDiv.appendChild(avatarImg);-->
+<!--        messageDiv.appendChild(messageSpan);-->
 
-        // Thêm tin nhắn vào khung chat
-        chatMessages.appendChild(messageDiv);
+<!--        // Thêm tin nhắn vào khung chat-->
+<!--        chatMessages.appendChild(messageDiv);-->
 
-        // Tự động cuộn xuống dưới cùng
-        chatMessages.scrollTop = chatMessages.scrollHeight;
-    }
+<!--        // Tự động cuộn xuống dưới cùng-->
+<!--        chatMessages.scrollTop = chatMessages.scrollHeight;-->
+<!--    }-->
 
-    document.addEventListener("DOMContentLoaded", function () {
-        ws = new WebSocket(`ws://localhost:8080/websocket/${conversationId}/${role}`);
-        console.log(ws);
-        ws.onopen = function () {
-            console.log("WebSocket connected successfully");
-            document.getElementById("messageInput").addEventListener("keypress", function (event) {
-                if (event.key === "Enter") {
-                    sendMessage();
-                }
-            });
-        };
+<!--    document.addEventListener("DOMContentLoaded", function () {-->
+<!--        ws = new WebSocket(`ws://localhost:8080/websocket/${conversationId}/${role}`);-->
+<!--        console.log(ws);-->
+<!--        ws.onopen = function () {-->
+<!--            console.log("WebSocket connected successfully");-->
+<!--            document.getElementById("messageInput").addEventListener("keypress", function (event) {-->
+<!--                if (event.key === "Enter") {-->
+<!--                    sendMessage();-->
+<!--                }-->
+<!--            });-->
+<!--        };-->
 
-        ws.onmessage = function (event) {
-            console.log("Check" + event);
-            displayMessage(event.data, 'receiver');
-        };
+<!--        ws.onmessage = function (event) {-->
+<!--            console.log("Check" + event);-->
+<!--            displayMessage(event.data, 'receiver');-->
+<!--        };-->
 
-        ws.onclose = function () {
-            console.log("WebSocket closed");
-        };
+<!--        ws.onclose = function () {-->
+<!--            console.log("WebSocket closed");-->
+<!--        };-->
 
-        ws.onerror = function (event) {
-            console.error("WebSocket error observed:", event);
-        };
-    });
-</script>
+<!--        ws.onerror = function (event) {-->
+<!--            console.error("WebSocket error observed:", event);-->
+<!--        };-->
+<!--    });-->
+
+<!--    function searchChat(input) {-->
+<!--        const searchValue = input.value.toLowerCase();-->
+<!--        const chatLists = document.querySelectorAll(".chat_list");-->
+
+<!--        chatLists.forEach(chat => {-->
+<!--            const workingNameElement = chat.querySelector(".col-lg-2 div");-->
+<!--            if (workingNameElement) {-->
+<!--                const workingName = workingNameElement.textContent.trim().toLowerCase();-->
+<!--                chat.style.display = workingName.includes(searchValue) ? "" : "none";-->
+<!--            }-->
+<!--        });-->
+<!--    }-->
+
+<!--    document.addEventListener("DOMContentLoaded", function () {-->
+<!--        // Lấy giá trị ID từ URL-->
+<!--        const urlParams = new URLSearchParams(window.location.search);-->
+<!--        const currentID = urlParams.get("mid"); // Lấy giá trị mid từ URL-->
+<!--        console.log("cur: " + currentID);-->
+
+<!--        // Lặp qua tất cả các phần tử có class "chat-container"-->
+<!--        document.querySelectorAll(".chat-container").forEach(divElement => {-->
+<!--            const anchor = divElement.querySelector("a");-->
+<!--            const divHref = anchor.getAttribute("href");-->
+<!--            const divParams = new URLSearchParams(divHref.split("?")[1]);-->
+<!--            const divID = divParams.get("mid"); // Lấy giá trị mid từ href trong thẻ a-->
+<!--            console.log("div: " + divID);-->
+<!--            // So sánh ID và thêm class nếu trùng khớp-->
+<!--            if (currentID === divID) {-->
+<!--                divElement.classList.add("highlight"); // Thêm class mới-->
+<!--            }-->
+<!--        });-->
+<!--    });-->
+
+<!--    document.addEventListener("DOMContentLoaded", function () {-->
+<!--        // Lấy giá trị ID từ URL-->
+<!--        const urlParams = new URLSearchParams(window.location.search);-->
+<!--        const currentID = urlParams.get("rid"); // Lấy giá trị mid từ URL-->
+<!--        console.log("cur: " + currentID);-->
+
+<!--        // Lặp qua tất cả các phần tử có class "chat-container"-->
+<!--        document.querySelectorAll(".chat-container1").forEach(divElement => {-->
+<!--            const anchor = divElement.querySelector("a");-->
+<!--            const divHref = anchor.getAttribute("href");-->
+<!--            const divParams = new URLSearchParams(divHref.split("?")[1]);-->
+<!--            const divID = divParams.get("rid"); // Lấy giá trị mid từ href trong thẻ a-->
+<!--            console.log("div: " + divID);-->
+<!--            // So sánh ID và thêm class nếu trùng khớp-->
+<!--            if (currentID === divID) {-->
+<!--                divElement.classList.add("highlight"); // Thêm class mới-->
+<!--            }-->
+<!--        });-->
+<!--    });-->
+
+<!--    function toggleEmojiPicker() {-->
+<!--        const picker = document.getElementById('emojiPicker');-->
+<!--        picker.style.display = picker.style.display === 'none' ? 'block' : 'none';-->
+<!--    }-->
+
+<!--    // Đóng emoji picker khi click ra ngoài-->
+<!--    document.addEventListener('click', function (event) {-->
+<!--        const picker = document.getElementById('emojiPicker');-->
+<!--        const emojiButton = document.querySelector('button[onclick="toggleEmojiPicker()"]');-->
+<!--        if (!picker.contains(event.target) && event.target !== emojiButton) {-->
+<!--            picker.style.display = 'none';-->
+<!--        }-->
+<!--    });-->
+
+<!--    // Xử lý chọn emoji-->
+<!--    const picker = document.getElementById('emojiPicker');-->
+<!--    const input = document.getElementById('messageInput');-->
+<!--    picker.addEventListener('emoji-click', event => {-->
+<!--        input.value += event.detail.unicode;-->
+<!--    });-->
+<!--</script>-->
+
 </body>
 </html>

@@ -1,0 +1,145 @@
+[33mf5fe070[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mSprint2[m[33m)[m HEAD@{0}: rebase (finish): returning to refs/heads/Sprint2
+[33mf5fe070[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mSprint2[m[33m)[m HEAD@{1}: rebase (continue): update
+[33mc759309[m[33m ([m[1;31morigin/Sprint2[m[33m)[m HEAD@{2}: rebase (start): checkout origin/Sprint2
+[33m3c7e3e8[m HEAD@{3}: commit: update
+[33m6fc97b6[m HEAD@{4}: commit: update
+[33m4926b28[m HEAD@{5}: rebase (finish): returning to refs/heads/Sprint2
+[33m4926b28[m HEAD@{6}: rebase (start): checkout origin/Sprint2
+[33md5dfe2d[m HEAD@{7}: rebase (finish): returning to refs/heads/Sprint2
+[33md5dfe2d[m HEAD@{8}: rebase (start): checkout origin/Sprint2
+[33m3c3d7a8[m HEAD@{9}: commit: update
+[33m9898aba[m HEAD@{10}: rebase (finish): returning to refs/heads/Sprint2
+[33m9898aba[m HEAD@{11}: rebase (pick): update
+[33mfcca77e[m HEAD@{12}: rebase (start): checkout origin/Sprint2
+[33m3d0fb24[m HEAD@{13}: commit: update
+[33m951f000[m HEAD@{14}: rebase (finish): returning to refs/heads/Sprint2
+[33m951f000[m HEAD@{15}: rebase (pick): update
+[33m22d7df4[m HEAD@{16}: rebase (start): checkout origin/Sprint2
+[33mcc576d8[m HEAD@{17}: commit: update
+[33m2cffa84[m HEAD@{18}: commit: update
+[33ma7046da[m HEAD@{19}: rebase (finish): returning to refs/heads/Sprint2
+[33ma7046da[m HEAD@{20}: rebase (pick): update
+[33mec3692c[m HEAD@{21}: rebase (start): checkout origin/Sprint2
+[33mdc9a5fd[m HEAD@{22}: commit: update
+[33m422cdc7[m HEAD@{23}: commit: update
+[33m55bce79[m HEAD@{24}: commit: update
+[33m92bce52[m HEAD@{25}: commit: update
+[33m3a0f155[m HEAD@{26}: rebase (finish): returning to refs/heads/Sprint2
+[33m3a0f155[m HEAD@{27}: rebase (pick): update
+[33m9b36a05[m HEAD@{28}: rebase (continue): update
+[33mc5836a1[m HEAD@{29}: rebase (start): checkout origin/Sprint2
+[33m7ed7225[m HEAD@{30}: commit: update
+[33mc3b4bb9[m HEAD@{31}: rebase (finish): returning to refs/heads/Sprint2
+[33mc3b4bb9[m HEAD@{32}: rebase (continue): update
+[33m0b577df[m HEAD@{33}: rebase (start): checkout origin/Sprint2
+[33m6b8b145[m HEAD@{34}: commit: update
+[33m3eda4f3[m HEAD@{35}: merge origin/Sprint2: Fast-forward
+[33md90c7c5[m HEAD@{36}: commit: update
+[33mb1b9fc9[m HEAD@{37}: commit: update
+[33m9b65d09[m HEAD@{38}: commit: update
+[33m56ec462[m HEAD@{39}: commit: update
+[33mc313a60[m HEAD@{40}: commit: update
+[33m26f86f8[m HEAD@{41}: commit: update
+[33m9fe3dac[m HEAD@{42}: commit: update
+[33m1c78592[m HEAD@{43}: commit: update
+[33m77135f1[m HEAD@{44}: commit: update
+[33m898a875[m HEAD@{45}: commit: update
+[33madcad6c[m HEAD@{46}: commit: update
+[33mdd92237[m HEAD@{47}: commit: update
+[33ma460436[m HEAD@{48}: commit: update
+[33mf1b48bb[m HEAD@{49}: commit: update
+[33m2cc742f[m HEAD@{50}: commit: update
+[33m3520231[m HEAD@{51}: commit: update
+[33m564dcd7[m HEAD@{52}: rebase (finish): returning to refs/heads/Sprint2
+[33m564dcd7[m HEAD@{53}: rebase (pick): update
+[33m11a401f[m HEAD@{54}: rebase (start): checkout origin/Sprint2
+[33ma209fc1[m HEAD@{55}: commit: update
+[33m9a1be02[m HEAD@{56}: commit: update
+[33m009ebea[m HEAD@{57}: commit: update
+[33m8b89a04[m HEAD@{58}: commit: update
+[33mfbc8adf[m HEAD@{59}: commit: update
+[33mf17f78c[m HEAD@{60}: rebase (finish): returning to refs/heads/Sprint2
+[33mf17f78c[m HEAD@{61}: rebase (pick): update
+[33m05d2ffc[m HEAD@{62}: rebase (start): checkout origin/Sprint2
+[33m39dd89b[m HEAD@{63}: commit: update
+[33ma44addf[m HEAD@{64}: commit: update
+[33mae764ea[m HEAD@{65}: commit: update
+[33m12ecad7[m HEAD@{66}: commit: update
+[33m439ff77[m HEAD@{67}: commit: update
+[33m0bdc6bb[m HEAD@{68}: rebase (finish): returning to refs/heads/Sprint2
+[33m0bdc6bb[m HEAD@{69}: rebase (start): checkout origin/Sprint2
+[33m856c06d[m HEAD@{70}: commit: update
+[33m7d4ba4d[m HEAD@{71}: commit: update
+[33md6e01f0[m HEAD@{72}: commit: update
+[33m7f2bcab[m HEAD@{73}: merge origin/Sprint2: Fast-forward
+[33mdd14cd0[m HEAD@{74}: commit: update
+[33mdcfb1a8[m HEAD@{75}: commit: update
+[33m852a05d[m HEAD@{76}: commit: update
+[33m35fba54[m HEAD@{77}: rebase (finish): returning to refs/heads/Sprint2
+[33m35fba54[m HEAD@{78}: rebase (start): checkout origin/Sprint2
+[33mbe6654a[m HEAD@{79}: commit: update
+[33m8717845[m HEAD@{80}: rebase (finish): returning to refs/heads/Sprint2
+[33m8717845[m HEAD@{81}: rebase (pick): update 404 not found
+[33m8852d25[m HEAD@{82}: rebase (start): checkout origin/Sprint2
+[33m51ba383[m HEAD@{83}: commit: update 404 not found
+[33m10d5543[m HEAD@{84}: commit: update
+[33me16cb28[m HEAD@{85}: rebase (finish): returning to refs/heads/Sprint2
+[33me16cb28[m HEAD@{86}: rebase (pick): update
+[33m1f56241[m HEAD@{87}: rebase (start): checkout origin/Sprint2
+[33mc2b67a1[m HEAD@{88}: commit: update
+[33mf10acb5[m HEAD@{89}: merge origin/Sprint2: Fast-forward
+[33m18726f4[m HEAD@{90}: commit: update
+[33maea4436[m HEAD@{91}: rebase (finish): returning to refs/heads/Sprint2
+[33maea4436[m HEAD@{92}: rebase (pick): update
+[33ma084469[m HEAD@{93}: rebase (start): checkout origin/Sprint2
+[33mbf14af0[m HEAD@{94}: commit: update
+[33mede3f61[m HEAD@{95}: rebase (finish): returning to refs/heads/Sprint2
+[33mede3f61[m HEAD@{96}: rebase (pick): update
+[33mdfe2026[m HEAD@{97}: rebase (start): checkout origin/Sprint2
+[33m6b5cab0[m HEAD@{98}: commit: update
+[33m164366f[m HEAD@{99}: commit: update
+[33m8ed2c7a[m HEAD@{100}: commit: update
+[33m0021b78[m HEAD@{101}: commit: update
+[33m4ba62c3[m HEAD@{102}: commit: update
+[33md031dab[m HEAD@{103}: commit: update
+[33med8f0c6[m HEAD@{104}: commit: update
+[33mc055d86[m HEAD@{105}: merge origin/Sprint2: Fast-forward
+[33md83f84b[m HEAD@{106}: commit: update
+[33m6aae127[m HEAD@{107}: rebase (finish): returning to refs/heads/Sprint2
+[33m6aae127[m HEAD@{108}: rebase (continue): update
+[33mb8565e4[m HEAD@{109}: rebase (start): checkout origin/Sprint2
+[33md5f3e18[m HEAD@{110}: commit: update
+[33mcf2a65f[m HEAD@{111}: commit: update
+[33m911bb9d[m HEAD@{112}: rebase (finish): returning to refs/heads/Sprint2
+[33m911bb9d[m HEAD@{113}: rebase (start): checkout origin/Sprint2
+[33me0a1dbf[m HEAD@{114}: commit: update
+[33mc2cf20e[m HEAD@{115}: commit: update
+[33m1d89231[m HEAD@{116}: commit: update
+[33m8f3b0af[m HEAD@{117}: commit: update
+[33ma26ff77[m HEAD@{118}: rebase (finish): returning to refs/heads/Sprint2
+[33ma26ff77[m HEAD@{119}: rebase (pick): update
+[33md607ca9[m HEAD@{120}: rebase (start): checkout origin/Sprint2
+[33m502ce88[m HEAD@{121}: commit: update
+[33ma66b127[m HEAD@{122}: rebase (finish): returning to refs/heads/Sprint2
+[33ma66b127[m HEAD@{123}: rebase (start): checkout origin/Sprint2
+[33mee70535[m HEAD@{124}: commit: update
+[33m288e5b8[m HEAD@{125}: rebase (finish): returning to refs/heads/Sprint2
+[33m288e5b8[m HEAD@{126}: rebase (pick): update
+[33mf4e95d1[m HEAD@{127}: rebase (start): checkout origin/Sprint2
+[33m0882d7c[m HEAD@{128}: commit: update
+[33m7e7c36f[m HEAD@{129}: commit: edit message_jp.properties
+[33m42cd9fb[m HEAD@{130}: pull origin Sprint2 --rebase (finish): returning to refs/heads/Sprint2
+[33m42cd9fb[m HEAD@{131}: pull origin Sprint2 --rebase (pick): create repo for notification
+[33m967f4db[m HEAD@{132}: pull origin Sprint2 --rebase (pick): create view switch language
+[33m4ad5b87[m HEAD@{133}: pull origin Sprint2 --rebase (pick): create view switch language
+[33mfb2732b[m HEAD@{134}: pull origin Sprint2 --rebase (pick): create view switch language
+[33m1adcec2[m HEAD@{135}: pull origin Sprint2 --rebase (start): checkout 1adcec2f32c7cabdbfbc440a084ab76ddd80936d
+[33md515378[m HEAD@{136}: commit: create repo
+[33m2da6f9a[m HEAD@{137}: commit: create repo for notification
+[33m8ab4153[m HEAD@{138}: commit: create view switch language
+[33mf467cf3[m HEAD@{139}: commit: create view switch language
+[33m0488965[m HEAD@{140}: commit: create view switch language
+[33mba8f3ee[m HEAD@{141}: commit: sua dashboard
+[33m2756c32[m HEAD@{142}: commit: sua dashboard
+[33md576130[m HEAD@{143}: commit: sua lai component
+[3

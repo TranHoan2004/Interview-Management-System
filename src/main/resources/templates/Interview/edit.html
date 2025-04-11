@@ -2,189 +2,354 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 
 <head>
-    <meta charset="UTF-8" />
+    <meta charset="UTF-8"/>
     <title th:text="${edit_interview}"></title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css"/>
+    <link rel="stylesheet" type="text/css" th:href="@{/css/styles.css}"/>
     <style>
-        /* Overall styles */
-        body {
-            background-color: #f8f9fa;
-            font-family: 'Arial', sans-serif;
+        .is-invalid {
+            border-color: #dc3545 !important;
+            box-shadow: 0 0 0 0.25rem rgba(220, 53, 69, 0.25) !important;
         }
 
-        .logo {
-            font-weight: bold;
-            background: #fff;
-            color: #16a085;
-            padding: 2px 8px;
+        #validationErrors {
+            margin-bottom: 20px;
             border-radius: 4px;
         }
 
-        /* Sidebar */
-        .sidebar {
-            width: 240px;
-            background: #2c3e50;
-            height: 100vh;
-            position: fixed;
-            padding: 20px;
-            color: white;
+        #validationErrors ul {
+            margin-bottom: 0;
         }
 
-        .sidebar h4 {
-            font-weight: bold;
-            text-align: center;
-            margin-bottom: 20px;
-        }
-
-        .sidebar a {
-            display: flex;
-            align-items: center;
-            padding: 12px;
-            color: white;
-            text-decoration: none;
-            border-radius: 5px;
-            transition: background 0.3s;
-        }
-
-        .sidebar a.fw-bold {
-            background: #34495e;
-        }
-
-        .sidebar a:hover {
-            background: #1abc9c;
-        }
-
-        .sidebar i {
-            margin-right: 10px;
-        }
-
-        .sidebar a.active {
-            background-color: #007bff;
-            color: white;
-        }
-
-        /* Main Content */
-        .content {
-            margin-left: 260px;
-            padding: 40px;
-            transition: all 0.3s;
-        }
-
-        .content h3 {
-            color: #2c3e50;
-            font-weight: bold;
-        }
-
-        .content a {
-            text-decoration: none;
-            font-weight: bold;
-            color: #007bff;
-        }
-
-        .content a:hover {
-            text-decoration: underline;
+        .required-field::after {
+            content: "*";
+            color: #dc3545;
+            margin-left: 4px;
         }
     </style>
 </head>
 
 <body>
-    <div class="d-flex">
-        <!-- Left Sidebar -->
-        <div class="sidebar" th:replace="~{component/left-sidebar :: leftSidebar}"></div>
+<!-- Loading overlay -->
+<div th:replace="~{component/load::load}"></div>
+<div class="d-flex">
+    <!-- Left Sidebar -->
+    <div class="sidebar" th:replace="~{component/left-sidebar :: leftSidebar}"></div>
 
-        <!-- Main Content -->
-        <div class="content flex-grow-1 p-4">
-            <!-- Top Sidebar / Header -->
-            <div th:replace="~{component/top-sidebar :: topSidebar}"></div>
+    <!-- Main Content -->
+    <div class="content flex-grow-1 p-4">
+        <!-- Top Sidebar / Header -->
+        <div
+                th:replace="~{component/new-top-sidebar::newTopSidebar(${interview_schedules}, '/interview/editInterview', null)}">
+        </div>
+        <div class="container mt-4">
+            <h2 class="fw-bold mb-3" th:text="${edit_interview}"></h2>
+            <form th:object="${interviewEdit}" th:method="post" th:action="@{/interview/editInterview}"
+                  id="interviewEdit">
+                <!-- Hidden field for the interview ID -->
+                <input type="hidden" th:field="*{id}"/>
 
-            <div class="container mt-4">
-                <h2 class="fw-bold mb-3" th:text="${edit_interview}"></h2>
-                <form th:object="${interview}" th:method="post" th:action="@{/interview/editInterview}">
-                    <!-- Hidden field for the interview ID -->
-                    <input type="hidden" th:field="*{id}" />
+                <!-- Title -->
+                <div class="mb-3">
+                    <label for="title" class="form-label fw-bold" th:text="${title_label}"></label>
+                    <input type="text" id="title" class="form-control" th:field="*{title}" required>
+                </div>
 
-                    <!-- Title -->
-                    <div class="mb-3">
-                        <label for="title" class="form-label fw-bold" th:text="${title_label}"></label>
-                        <input type="text" id="title" class="form-control" th:field="*{title}" required>
+                <!-- Candidate ID -->
+                <div class="mb-3">
+                    <label for="candidateId" class="form-label fw-bold" th:text="${candidate_id}"></label>
+                    <input type="number" id="candidateId" class="form-control" th:field="*{candidateId}" required>
+                </div>
+
+                <!-- Job ID -->
+                <div class="mb-3">
+                    <label for="jobId" class="form-label fw-bold" th:text="${job_id}"></label>
+                    <input type="number" id="jobId" class="form-control" th:field="*{jobId}">
+                </div>
+
+                <!-- Schedule Date -->
+                <div class="mb-4">
+                    <label for="scheduleTime" class="form-label required-field"
+                           th:text="${schedule_time_title}"></label>
+                    <input type="date" class="form-control" id="scheduleTime" th:field="*{scheduleTime}" required
+                           min="">
+                </div>
+
+                <!-- Schedule Time (From and To) -->
+                <div class="row">
+                    <div class="col-md-6 mb-4">
+                        <label for="startTime" class="form-label required-field" th:text="${start_time}"></label>
+                        <input type="time" class="form-control" id="startTime" th:field="*{startTime}" required>
                     </div>
 
-                    <!-- Candidate ID -->
-                    <div class="mb-3">
-                        <label for="candidateId" class="form-label fw-bold" th:text="${candidate_id}"></label>
-                        <input type="number" id="candidateId" class="form-control" th:field="*{candidateId}" required>
+                    <div class="col-md-6 mb-4">
+                        <label for="endTime" class="form-label required-field" th:text="${end_time}"></label>
+                        <input type="time" class="form-control" id="endTime" th:field="*{endTime}" required>
                     </div>
+                </div>
 
-                    <!-- Job ID -->
-                    <div class="mb-3">
-                        <label for="jobId" class="form-label fw-bold" th:text="${job_id}"></label>
-                        <input type="number" id="jobId" class="form-control" th:field="*{jobId}">
-                    </div>
+                <!-- Locations -->
+                <div class="mb-3">
+                    <label for="locations" class="form-label fw-bold" th:text="${location_label}"></label>
+                    <input type="text" id="locations" class="form-control" th:field="*{locations}" required>
+                </div>
 
-                    <!-- Schedule Time -->
-                    <div class="mb-3">
-                        <label for="scheduleTime" class="form-label fw-bold" th:text="${schedule_time_title}"></label>
-                        <input type="datetime-local" id="scheduleTime" class="form-control" th:field="*{scheduleTime}"
-                            required>
-                    </div>
+                <!-- Recruiter Owner -->
+                <div class="mb-3">
+                    <label for="recruiterOwner" class="form-label fw-bold" th:text="${recruiter_owner}"></label>
+                    <input type="number" id="recruiterOwner" class="form-control" th:field="*{recruiterOwner}"
+                           required>
+                </div>
 
-                    <!-- Start Time -->
-                    <div class="mb-3">
-                        <label for="startTime" class="form-label fw-bold" th:text="${start_time}"></label>
-                        <input type="time" id="startTime" class="form-control" th:field="*{startTime}" required>
-                    </div>
+                <!-- Meeting ID -->
+                <div class="mb-3">
+                    <label for="meetId" class="form-label fw-bold" th:text="${meeting_id}"></label>
+                    <input type="text" id="meetId" class="form-control" th:field="*{meetId}">
+                </div>
 
-                    <!-- End Time -->
-                    <div class="mb-3">
-                        <label for="endTime" class="form-label fw-bold" th:text="${end_time}"></label>
-                        <input type="time" id="endTime" class="form-control" th:field="*{endTime}" required>
-                    </div>
+                <!-- Note -->
+                <div class="mb-3">
+                    <label for="note" class="form-label fw-bold" th:text="${note_title}"></label>
+                    <textarea id="note" class="form-control" th:field="*{note}" rows="3"></textarea>
+                </div>
 
-                    <!-- Locations -->
-                    <div class="mb-3">
-                        <label for="locations" class="form-label fw-bold" th:text="${location_label}"></label>
-                        <input type="text" id="locations" class="form-control" th:field="*{locations}" required>
-                    </div>
+                <button type="submit" class="btn btn-primary">
+                    <i class="fa fa-save"></i>
+                    <span th:text="${save_btn}"></span>
+                </button>
+                <a class="btn btn-danger text-white" th:href="@{/interview/list}">
+                    <i class="fa fa-arrow-left"></i>
+                    <span th:text="${cancelBtn}"></span>
+                </a>
+            </form>
+        </div>
+    </div>
+</div>
 
-                    <!-- Recruiter Owner -->
-                    <div class="mb-3">
-                        <label for="recruiterOwner" class="form-label fw-bold" th:text="${recruiter_owner}"></label>
-                        <input type="number" id="recruiterOwner" class="form-control" th:field="*{recruiterOwner}"
-                            required>
-                    </div>
-
-                    <!-- Meeting ID -->
-                    <div class="mb-3">
-                        <label for="meetId" class="form-label fw-bold" th:text="${meeting_id}"></label>
-                        <input type="text" id="meetId" class="form-control" th:field="*{meetId}">
-                    </div>
-
-                    <!-- Note -->
-                    <div class="mb-3">
-                        <label for="note" class="form-label fw-bold" th:text="${note_title}"></label>
-                        <textarea id="note" class="form-control" th:field="*{note}" rows="3"></textarea>
-                    </div>
-
-                    <!-- Result -->
-                    <div class="mb-3">
-                        <label for="result" class="form-label fw-bold" th:text="${result_title}"></label>
-                        <input type="text" id="result" class="form-control" th:field="*{result}">
-                    </div>
-
-                    <button type="submit" class="btn btn-primary">
-                        <i class="fa fa-save"></i>
-                        <span th:text="${save_btn}"></span>
-                    </button>
-                    <a class="btn btn-danger text-white" th:href="@{/interview/list}">
-                        <i class="fa fa-arrow-left"></i>
-                        <span th:text="${cancelBtn}"></span>
-                    </a>
-                </form>
+<!-- Save Confirmation Modal -->
+<div class="modal fade" id="saveConfirmModal" tabindex="-1" aria-labelledby="saveConfirmModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="saveConfirmModalLabel">Confirm Changes</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Are you sure want to change this detail?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No</button>
+                <button type="button" class="btn btn-primary" id="confirmSaveBtn">Yes</button>
             </div>
         </div>
     </div>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</div>
+
+<!-- Cancel Confirmation Modal -->
+<div class="modal fade" id="cancelConfirmModal" tabindex="-1" aria-labelledby="cancelConfirmModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="cancelConfirmModalLabel">Confirm Cancellation</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Your changes will not be saved, are you sure you want to cancel?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No</button>
+                <button type="button" class="btn btn-danger" id="confirmCancelBtn">Yes</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script th:src="@{/js/interviews.js}"></script>
+<script th:src="@{/js/index.js}"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const interviewForm = document.getElementById('interviewEdit');
+        const cancelButton = document.querySelector('a.btn.btn-danger');
+
+        // References to the modals
+        const saveConfirmModal = new bootstrap.Modal(document.getElementById('saveConfirmModal'));
+        const cancelConfirmModal = new bootstrap.Modal(document.getElementById('cancelConfirmModal'));
+
+        if (interviewForm) {
+            // Set today's date as minimum for schedule date
+            const scheduleTimeInput = document.getElementById('scheduleTime');
+            const today = new Date().toISOString().split('T')[0];
+            scheduleTimeInput.setAttribute('min', today);
+
+            interviewForm.addEventListener('submit', function(event) {
+                event.preventDefault();
+
+                let isValid = true;
+                const errorMessages = [];
+
+                // Validate title
+                const title = document.getElementById('title').value.trim();
+                if (title === '') {
+                    isValid = false;
+                    errorMessages.push('Title is required');
+                    highlightField('title');
+                }
+
+                // Validate candidate ID
+                const candidateId = document.getElementById('candidateId').value.trim();
+                if (candidateId === '' || isNaN(candidateId) || parseInt(candidateId) <= 0) {
+                    isValid = false;
+                    errorMessages.push('Candidate ID must be a valid positive number');
+                    highlightField('candidateId');
+                }
+
+                // Validate job ID if provided
+                const jobId = document.getElementById('jobId').value.trim();
+                if (jobId !== '' && (isNaN(jobId) || parseInt(jobId) <= 0)) {
+                    isValid = false;
+                    errorMessages.push('Job ID must be a valid positive number');
+                    highlightField('jobId');
+                }
+
+                // Validate schedule date
+                const scheduleTime = document.getElementById('scheduleTime').value;
+                if (scheduleTime === '') {
+                    isValid = false;
+                    errorMessages.push('Schedule date is required');
+                    highlightField('scheduleTime');
+                }
+
+                // Validate start and end times
+                const startTime = document.getElementById('startTime').value;
+                const endTime = document.getElementById('endTime').value;
+
+                if (startTime === '') {
+                    isValid = false;
+                    errorMessages.push('Start time is required');
+                    highlightField('startTime');
+                }
+
+                if (endTime === '') {
+                    isValid = false;
+                    errorMessages.push('End time is required');
+                    highlightField('endTime');
+                }
+
+                // Check if end time is after start time
+                if (startTime && endTime && startTime >= endTime) {
+                    isValid = false;
+                    errorMessages.push('End time must be after start time');
+                    highlightField('startTime');
+                    highlightField('endTime');
+                }
+
+                // Validate location
+                const locations = document.getElementById('locations').value.trim();
+                if (locations === '') {
+                    isValid = false;
+                    errorMessages.push('Location is required');
+                    highlightField('locations');
+                }
+
+                // Validate recruiter owner
+                const recruiterOwner = document.getElementById('recruiterOwner').value.trim();
+                if (recruiterOwner === '' || isNaN(recruiterOwner) || parseInt(recruiterOwner) <= 0) {
+                    isValid = false;
+                    errorMessages.push('Recruiter Owner must be a valid positive number');
+                    highlightField('recruiterOwner');
+                }
+
+                // If form is invalid, prevent submission and show errors
+                if (!isValid) {
+                    event.preventDefault();
+                    displayValidationErrors(errorMessages);
+                }
+
+                // If form is valid, show confirmation modal
+                if (isValid) {
+                    formIsValid = true;
+                    saveConfirmModal.show();
+                } else {
+                    // Show validation errors
+                    displayValidationErrors(errorMessages);
+                }
+            });
+
+            // Handle confirm save button click
+            document.getElementById('confirmSaveBtn').addEventListener('click', function() {
+                if (formIsValid) {
+                    saveConfirmModal.hide();
+                    interviewForm.submit();
+                }
+            });
+        }
+
+        // Handle cancel button click
+        if (cancelButton) {
+            cancelButton.addEventListener('click', function(event) {
+                event.preventDefault();
+                // Store the URL to navigate to if confirmed
+                this.dataset.cancelUrl = this.getAttribute('href');
+                cancelConfirmModal.show();
+            });
+
+            // Handle confirm cancel button click
+            document.getElementById('confirmCancelBtn').addEventListener('click', function() {
+                const url = cancelButton.dataset.cancelUrl;
+                if (url) {
+                    cancelConfirmModal.hide();
+                    window.location.href = url;
+                }
+            });
+        }
+
+        // Helper function to highlight invalid fields
+        function highlightField(fieldId) {
+            const field = document.getElementById(fieldId);
+            field.classList.add('is-invalid');
+
+            // Remove the highlight when the user starts typing
+            field.addEventListener('input', function() {
+                this.classList.remove('is-invalid');
+            }, { once: true });
+        }
+
+        // Display validation errors in a dialog or alert
+        function displayValidationErrors(errors) {
+            // Create validation error container if it doesn't exist
+            let errorContainer = document.getElementById('validationErrors');
+            if (!errorContainer) {
+                errorContainer = document.createElement('div');
+                errorContainer.id = 'validationErrors';
+                errorContainer.className = 'alert alert-danger mt-3';
+                errorContainer.innerHTML = '<h5>Please fix the following errors:</h5>';
+
+                // Insert before the form
+                const form = document.getElementById('interviewEdit');
+                form.parentNode.insertBefore(errorContainer, form);
+            }
+
+            // Clear previous errors
+            errorContainer.innerHTML = '<h5>Please fix the following errors:</h5>';
+
+            // Create error list
+            const errorList = document.createElement('ul');
+            errors.forEach(error => {
+                const listItem = document.createElement('li');
+                listItem.textContent = error;
+                errorList.appendChild(listItem);
+            });
+
+            errorContainer.appendChild(errorList);
+
+            // Scroll to error container
+            errorContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+    });
+</script>
 </body>
 
 </html>

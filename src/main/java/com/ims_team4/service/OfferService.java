@@ -35,4 +35,6 @@ public interface OfferService {
     boolean createOffer(int salary, LocalDate from, LocalDate to, LocalDate duedate, String interviewNote, int interviewId, String note, int recruiterOwner, int cid, int coid, int did, int eid, int lid, int pid, int updateBy);
 
     List<OfferDTO> getAllOfferFromToOfEid(LocalDate from, LocalDate to, int eid);
+
+    List<OfferDTO> getAllOfferByDueDateAndStatus(LocalDate dueDate, int status);
 }

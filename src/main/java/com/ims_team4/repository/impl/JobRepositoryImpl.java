@@ -95,8 +95,43 @@ public class JobRepositoryImpl implements JobRepository {
     }
 
     @Override
+    public void removeJobCandidateLinks(Long jobId) {
+
+    }
+
+    @Override
     public void deleteJobById(Long id) {
 
+    }
+
+    @Override
+    public int countTotalJobs() {
+        return 0;
+    }
+
+    @Override
+    public int countOpenJobs() {
+        return 0;
+    }
+
+    @Override
+    public int countClosedJobs() {
+        return 0;
+    }
+
+    @Override
+    public int countTotalJobsLastMonth() {
+        return 0;
+    }
+
+    @Override
+    public int countOpenJobsLastMonth() {
+        return 0;
+    }
+
+    @Override
+    public int countClosedJobsLastMonth() {
+        return 0;
     }
 
     @Override

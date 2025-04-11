@@ -3,6 +3,8 @@ package com.ims_team4.service;
 import com.ims_team4.dto.EmployeeDTO;
 import com.ims_team4.model.Employee;
 import com.ims_team4.model.utils.HrRole;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 import java.util.Optional;
@@ -28,7 +30,7 @@ public interface EmployeeService {
 
     EmployeeDTO getEmployeeById(long id);
 
-    List<EmployeeDTO> search(String title, Long positionId);
+    Page<EmployeeDTO> search(String title, Long positionId, Pageable pageable);
 
     Optional<Employee> getEmployeeByUserId(Long userId);
 
@@ -36,5 +38,8 @@ public interface EmployeeService {
 
     EmployeeDTO getEmployeeDTOByEmail(String email);
 
-    List<EmployeeDTO> getActiveEmployees();
+    EmployeeDTO getActiveEmployeesByID(Long id);
+    List<EmployeeDTO> search(String title, Long positionId);
+
+
 }

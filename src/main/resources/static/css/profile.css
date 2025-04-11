@@ -1,0 +1,34 @@
+/* profile */
+.avatar-container {
+    display: flex;
+    justify-content: center;
+    /* Căn giữa ảnh */
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.avatar {
+    width: 200px; /* Kích thước lớn hơn */
+    height: 200px; /* Đảm bảo chiều cao bằng chiều rộng */
+    border-radius: 50%; /* Làm ảnh tròn */
+    object-fit: cover; /* Giữ ảnh cân đối, không méo */
+    border: 2px solid #ddd; /* Viền nhạt hơn */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Đổ bóng nhẹ */
+}
+
+/* employee details, edit user, create user */
+.avatar-preview {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid #ddd;
+    padding: 2px;
+    margin: 0 auto; /* Căn giữa */
+    display: block;
+}
+
+.avatar-preview[src=""] {
+    visibility: hidden;
+    display: none !important;
+}

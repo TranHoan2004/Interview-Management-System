@@ -1,416 +1,17 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/html">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title th:text="${admin_offer_title}"></title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${manager_offer_title}"></title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
-    <style>
-        /* Global Styles */
-        body {
-            background-color: #eef1f6;
-            font-family: 'Arial', sans-serif;
-            padding-top: 0;
-        }
-
-        /* Mobile menu toggle button */
-        .mobile-menu-toggle {
-            display: none;
-            position: fixed;
-            top: 15px;
-            left: 15px;
-            z-index: 1001;
-            background: #2c3e50;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            padding: 8px 12px;
-            font-size: 1.2rem;
-            cursor: pointer;
-        }
-
-        /* Sidebar styles */
-        .sidebar {
-            background-color: #2c3e50;
-            color: white;
-            height: 100vh;
-            position: fixed;
-            left: 0;
-            top: 0;
-            width: 250px;
-            transition: transform 0.3s ease;
-            z-index: 1000;
-            overflow-y: auto;
-            padding-top: 20px;
-        }
-
-        .sidebar h4 {
-            color: white;
-            padding: 0 20px 20px;
-            margin: 0;
-        }
-
-        .sidebar a {
-            display: flex;
-            align-items: center;
-            color: white;
-            padding: 12px 20px;
-            text-decoration: none;
-            transition: background-color 0.3s;
-        }
-
-        .sidebar a:hover {
-            background-color: #34495e;
-        }
-
-        .sidebar a.active {
-            background-color: #007bff;
-            color: white;
-        }
-
-        .sidebar a i {
-            margin-right: 10px;
-            width: 20px;
-            text-align: center;
-        }
-
-        .logo {
-            font-weight: bold;
-            background: #fff;
-            color: #16a085;
-            padding: 2px 8px;
-            border-radius: 4px;
-        }
-
-        /* Overlay when sidebar is open on mobile */
-        .sidebar-overlay {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-color: rgba(0, 0, 0, 0.5);
-            z-index: 999;
-        }
-
-        /* Main Content Area */
-        .main-content {
-            margin-left: 250px;
-            padding: 20px;
-            transition: all 0.3s ease;
-        }
-
-        /* Header Styles */
-        .page-title {
-            font-size: 35px;
-            font-weight: bold;
-            color: #2c3e50;
-            margin-bottom: 0;
-        }
-
-        .breadcrumb {
-            background-color: white;
-            box-shadow: 0px 1px 3px rgba(0, 0, 0, 0.1);
-        }
-
-        /* Filter Bar Styles */
-        .filter-bar {
-            display: flex;
-            gap: 10px;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-
-        .filter-bar .form-control,
-        .filter-bar .form-select {
-            max-width: 220px;
-        }
-
-        .search-container {
-            flex: 1;
-        }
-
-        /* Table Styles */
-        .table-container {
-            background: white;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
-            overflow-x: auto;
-        }
-
-        .table th {
-            background-color: #2c3e50;
-            color: white;
-            text-align: center;
-            white-space: nowrap;
-        }
-
-        .table td {
-            vertical-align: middle;
-        }
-
-        .table a {
-            color: #2c3e50;
-            transition: color 0.3s;
-        }
-
-        .table a:hover {
-            color: #1abc9c;
-        }
-
-        /* Button Styles */
-        .btn-primary {
-            background-color: #1abc9c;
-            border: none;
-        }
-
-        .btn-primary:hover {
-            background-color: #16a085;
-        }
-
-        .btn-secondary {
-            background-color: #34495e;
-            border: none;
-        }
-
-        .btn-secondary:hover {
-            background-color: #2c3e50;
-        }
-
-        /* Notification Popup */
-        .custom-popup {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: rgba(255, 255, 255, 0.95);
-            padding: 15px 20px;
-            border-radius: 8px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-            display: none;
-            z-index: 1050;
-            min-width: 250px;
-            max-width: 300px;
-            animation: fadeInSlideDown 0.5s ease-out;
-        }
-
-        .popup-content {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-size: 16px;
-            color: #333;
-        }
-
-        .btn-close-custom {
-            background: #ff5e57;
-            border: none;
-            width: 30px;
-            height: 30px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 50%;
-            transition: all 0.3s ease;
-        }
-
-        .btn-close-custom:hover {
-            background: #e74c3c;
-            transform: scale(1.1);
-        }
-
-        .btn-close-custom i {
-            color: white;
-            font-size: 16px;
-        }
-
-        @keyframes fadeInSlideDown {
-            from { opacity: 0; transform: translateY(-20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        /* Responsive Styles */
-        @media (max-width: 1199.98px) {
-            .filter-bar {
-                flex-wrap: wrap;
-            }
-
-            .search-container {
-                min-width: 100%;
-            }
-        }
-
-        @media (max-width: 991.98px) {
-            .mobile-header {
-                display: flex;
-            }
-
-            .sidebar {
-                transform: translateX(-100%);
-            }
-
-            .sidebar.open {
-                transform: translateX(0);
-            }
-
-            .sidebar-overlay.active {
-                display: block;
-            }
-
-            .main-content {
-                margin-left: 0;
-                padding-top: 80px;
-            }
-
-            .page-title {
-                font-size: 28px;
-            }
-
-            .filter-bar {
-                flex-direction: column;
-                align-items: stretch;
-                gap: 15px;
-            }
-
-            .filter-bar .form-control,
-            .filter-bar .form-select {
-                max-width: 100%;
-            }
-
-            .select-container {
-                width: 100% !important;
-                margin-right: 0 !important;
-            }
-
-            .status {
-                margin-right: 0 !important;
-            }
-        }
-
-        @media (max-width: 767.98px) {
-            .page-title {
-                font-size: 24px;
-            }
-
-            .table-container {
-                padding: 10px;
-            }
-
-            .table td, .table th {
-                padding: 0.5rem;
-                font-size: 0.9rem;
-            }
-
-            .breadcrumb {
-                font-size: 0.85rem;
-            }
-        }
-
-        @media (max-width: 575.98px) {
-            .page-title {
-                font-size: 20px;
-            }
-
-            .main-content {
-                padding: 15px 10px;
-            }
-
-            .button-group {
-                width: 100%;
-            }
-
-            .button-group .btn {
-                width: 100%;
-                margin-bottom: 10px;
-            }
-
-            .pagination {
-                flex-wrap: wrap;
-            }
-        }
-    </style>
+    <link rel="stylesheet" th:href="@{/css/offer.css}">
+    <link rel="stylesheet" th:href="@{/css/styles.css}"/>
 </head>
-
 <body>
-<!-- Mobile Header -->
-<div class="mobile-header">
-    <div class="logo">DEV IMS</div>
-    <button class="menu-toggle" id="menuToggle">
-        <i class="fas fa-bars"></i>
-    </button>
-</div>
+<div th:replace="~{recruiter-features/navbar :: mobile-menu}"></div>
 
-<!-- Sidebar -->
-<button class="mobile-menu-toggle" id="mobileMenuToggle">
-    <i class="fas fa-bars"></i>
-</button>
-
-<!-- Sidebar Overlay -->
-<div class="sidebar-overlay" id="sidebarOverlay"></div>
-
-<!-- Sidebar -->
-<div id="sidebar" class="sidebar" th:fragment="leftSidebar">
-    <h4><span class="logo">DEV</span> IMS</h4>
-
-    <a th:href="@{/dashboard}">
-        <i class="fa-solid fa-house"></i>
-        <div th:text="${homeLeftSidebar}"></div>
-    </a>
-
-    <a th:href="@{/candidate/list}">
-        <i class="fa-solid fa-user"></i>
-        <div th:text="${candidateLeftSidebar}"></div>
-    </a>
-
-    <!--Job-->
-    <div th:if="${session.account.getRole().name().equals('ROLE_MANAGER')}">
-        <a th:href="@{/jobs/manager/list/{id}(id=${session.account.getUserID()})}">
-            <i class="fa-solid fa-briefcase"></i>
-            <div th:text="${jobLeftSidebar}"></div>
-        </a>
-    </div>
-
-    <div th:if="${session.account.getRole().name().equals('ROLE_ADMINISTRATOR')}">
-        <a th:href="@{/jobs/admin/listAllJob}">
-            <i class="fa-solid fa-briefcase"></i>
-            <div th:text="${jobLeftSidebar}"></div>
-        </a>
-    </div>
-
-    <a th:href="@{/interview/list}">
-        <i class="fa-solid fa-comments"></i>
-        <div th:text="${interviewLeftSidebar}"></div>
-    </a>
-
-    <div th:if="${session.account.getRole().name().equals('ROLE_RECRUITER')}">
-        <a th:href="@{/offer/offer/{id}(id=${session.account.getUserID()})}" id="offer-link">
-            <i class="fa-solid fa-file-alt"></i>
-            <div th:text="${offerLeftSidebar}"></div>
-        </a>
-    </div>
-
-    <div th:if="${session.account.getRole().name().equals('ROLE_MANAGER')}">
-        <a th:href="@{/offer/managerOffer/{id}(id=${session.account.getUserID()})}" id="manager-offer-link">
-            <i class="fa-solid fa-file-alt"></i>
-            <div th:text="${offerLeftSidebar}"></div>
-        </a>
-    </div>
-
-    <div th:if="${session.account.getRole().name().equals('ROLE_ADMINISTRATOR')}">
-        <a th:href="@{/offer/adminOffer/{id}(id=${session.account.getUserID()})}" id="admin-offer-link">
-            <i class="fa-solid fa-file-alt"></i>
-            <div th:text="${offerLeftSidebar}"></div>
-        </a>
-        <a th:href="@{/user/list}" id="user-management-link">
-            <i class="fa-solid fa-users"></i>
-            <div th:text="${userManagementLeftSidebar}"></div>
-        </a>
-    </div>
-</div>
-
-<!-- Notification Popup -->
 <div id="notification" class="custom-popup">
     <div class="popup-content">
         <i class="fa-solid fa-circle-check text-success fa-2x"></i>
@@ -420,57 +21,48 @@
         </button>
     </div>
 </div>
+<!-- Sidebar -->
+<div class="sidebar" th:replace="~{component/left-sidebar::leftSidebar}"></div>
 
-<!-- Main Content -->
-<div class="main-content">
-    <div class="d-flex justify-content-between align-items-center mb-0 flex-wrap">
-        <div class="container py-2 flex-grow-1" style="flex-basis: 68%;">
-            <h3 class="page-title fw-bold text-dark">
-                <i class="fa-solid fa-clipboard-list text-primary"></i>
-                <span th:text="${offer_list}"></span>
-            </h3>
-            <nav aria-label="breadcrumb">
-                <ol class="breadcrumb bg-white shadow-sm p-2 rounded">
-                    <li class="breadcrumb-item">
-                        <a th:href="@{/offer/adminOffer/{rid}(rid=${rid})}"
-                           class="text-decoration-none text-primary fw-bold" th:text="${offer_list}"></a>
-                    </li>
-                </ol>
-            </nav>
-        </div>
-        <div th:replace="~{component/top-sidebar::topSidebar}"></div>
-    </div>
-
-    <!-- Search and Filter Bar -->
+<!-- Nội dung -->
+<div class="content" style="padding-left: 50px">
+    <div th:replace="~{component/new-top-sidebar::newTopSidebar(${offer_list}, @{/offer/managerOffer/{rid}(rid=${T(com.ims_team4.controller.utils.UrlIdEncoder).encodeId(session.account.userID)})}, null)}"></div>
+    <!-- Thanh tìm kiếm và bộ lọc -->
     <form th:action="@{/offer/search}" method="get">
-        <div class="filter-bar">
-            <input type="hidden" name="rid" th:value="${rid}"/>
-            <div class="search-container input-group">
+        <div class="filter-bar mb-3">
+            <input type="hidden" name="rid"
+                   th:value="${T(com.ims_team4.controller.utils.UrlIdEncoder).encodeId(session.account.userID)}"/>
+            <div class="search input-group flex-nowrap">
                 <span class="input-group-text"><i class="fa-solid fa-search"></i></span>
                 <input type="text" name="text" class="form-control" th:placeholder="${search}">
             </div>
-            <div class="select-container d-flex flex-wrap gap-2" style="width: 45%">
+            <div class="select-container">
                 <select class="form-select" name="dep">
-                    <option value="0" th:text="${department}"></option>
+                    <option value="0" th:text="${departmentTitle}"></option>
                     <option th:each="department : ${listD}" th:value="${department.getId()}"
                             th:text="${department.getName()}"></option>
                 </select>
-
                 <select class="form-select status" name="status">
                     <option value="0" th:text="${status}"></option>
                     <option th:each="statusOffer : ${listS}" th:value="${statusOffer.getId()}"
                             th:text="${statusOffer.getStatusName()}"></option>
                 </select>
             </div>
-            <div class="button-group d-flex gap-2">
-                <button type="submit" class="btn btn-secondary" th:text="${search}"></button>
+            <div class="button-group">
+                <button type="submit" class="btn btn-secondary me-2" th:text="${search}"></button>
+                <th:block th:if="${session.account.getRole().name().equals('ROLE_MANAGER')}">
+                    <a th:href="@{/chat(mid=${T(com.ims_team4.controller.utils.UrlIdEncoder).encodeId(session.account.getUserID())}, rid=${T(com.ims_team4.controller.utils.UrlIdEncoder).encodeId(session.rid)}, role=${session.account.role})}"
+                       class="chat-button fw-bold text-decoration-none me-2">
+                        <i class="fa-brands fa-facebook-messenger"></i>
+                        <span th:text="${chat_title}"></span>
+                    </a>
+                </th:block>
                 <button type="button" class="btn btn-outline-secondary" data-bs-toggle="modal"
                         data-bs-target="#exportModal" th:text="${exportBtn}"></button>
             </div>
         </div>
     </form>
 
-    <!-- Export Modal -->
     <div class="modal fade" id="exportModal" tabindex="-1" aria-labelledby="exportModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <form th:action="@{/offer/export}" class="modal-content rounded-3 shadow-lg p-3">
@@ -501,108 +93,197 @@
         </div>
     </div>
 
-    <!-- Data Table -->
-    <div class="table-container">
-        <table class="table table-bordered table-hover">
-            <thead>
-            <tr>
-                <th th:text="${candidate_name}"></th>
-                <th th:text="${email}"></th>
-                <th th:text="${approver_title}"></th>
-                <th th:text="${department}"></th>
-                <th th:text="${note}"></th>
-                <th th:text="${status}"></th>
-                <th th:text="${action}"></th>
-            </tr>
-            </thead>
-            <tbody>
-            <th:block th:each="offer : ${listO}">
+    <!-- Bảng dữ liệu -->
+    <div class="table-view">
+        <div class="table-container">
+            <table class="table table-bordered table-hover">
+                <thead>
                 <tr>
-                    <th:block th:each="candidate : ${listC}" th:if="${candidate.getUserId() == offer.getCandidateId()}">
-                        <th:block th:each="user : ${listU}" th:if="${user.getId() == candidate.getUserId()}">
-                            <td th:text="${user.getFullname()}"></td>
-                            <td th:text="${user.getEmail()}"></td>
-                            <td th:each="emp : ${listU}" th:if="${emp.getId() == offer.getEmployeeId()}"
-                                th:text="${emp.getFullname()}"></td>
-                            <td th:text="${offer.getDepartmentName()}"></td>
-                            <td th:text="${offer.note} ?: 'N/A'"></td>
-                            <td>
-                                <span th:text="${offer.getStatusOfferName()}"></span>
-                            </td>
-                            <td>
-                                <a th:href="@{/offer/offerdetail/{id}(id=${offer.getId()}, rid=${offer.getEmployeeId()})}"
-                                   class="me-2"><i
-                                        class="fa-solid fa-eye"></i></a>
-                                <a th:data-status="${offer.getStatusOfferId()}"
-                                   th:data-id="${offer.getId()}"
-                                   th:data-eid="${offer.getEmployeeId()}"
-                                   onclick="checkStatusToEdit(this.getAttribute('data-id'), this.getAttribute('data-status'), this.getAttribute('data-eid'))"
-                                   href="#">
-                                    <i class="fa-solid fa-edit"></i>
-                                </a>
-                            </td>
-                        </th:block>
-                    </th:block>
+                    <th th:text="${candidate_name}"></th>
+                    <th th:text="${email}"></th>
+                    <th th:text="${approver_title}"></th>
+                    <th th:text="${departmentTitle}"></th>
+                    <th th:text="${note}"></th>
+                    <th th:text="${status}"></th>
+                    <th th:text="${action}"></th>
                 </tr>
-            </th:block>
-            </tbody>
-        </table>
-        <nav aria-label="Page navigation">
-            <ul class="pagination justify-content-center">
-                <li class="page-item" th:classappend="${currentPage == 1} ? 'disabled'">
-                    <a class="page-link" th:href="@{/offer/adminOffer/{id}(id=${id}, page=${currentPage - 1})}"
-                       aria-label="Previous">
-                        <span aria-hidden="true">&laquo;</span>
-                    </a>
-                </li>
-                <li class="page-item" th:each="page : ${#numbers.sequence(1, totalPages)}"
-                    th:classappend="${page == currentPage} ? 'active'">
-                    <a class="page-link" th:href="@{/offer/adminOffer/{id}(id=${id}, page=${page})}"
-                       th:text="${page}"></a>
-                </li>
-                <li class="page-item" th:classappend="${currentPage == totalPages} ? 'disabled'">
-                    <a class="page-link" th:href="@{/offer/adminOffer/{id}(id=${id}, page=${currentPage + 1})}"
-                       aria-label="Next">
-                        <span aria-hidden="true">&raquo;</span>
-                    </a>
-                </li>
-            </ul>
-        </nav>
+                </thead>
+                <tbody>
+                <th:block th:each="offer : ${listO}">
+                    <tr>
+                        <th:block th:each="candidate : ${listC}"
+                                  th:if="${candidate.getUserId() == offer.getCandidateId()}">
+                            <th:block th:each="user : ${listU}" th:if="${user.getId() == candidate.getUserId()}">
+                                <td style="max-width: 100px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"
+                                    th:title="${user.getFullname()}" th:text="${user.getFullname()}"></td>
+                                <td th:text="${user.getEmail()}"></td>
+                                <td style="max-width: 150px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"
+                                    th:title="${emp.getFullname()}" th:each="emp : ${listU}" th:if="${emp.getId() == offer.getEmployeeId()}"
+                                    th:text="${emp.getFullname()}"></td>
+                                <td th:text="${offer.getDepartmentName()}"></td>
+                                <td th:text="${offer.note} ?: 'N/A'"
+                                    style="max-width: 150px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"
+                                    th:title="${offer.note}"></td>
+                                <td style="max-width: 150px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"
+                                    th:title="${offer.getStatusOfferName()}" th:text="${offer.getStatusOfferName()}">
+                                </td>
+                                <td>
+                                    <a th:href="@{/offer/offerdetail/{id}(id=${T(com.ims_team4.controller.utils.UrlIdEncoder).encodeId(offer.getId())}, rid=${T(com.ims_team4.controller.utils.UrlIdEncoder).encodeId(offer.getEmployeeId())})}"
+                                       class="me-2"><i
+                                            class="fa-solid fa-eye"></i></a>
+                                    <a th:data-status="${offer.statusOfferId}"
+                                       th:data-id="${offer.id}"
+                                       th:data-eid="${offer.getEmployeeId()}"
+                                       th:data-edit-url="@{/offer/editoffer/{id}(id=${T(com.ims_team4.controller.utils.UrlIdEncoder).encodeId(offer.id)}, rid=${T(com.ims_team4.controller.utils.UrlIdEncoder).encodeId(offer.getEmployeeId())})}"
+                                       onclick="checkStatusToEdit(this)"
+                                       href="#">
+                                        <i class="fa-solid fa-edit"></i>
+                                    </a>
+                                </td>
+                            </th:block>
+                        </th:block>
+                    </tr>
+                </th:block>
+                </tbody>
+            </table>
+            <nav aria-label="Page navigation" th:if="${totalPages > 0}">
+                <ul class="pagination justify-content-center">
+                    <!-- Previous button -->
+                    <li class="page-item" th:classappend="${currentPage == 1} ? 'disabled'">
+                        <a class="page-link"
+                           th:href="@{/offer/managerOffer/{encodedId}(encodedId=${T(com.ims_team4.controller.utils.UrlIdEncoder).encodeId(session.account.userID)}, page=${currentPage - 1})}"
+                           aria-label="Previous"
+                           th:if="${totalPages > 1}">
+                            <span aria-hidden="true">&laquo;</span>
+                        </a>
+                        <span class="page-link" aria-hidden="true" th:unless="${totalPages > 1}">&laquo;</span>
+                    </li>
+
+                    <!-- Always show first page -->
+                    <li class="page-item" th:classappend="${1 == currentPage} ? 'active'">
+                        <a class="page-link"
+                           th:href="@{/offer/managerOffer/{encodedId}(encodedId=${T(com.ims_team4.controller.utils.UrlIdEncoder).encodeId(session.account.userID)}, page=1)}"
+                           th:text="1"></a>
+                    </li>
+
+                    <!-- Middle pages - only show if more than 1 page -->
+                    <th:block th:if="${totalPages > 1}">
+                        <th:block th:if="${totalPages <= 4}">
+                            <!-- Show all pages if total pages <= 4 -->
+                            <li class="page-item" th:each="page : ${#numbers.sequence(2, totalPages - 1)}"
+                                th:classappend="${page == currentPage} ? 'active'">
+                                <a class="page-link"
+                                   th:href="@{/offer/managerOffer/{encodedId}(encodedId=${T(com.ims_team4.controller.utils.UrlIdEncoder).encodeId(session.account.userID)}, page=${page})}"
+                                   th:text="${page}"></a>
+                            </li>
+                        </th:block>
+                        <th:block th:if="${totalPages > 4}">
+                            <!-- Show current page and surrounding pages with ellipsis -->
+                            <th:block th:if="${currentPage <= 3}">
+                                <!-- Show pages 2-3 when current page is near start -->
+                                <li class="page-item" th:classappend="${2 == currentPage} ? 'active'">
+                                    <a class="page-link"
+                                       th:href="@{/offer/managerOffer/{encodedId}(encodedId=${T(com.ims_team4.controller.utils.UrlIdEncoder).encodeId(session.account.userID)}, page=2)}"
+                                       th:text="2"></a>
+                                </li>
+                                <li class="page-item" th:classappend="${3 == currentPage} ? 'active'">
+                                    <a class="page-link"
+                                       th:href="@{/offer/managerOffer/{encodedId}(encodedId=${T(com.ims_team4.controller.utils.UrlIdEncoder).encodeId(session.account.userID)}, page=3)}"
+                                       th:text="3"></a>
+                                </li>
+                                <li class="page-item disabled">
+                                    <span class="page-link">...</span>
+                                </li>
+                            </th:block>
+
+                            <th:block th:if="${currentPage > 3 and currentPage < totalPages - 2}">
+                                <!-- Show ellipsis, current page -1, current page, current page +1, ellipsis -->
+                                <li class="page-item disabled">
+                                    <span class="page-link">...</span>
+                                </li>
+                                <li class="page-item">
+                                    <a class="page-link"
+                                       th:href="@{/offer/managerOffer/{encodedId}(encodedId=${T(com.ims_team4.controller.utils.UrlIdEncoder).encodeId(session.account.userID)}, page=${currentPage - 1})}"
+                                       th:text="${currentPage - 1}"></a>
+                                </li>
+                                <li class="page-item active">
+                                    <a class="page-link"
+                                       th:href="@{/offer/managerOffer/{encodedId}(encodedId=${T(com.ims_team4.controller.utils.UrlIdEncoder).encodeId(session.account.userID)}, page=${currentPage})}"
+                                       th:text="${currentPage}"></a>
+                                </li>
+                                <li class="page-item">
+                                    <a class="page-link"
+                                       th:href="@{/offer/managerOffer/{encodedId}(encodedId=${T(com.ims_team4.controller.utils.UrlIdEncoder).encodeId(session.account.userID)}, page=${currentPage + 1})}"
+                                       th:text="${currentPage + 1}"></a>
+                                </li>
+                                <li class="page-item disabled">
+                                    <span class="page-link">...</span>
+                                </li>
+                            </th:block>
+
+                            <th:block th:if="${currentPage >= totalPages - 2}">
+                                <!-- Show pages near end -->
+                                <li class="page-item disabled">
+                                    <span class="page-link">...</span>
+                                </li>
+                                <li class="page-item" th:classappend="${totalPages - 2 == currentPage} ? 'active'">
+                                    <a class="page-link"
+                                       th:href="@{/offer/managerOffer/{encodedId}(encodedId=${T(com.ims_team4.controller.utils.UrlIdEncoder).encodeId(session.account.userID)}, page=${totalPages - 2})}"
+                                       th:text="${totalPages - 2}"></a>
+                                </li>
+                                <li class="page-item" th:classappend="${totalPages - 1 == currentPage} ? 'active'">
+                                    <a class="page-link"
+                                       th:href="@{/offer/managerOffer/{encodedId}(encodedId=${T(com.ims_team4.controller.utils.UrlIdEncoder).encodeId(session.account.userID)}, page=${totalPages - 1})}"
+                                       th:text="${totalPages - 1}"></a>
+                                </li>
+                            </th:block>
+                        </th:block>
+
+                        <!-- Always show last page if totalPages > 1 -->
+                        <li class="page-item" th:classappend="${totalPages == currentPage} ? 'active'">
+                            <a class="page-link"
+                               th:href="@{/offer/managerOffer/{encodedId}(encodedId=${T(com.ims_team4.controller.utils.UrlIdEncoder).encodeId(session.account.userID)}, page=${totalPages})}"
+                               th:text="${totalPages}"></a>
+                        </li>
+                    </th:block>
+
+                    <!-- Next button -->
+                    <li class="page-item" th:classappend="${currentPage == totalPages} ? 'disabled'">
+                        <a class="page-link"
+                           th:href="@{/offer/managerOffer/{encodedId}(encodedId=${T(com.ims_team4.controller.utils.UrlIdEncoder).encodeId(session.account.userID)}, page=${currentPage + 1})}"
+                           aria-label="Next"
+                           th:if="${totalPages > 1}">
+                            <span aria-hidden="true">&raquo;</span>
+                        </a>
+                        <span class="page-link" aria-hidden="true" th:unless="${totalPages > 1}">&raquo;</span>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </div>
+
+    <!--    Offer-Card-->
+    <div th:replace="~{recruiter-features/offer-card :: offer-card}"></div>
+
+    <div>
+        <div id="chatbot-icon" onclick="toggleChatBot()">
+            <img src="https://cdn-icons-png.flaticon.com/512/4712/4712035.png" alt="Chatbot">
+        </div>
+
+        <!-- Cửa sổ chat -->
+        <div id="chat-window" style="position: relative;">
+            <iframe
+                    src="https://www.coze.com/store/agent/7488646243938762753?bot_id=true"
+                    allow="microphone"
+                    id="coze-bot"
+                    style="height: 80%; border: none;">
+            </iframe>
+        </div>
     </div>
 </div>
+</body>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const mobileMenuToggle = document.getElementById('mobileMenuToggle');
-        const sidebar = document.getElementById('sidebar');
-        const sidebarOverlay = document.getElementById('sidebarOverlay');
-
-        // Toggle sidebar on menu button click
-        mobileMenuToggle.addEventListener('click', function() {
-            sidebar.classList.toggle('open');
-            sidebarOverlay.classList.toggle('active');
-        });
-
-        // Close sidebar when clicking on overlay
-        sidebarOverlay.addEventListener('click', function() {
-            sidebar.classList.remove('open');
-            sidebarOverlay.classList.remove('active');
-        });
-
-        // Close sidebar when clicking outside on mobile
-        document.addEventListener('click', function(event) {
-            if (window.innerWidth <= 991.98) {
-                const isClickInsideSidebar = sidebar.contains(event.target);
-                const isClickOnMenuToggle = mobileMenuToggle.contains(event.target);
-
-                if (!isClickInsideSidebar && !isClickOnMenuToggle && sidebar.classList.contains('open')) {
-                    sidebar.classList.remove('open');
-                    sidebarOverlay.classList.remove('active');
-                }
-            }
-        });
-    });
-
     document.addEventListener("DOMContentLoaded", function () {
         let msg = `[[${msg}]]`;
         if (msg && msg !== "null") {
@@ -616,6 +297,7 @@
         notificationText.innerText = message;
         notification.style.display = "block";
 
+        // Tự động ẩn sau 3 giây
         setTimeout(() => {
             closeNotification();
         }, 3000);
@@ -626,14 +308,32 @@
         notification.style.display = "none";
     }
 
-    function checkStatusToEdit(offerId, status, eid) {
-        if (status === "1") {
-            window.location.href = `/offer/editoffer/${offerId}?rid=${eid}`;
+    function toggleMobileMenu() {
+        const mobileMenu = document.getElementById('mobileMenu');
+        mobileMenu.classList.toggle('show');
+
+        const menuIcon = document.querySelector('.menu-toggle i');
+        if (mobileMenu.classList.contains('show')) {
+            menuIcon.classList.remove('fa-bars');
+            menuIcon.classList.add('fa-times');
         } else {
-            alert("Editing is not allowed because the status is invalid.");
+            menuIcon.classList.remove('fa-times');
+            menuIcon.classList.add('fa-bars');
         }
     }
+
+    document.addEventListener('click', function (event) {
+        const mobileMenu = document.getElementById('mobileMenu');
+        const menuToggle = document.querySelector('.menu-toggle');
+
+        if (!menuToggle.contains(event.target) &&
+            !mobileMenu.contains(event.target) &&
+            mobileMenu.classList.contains('show')) {
+            toggleMobileMenu();
+        }
+    });
 </script>
+<script src="/js/recruiter-offer.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-</body>
 </html>
+

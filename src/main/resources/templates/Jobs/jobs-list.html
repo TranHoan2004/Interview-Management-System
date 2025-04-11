@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${job_list}"></title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+          rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@4.1.1/animate.min.css">
+    <link rel="stylesheet" th:href="@{/css/jobs.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{/css/styles.css}" />
+</head>
+<body>
+<div>
+    <!-- Loading overlay -->
+    <div th:replace="~{component/load::load}"></div>
+    <!-- Left sidebar -->
+    <div class="sidebar" th:replace="~{component/left-sidebar::leftSidebar}"></div>
+
+    <!-- Main Content -->
+    <div th:if="${session.account.getRole().name().equals('ROLE_ADMINISTRATOR')}">
+        <div th:replace="~{Jobs/admin/jobs-admin::mainListJobAdmin}"></div>
+    </div>
+
+    <div th:if="${session.account.getRole().name().equals('ROLE_MANAGER')}">
+        <div th:replace="~{Jobs/manager/jobs-manager::mainListJobManager}"></div>
+    </div>
+
+    <div th:if="${session.account.getRole().name().equals('ROLE_INTERVIEWER')}">
+        <div th:replace="~{Jobs/interview/jobs-interview ::mainListJobInterview}"></div>
+    </div>
+</div>
+</body>
+<!-- Success Popup -->
+<div id="successPopup" class="popup-overlay" th:if="${successMessage}">
+    <div class="popup-content">
+        <i class="fa-solid fa-circle-check success-icon"></i>
+        <p th:text="${successMessage}"></p>
+        <button class="btn btn-success mt-2" onclick="closePopup('successPopup')" th:text="${ok_btn}"></button>
+    </div>
+</div>
+
+<!-- Error Popup -->
+<div id="errorPopup" class="popup-overlay" th:if="${errorMessage}">
+    <div class="popup-content">
+        <i class="fa-solid fa-circle-xmark error-icon"></i>
+        <p th:text="${errorMessage}"></p>
+        <button class="btn btn-danger mt-2" onclick="closePopup('errorPopup')" th:text="${ok_btn}"></button>
+    </div>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" id="confirmDeleteModal" tabindex="-1" aria-labelledby="confirmDeleteLabel" aria-hidden="true">
+    <div class="modal-dialog modal-md">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title" id="confirmDeleteLabel">
+                    <i class="fa-solid fa-triangle-exclamation me-2"></i>
+                    <span th:text="${confirm_deletion}"></span>
+                </h5>
+                <button type="button" class="btn btn-close text-white" data-bs-dismiss="modal" aria-label="Close">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <i class="fa-solid fa-exclamation-circle text-warning me-2"></i>
+                <span th:text="${confirm_delete_alert}"></span>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">
+                    <i class="fa-solid fa-ban"></i>
+                    <span th:text="${cancelBtn}"></span>
+                </button>
+                <button type="button" class="btn btn-danger btn-sm" id="confirmDeleteBtn">
+                    <i class="fa-solid fa-trash"></i>
+                    <span th:text="${confirm_yes_and_delete}"></span>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Toast Notification -->
+<div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
+    <div id="deleteToast" class="toast align-items-center text-bg-success border-0" role="alert" aria-live="assertive"
+         aria-atomic="true">
+        <div class="d-flex">
+            <div class="toast-body">
+                <i class="fa-solid fa-check-circle me-2"></i>
+                <span th:text="${delete_successfully}"></span>
+            </div>
+            <button type="button" class="btn text-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+    </div>
+</div>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        setTimeout(() => closePopup("successPopup"), 3000);
+        setTimeout(() => closePopup("errorPopup"), 3000);
+    });
+
+    function closePopup(id) {
+        let popup = document.getElementById(id);
+        if (popup) {
+            popup.style.display = "none";
+        }
+    }
+
+    document.addEventListener("DOMContentLoaded", function () {
+
+        let selectedForm = null; // Lưu form cần xóa
+
+        document.querySelectorAll(".delete-job-btn").forEach(button => {
+            button.addEventListener("click", function (event) {
+                event.preventDefault(); // ⛔ Ngăn form submit ngay lập tức
+                selectedForm = this.closest(".delete-form"); // Lưu lại form để xác nhận sau
+                let modalElement = document.getElementById('confirmDeleteModal');
+                if (modalElement) {
+                    let modal = new bootstrap.Modal(modalElement);
+                    modal.show();
+                }
+            });
+        });
+
+        document.getElementById("confirmDeleteBtn")?.addEventListener("click", function () {
+            if (selectedForm) {
+                fetch(selectedForm.action, {method: "POST"})
+                    .then(response => {
+                        if (response.ok) {
+                            let toastElement = document.getElementById('deleteToast');
+                            if (toastElement) {
+                                let toast = new bootstrap.Toast(toastElement);
+                                toast.show(); // Hiển thị thông báo
+                            }
+                            setTimeout(() => location.reload(), 1000);
+                        } else {
+                            alert("❌ Delete failed, please try again!");
+                        }
+                    })
+                    .catch(error => {
+                        alert("⚠️ An error occurred: " + error.message);
+                    });
+
+                let modalElement = document.getElementById('confirmDeleteModal');
+                if (modalElement) {
+                    let modal = bootstrap.Modal.getInstance(modalElement);
+                    if (modal) modal.hide();
+                }
+            }
+        });
+
+        const importBtn = document.getElementById('importBtn');
+        const importContainer = document.getElementById('importContainer');
+        const closeBtn = document.getElementById('closeBtn');
+
+        if (importBtn && importContainer && closeBtn) {
+            importBtn.addEventListener('click', function () {
+                importContainer.style.display = 'block';
+                importBtn.style.display = 'none';
+            });
+
+            closeBtn.addEventListener('click', function () {
+                importContainer.style.display = 'none';
+                importBtn.style.display = 'inline-block';
+            });
+        }
+    });
+</script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Initialize Bootstrap dropdowns
+        var dropdownElementList = [].slice.call(document.querySelectorAll('.dropdown-toggle'))
+        var dropdownList = dropdownElementList.map(function (dropdownToggleEl) {
+            return new bootstrap.Dropdown(dropdownToggleEl)
+        });
+
+        // Animate elements sequentially
+        const animateElements = (selector, delay = 100) => {
+            const elements = document.querySelectorAll(selector);
+            elements.forEach((element, index) => {
+                setTimeout(() => {
+                    element.classList.add('show');
+                }, index * delay);
+            });
+        };
+
+        // Stagger animations for different elements
+        setTimeout(() => animateElements('.page-title'), 100);
+        setTimeout(() => animateElements('.search-section'), 200);
+        setTimeout(() => animateElements('.interview-card, tbody tr'), 300);
+        setTimeout(() => animateElements('.pagination, .mt-4'), 500);
+
+        // View toggle functionality
+        const gridViewBtn = document.getElementById('gridViewBtn');
+        const tableViewBtn = document.getElementById('tableViewBtn');
+        const gridView = document.getElementById('gridView');
+        const tableView = document.getElementById('tableView');
+
+        if (gridViewBtn && tableViewBtn && gridView && tableView) {
+            gridViewBtn.addEventListener('click', function () {
+                gridView.style.display = 'grid';
+                tableView.style.display = 'none';
+                gridViewBtn.classList.add('active');
+                tableViewBtn.classList.remove('active');
+            });
+
+            tableViewBtn.addEventListener('click', function () {
+                gridView.style.display = 'none';
+                tableView.style.display = 'block';
+                gridViewBtn.classList.remove('active');
+                tableViewBtn.classList.add('active');
+            });
+        }
+
+        // Hide loading overlay
+        setTimeout(() => {
+            const loadingOverlay = document.getElementById('loadingOverlay');
+            loadingOverlay.style.opacity = '0';
+            setTimeout(() => {
+                loadingOverlay.style.display = 'none';
+            }, 300);
+        }, 500);
+
+        // Logout function
+        window.logout = function () {
+            if (confirm('Are you sure you want to logout?')) {
+                window.location.href = '/logout';
+            }
+        }
+    });
+</script>
+</html>

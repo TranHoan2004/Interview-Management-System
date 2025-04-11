@@ -4,8 +4,8 @@ spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://127.0.0.1:3306/ims?useSSL=false&serverTimezone=UTC&characterEncoding=UTF-8&autoReconnect=true&allowPublicKeyRetrieval=true
-    username: root
-    password: hoan2709
+    username:
+    password:
   jpa:
     hibernate:
       ddl-auto: update
@@ -20,7 +20,6 @@ spring:
     view:
       prefix: classpath:/templates/
       suffix: .html
-# Protect cookies from csrf and xss
 server:
   servlet:
     session:

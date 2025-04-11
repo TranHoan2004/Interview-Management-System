@@ -11,7 +11,7 @@ import java.util.Optional;
 public interface UserService {
     List<UserDTO> getAllUsers();
 
-    List<UserDTO> getUserByEmail(String email) throws Exception;
+    UserDTO getUserByEmail(String email) throws Exception;
 
     UserDTO saveUser(UserDTO userDTO);
 
@@ -32,4 +32,6 @@ public interface UserService {
 
     @Transactional
     void deleteUserById(Long userId);
+
+    Users findByEmail(String email);
 }

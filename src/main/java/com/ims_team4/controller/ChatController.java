@@ -8,7 +8,6 @@ import com.ims_team4.model.utils.HrRole;
 import com.ims_team4.service.ChatDetailService;
 import com.ims_team4.service.ChatService;
 import com.ims_team4.service.EmployeeService;
-import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import java.util.List;
 
 @Controller
+// Duc Long
 public class ChatController {
     private final ChatService chatService;
     private final ChatDetailService chatDetailService;
@@ -29,7 +29,7 @@ public class ChatController {
     }
 
     @GetMapping("/chat")
-    public String chat(@RequestParam("rid") String ridHash, @RequestParam("mid") String midHash, @RequestParam("role") String role, Model model, HttpSession session) {
+    public String chat(@RequestParam("rid") String ridHash, @RequestParam("mid") String midHash, @RequestParam("role") String role, Model model) {
         int rid = UrlIdEncoder.decodeId(ridHash);
         int mid = UrlIdEncoder.decodeId(midHash);
         int chatId = chatService.getChatIdByRecruiterAndManager(rid, mid);

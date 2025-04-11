@@ -38,7 +38,6 @@ public class SessionController {
             Authentication authentication = context.getAuthentication();
             if (authentication != null) {
                 if (authentication.getPrincipal() instanceof UserDetails user) {
-                    logger.info("user details: " + user.getUsername());
                     logger.log(Level.FINE, "getUserDetailsFromSession: " + user);
                     return user.getUsername();
                 }
@@ -50,7 +49,6 @@ public class SessionController {
     }
 
     public EmployeeDTO getEntityFromSession(HttpSession session) {
-        logger.info("getEntityFromSession");
         String email = getEmailFromSession(session);
         logger.info("Get email from session: " + email);
         EmployeeDTO account = EmployeeDTO.builder().build();
@@ -63,13 +61,12 @@ public class SessionController {
         return account;
     }
 
-    public void setAtributeForSecurityContext(@NotNull EmployeeDTO account, @NotNull HttpSession session) {
-        SecurityContext context = SecurityContextHolder.getContext();;
+    public void setAttributeForSecurityContext(@NotNull EmployeeDTO account, @NotNull HttpSession session) {
+        SecurityContext context = SecurityContextHolder.getContext();
         GrantedAuthority ga = new SimpleGrantedAuthority(account.getRole().name());
         UserDetails details = new User(account.getEmail(), account.getPassword(), List.of(ga));
         Authentication auth = new UsernamePasswordAuthenticationToken(details, account.getPassword(), List.of(ga));
         context.setAuthentication(auth);
         session.setAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY, context);
-        System.out.println(session.getAttribute("SPRING_SECURITY_CONTEXT"));
     }
 }

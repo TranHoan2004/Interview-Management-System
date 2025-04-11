@@ -41,7 +41,8 @@ public class CandidateServiceImpl implements CandidateService {
     @Override
     public List<CandidateDTO> getCandidateByUserId(Long userId) {
         List<Candidate> candidates = new ArrayList<>();
-        candidateRepository.getCandidateByUserId(userId).ifPresent(candidates::add);        return candidates.stream()
+        candidateRepository.getCandidateByUserId(userId).ifPresent(candidates::add);
+        return candidates.stream()
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
     }

@@ -5,655 +5,798 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title th:text="${interview_details}"></title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@4.1.1/animate.min.css">
+    <link rel="stylesheet" type="text/css" th:href="@{/css/styles.css}" />
+    <link rel="stylesheet" type="text/css" th:href="@{/css/interview.css}" />
     <style>
+        /* Enhanced visual styles with improved organization */
         :root {
-            --primary: #2c3e50;
-            --secondary: #1abc9c;
-            --accent: #3498db;
-            --light: #f8f9fa;
-            --dark: #343a40;
-            --success: #2ecc71;
-            --warning: #f39c12;
-            --danger: #e74c3c;
-            --card-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            --transition: all 0.3s ease;
+            --primary-hue: 230;
+            --primary-saturation: 70%;
         }
 
-        /* General Styles */
         body {
-            background-color: #f5f7fa;
-            font-family: 'Segoe UI', 'Arial', sans-serif;
-            line-height: 1.6;
-            color: #333;
+            background-color: #f8f9fa;
         }
 
-        .logo {
-            font-weight: bold;
-            background: #fff;
-            color: var(--secondary);
-            padding: 2px 8px;
-            border-radius: 4px;
-        }
-
-        /* Sidebar */
-        .sidebar {
-            width: 240px;
-            background: var(--primary);
-            height: 100vh;
-            position: fixed;
-            padding: 20px;
-            color: white;
-            z-index: 100;
-            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
-        }
-
-        .sidebar h4 {
-            font-weight: bold;
-            text-align: center;
-            margin-bottom: 20px;
-        }
-
-        .sidebar a {
-            display: flex;
-            align-items: center;
-            padding: 12px;
-            color: rgba(255, 255, 255, 0.8);
-            text-decoration: none;
-            border-radius: 5px;
-            transition: var(--transition);
-            margin-bottom: 4px;
-        }
-
-        .sidebar a.fw-bold {
-            background: #34495e;
-        }
-
-        .sidebar a:hover {
-            background: var(--secondary);
-            color: white;
-            transform: translateX(4px);
-        }
-
-        .sidebar i {
-            margin-right: 10px;
-            width: 20px;
-            text-align: center;
-        }
-
-        .sidebar a.active {
-            background-color: var(--accent);
-            color: white;
-        }
-
-        /* Main Content */
-        .content {
-            margin-left: 260px;
-            padding: 30px;
-            transition: var(--transition);
-        }
-
-        .content h2 {
-            color: var(--primary);
-            font-weight: 700;
-            margin-bottom: 25px;
-            position: relative;
-            padding-bottom: 10px;
-        }
-
-        .content h2:after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 50px;
-            height: 3px;
-            background: var(--secondary);
-            border-radius: 2px;
-        }
-
-        /* Cards and Details */
+        /* Card containers with enhanced depth */
         .detail-card {
+            border-radius: 18px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(0, 0, 0, 0.04);
             background: white;
-            border-radius: 10px;
-            box-shadow: var(--card-shadow);
             overflow: hidden;
-            transition: var(--transition);
-            border: none;
-            margin-bottom: 20px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            margin-bottom: 25px;
         }
 
         .detail-card:hover {
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.12);
-            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.08);
+            transform: translateY(-3px);
         }
 
-        .card-header {
-            background: var(--primary);
+        .detail-card-header {
+            position: relative;
+            background: linear-gradient(135deg, hsl(var(--primary-hue), var(--primary-saturation), 45%) 0%,
+            hsl(var(--primary-hue), var(--primary-saturation), 35%) 100%);
+            padding: 20px 25px;
             color: white;
-            padding: 15px 20px;
-            font-weight: 600;
-            font-size: 18px;
-            border-bottom: none;
-        }
-
-        .detail-row {
             display: flex;
-            border-bottom: 1px solid #eee;
-            padding: 12px 0;
+            align-items: center;
+            justify-content: space-between;
         }
 
-        .detail-row:last-child {
-            border-bottom: none;
+        .detail-card-body {
+            padding: 30px;
         }
 
-        .detail-label {
+        /* Improved section headers */
+        .detail-section {
+            margin-bottom: 30px;
+        }
+
+        .detail-section:last-child {
+            margin-bottom: 0;
+        }
+
+        .section-header {
+            position: relative;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+            padding-bottom: 15px;
+        }
+
+        .section-header::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            bottom: -1px;
+            height: 3px;
+            width: 60px;
+            background: linear-gradient(to right,
+            hsl(var(--primary-hue), var(--primary-saturation), 60%),
+            hsl(var(--primary-hue), var(--primary-saturation), 40%));
+            border-radius: 2px;
+        }
+
+        .section-header i {
+            margin-right: 12px;
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg,
+            hsl(var(--primary-hue), var(--primary-saturation), 90%) 0%,
+            hsl(var(--primary-hue), var(--primary-saturation), 75%) 100%);
+            color: hsl(var(--primary-hue), var(--primary-saturation), 30%);
+            border-radius: 10px;
+            font-size: 1rem;
+        }
+
+        .section-header h5 {
             font-weight: 600;
-            width: 180px;
-            color: var(--dark);
-            padding-right: 15px;
+            margin: 0;
+            color: hsl(var(--primary-hue), var(--primary-saturation), 30%);
         }
 
-        .detail-value {
+        /* Enhanced info items with improved design */
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        .info-item {
+            background: rgba(255, 255, 255, 0.6);
+            border: 1px solid rgba(0, 0, 0, 0.03);
+            padding: 18px 20px;
+            border-radius: 14px;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.02);
+        }
+
+        .info-item i {
+            width: 45px;
+            height: 45px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 18px;
+            border-radius: 12px;
+            font-size: 1.2rem;
+            background: linear-gradient(135deg,
+            hsl(var(--primary-hue), var(--primary-saturation), 65%) 0%,
+            hsl(var(--primary-hue), var(--primary-saturation), 50%) 100%);
+            color: white;
+            box-shadow: 0 4px 12px hsla(var(--primary-hue), var(--primary-saturation), 50%, 0.2);
+            transition: all 0.3s;
+        }
+
+        .info-item:hover i {
+            transform: scale(1.15) rotate(5deg);
+            box-shadow: 0 6px 16px hsla(var(--primary-hue), var(--primary-saturation), 50%, 0.3);
+        }
+
+        .info-item-content {
             flex: 1;
         }
 
-        /* Status indicators */
-        .status-badge {
-            padding: 5px 10px;
-            border-radius: 50px;
-            font-size: 0.85rem;
+        .info-label {
+            font-size: 0.8rem;
+            text-transform: uppercase;
             font-weight: 600;
-            display: inline-block;
+            letter-spacing: 0.05em;
+            color: #6c757d;
+            margin-bottom: 4px;
+            transition: color 0.3s;
         }
 
-        .status-new {
-            background-color: #e3f2fd;
-            color: #1976d2;
+        .info-item:hover .info-label {
+            color: hsl(var(--primary-hue), var(--primary-saturation), 40%);
         }
 
-        .status-invited {
-            background-color: #e8f5e9;
-            color: #388e3c;
+        .info-value {
+            font-weight: 500;
+            font-size: 1.05rem;
+            color: #343a40;
         }
 
-        .status-interviewed {
-            background-color: #fff9c4;
-            color: #fbc02d;
+        /* Enhanced note box */
+        .note-container {
+            background-color: rgba(255, 255, 255, 0.6);
+            border-radius: 14px;
+            padding: 20px;
+            border: 1px solid rgba(0, 0, 0, 0.04);
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.02);
         }
 
-        .status-cancelled {
-            background-color: #ffebee;
+        .note-container:hover {
+            background-color: rgba(255, 255, 255, 0.8);
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.05);
+            transform: translateY(-3px);
+        }
+
+        .note-content {
+            position: relative;
+            background-color: #f8f9fa;
+            border-left: 4px solid hsl(var(--primary-hue), var(--primary-saturation), 50%);
+            border-radius: 0 6px 6px 0;
+            padding: 20px;
+            font-style: italic;
+            color: #495057;
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.02);
+            transition: all 0.3s;
+        }
+
+        .note-content:hover {
+            background-color: #f1f4f8;
+            box-shadow: inset 0 0 15px rgba(0,0,0,0.04);
+        }
+
+        .note-content::before {
+            content: '"';
+            font-size: 2.5rem;
+            position: absolute;
+            top: -5px;
+            left: 10px;
+            opacity: 0.1;
+            font-family: Georgia, serif;
+        }
+
+        /* Enhanced result indicators */
+        .result-badge {
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            letter-spacing: 0.5px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            min-width: 120px;
+            justify-content: center;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .result-badge:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 15px rgba(0,0,0,0.12);
+        }
+
+        .result-passed {
+            background: linear-gradient(135deg, #e3fcef 0%, #c8f7e1 100%);
+            color: #00897b;
+        }
+
+        .result-failed {
+            background: linear-gradient(135deg, #ffe5e8 0%, #ffd1d7 100%);
             color: #d32f2f;
         }
 
-        /* Action Buttons */
-        .action-btn {
-            border-radius: 50px;
-            padding: 8px 20px;
+        .result-na {
+            background: linear-gradient(135deg, #f5f5f5 0%, #eeeeee 100%);
+            color: #757575;
+        }
+
+        /* Enhanced action bar */
+        .action-bar {
+            background: linear-gradient(135deg, #ffffff 0%, #f9fafd 100%);
+            border-radius: 18px;
+            padding: 24px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.06), 0 1px 3px rgba(0,0,0,0.08);
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 40px;
+            border: 1px solid rgba(0,0,0,0.04);
+            position: relative;
+        }
+
+        .action-bar::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(to right,
+            hsl(var(--primary-hue), var(--primary-saturation), 70%),
+            hsl(var(--primary-hue), var(--primary-saturation), 50%));
+        }
+
+        /* Enhanced action buttons */
+        .action-btn-detail {
+            padding: 14px 24px;
+            border-radius: 12px;
             font-weight: 600;
-            transition: var(--transition);
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-            border: none;
-            margin-right: 10px;
-            display: inline-flex;
+            display: flex;
             align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: all 0.4s;
+            min-width: 160px;
+            box-shadow: 0 6px 16px rgba(0,0,0,0.08);
+            border: none;
+            text-decoration: none;
+            color: white;
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+        }
+
+        .action-btn-detail::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.1);
+            transition: all 0.4s;
+            z-index: -1;
+        }
+
+        .action-btn-detail:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+            color: white;
+        }
+
+        .action-btn-detail:hover::after {
+            left: 0;
         }
 
         .action-btn i {
-            margin-right: 8px;
-        }
-
-        .btn-info {
-            background-color: var(--accent);
-            color: white;
-        }
-
-        .btn-info:hover {
-            background-color: #2980b9;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
-            color: white;
+            font-size: 1.1rem;
         }
 
         .btn-warning {
-            background-color: var(--warning);
-            color: white;
-        }
-
-        .btn-warning:hover {
-            background-color: #e67e22;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
-            color: white;
+            background: linear-gradient(135deg, #ff9800 0%, #f57c00 100%);
         }
 
         .btn-danger {
-            background-color: var(--danger);
-            color: white;
-        }
-
-        .btn-danger:hover {
-            background-color: #c0392b;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
-            color: white;
+            background: linear-gradient(135deg, #f44336 0%, #d32f2f 100%);
         }
 
         .btn-success {
-            background-color: var(--success);
-            color: white;
-        }
-
-        .btn-success:hover {
-            background-color: #27ae60;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
-            color: white;
+            background: linear-gradient(135deg, #4caf50 0%, #388e3c 100%);
         }
 
         .btn-secondary {
-            background-color: #95a5a6;
-            color: white;
+            background: linear-gradient(135deg, #78909c 0%, #546e7a 100%);
         }
 
-        .btn-secondary:hover {
-            background-color: #7f8c8d;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
-            color: white;
+        /* Animated transitions */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
-        /* Action panel */
-        .action-panel {
-            background: #fff;
-            border-radius: 10px;
-            padding: 20px;
-            box-shadow: var(--card-shadow);
-            margin-top: 20px;
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            align-items: center;
-            transition: var(--transition);
-        }
-
-        .action-panel:hover {
-            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
-        }
-
-        .divider {
-            height: 35px;
-            width: 1px;
-            background-color: #ddd;
-            margin: 0 10px;
-        }
-
-        /* Notification */
-        .notification-toast {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: white;
-            border-left: 4px solid var(--success);
-            padding: 15px 20px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-            border-radius: 4px;
-            z-index: 1050;
-            transform: translateX(400px);
+        .animated-section {
             opacity: 0;
-            transition: all 0.5s ease;
+            animation: fadeInUp 0.6s forwards;
         }
 
-        .notification-toast.show {
-            transform: translateX(0);
-            opacity: 1;
+        .animated-section:nth-child(1) { animation-delay: 0.1s; }
+        .animated-section:nth-child(2) { animation-delay: 0.2s; }
+        .animated-section:nth-child(3) { animation-delay: 0.3s; }
+        .animated-section:nth-child(4) { animation-delay: 0.4s; }
+        .animated-section:nth-child(5) { animation-delay: 0.5s; }
+
+        .animated-item {
+            opacity: 0;
+            animation: fadeInUp 0.5s forwards;
         }
 
-        .notification-toast.success {
-            border-left-color: var(--success);
+        /* Modern separator */
+        .modern-separator {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 36px;
+            margin: 0 20px;
         }
 
-        .notification-toast.error {
-            border-left-color: var(--danger);
+        .modern-separator::after {
+            content: '';
+            height: 28px;
+            width: 2px;
+            background: linear-gradient(to bottom, rgba(0,0,0,0.03), rgba(0,0,0,0.08), rgba(0,0,0,0.03));
+            border-radius: 1px;
         }
 
-        /* Responsiveness */
-        @media (max-width: 992px) {
-            .content {
-                margin-left: 0;
-                padding: 80px 15px 15px;
-            }
-
-            .sidebar {
-                transform: translateX(-100%);
-            }
-
-            .sidebar.show {
-                transform: translateX(0);
-            }
-
-            .detail-label {
-                width: 140px;
-            }
+        /* Copy button enhancement */
+        .copy-btn {
+            background: transparent;
+            border: none;
+            color: #6c757d;
+            cursor: pointer;
+            padding: 5px 8px;
+            border-radius: 6px;
+            transition: all 0.3s;
+            margin-left: 8px;
         }
+
+        .copy-btn:hover {
+            background-color: rgba(108, 117, 125, 0.1);
+            color: #495057;
+        }
+
+        .copy-success {
+            color: #28a745;
+        }
+
+        /* Enhanced page header */
+        .page-header {
+            position: relative;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+        }
+
+        .page-title {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .page-title i {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg,
+            hsl(var(--primary-hue), var(--primary-saturation), 90%) 0%,
+            hsl(var(--primary-hue), var(--primary-saturation), 75%) 100%);
+            color: hsl(var(--primary-hue), var(--primary-saturation), 30%);
+            border-radius: 10px;
+            font-size: 1.2rem;
+            margin-right: 15px;
+        }
+
     </style>
 </head>
 
 <body>
-    <div class="d-flex">
+<!-- Loading overlay -->
+<div th:replace="~{component/load::load}"></div>
 
-        <!-- Left Sidebar -->
-        <div class="sidebar" th:replace="~{component/left-sidebar :: leftSidebar}"></div>
+<div class="d-flex">
+    <!-- Left Sidebar -->
+    <div class="sidebar" th:replace="~{component/left-sidebar :: leftSidebar}"></div>
 
-        <!-- Main Content -->
-        <div class="content flex-grow-1 p-4">
-            <!-- Top Sidebar / Header -->
-            <div th:replace="~{component/top-sidebar :: topSidebar}"></div>
+    <!-- Main Content -->
+    <div class="content flex-grow-1">
+        <!-- Top Sidebar / Header -->
+        <div th:replace="~{component/new-top-sidebar::newTopSidebar(${interview_details}, '/interview/interviewDetail', ${details_title})}"></div>
 
-            <div class="container-fluid mt-4">
-                <div class="d-flex align-items-center justify-content-between mb-4">
-                    <h2 class="mb-0">
-                        <i class="fas fa-calendar-check me-2 text-secondary"></i>
-                        <span th:text="${interview_details}"></span>
-                    </h2>
-
-                    <nav aria-label="breadcrumb">
-                        <ol class="breadcrumb m-0">
-                            <li class="breadcrumb-item">
-                                <a th:href="@{/dashboard}" class="text-decoration-none" th:text="${home_page}"></a>
-                            </li>
-
-                            <li class="breadcrumb-item">
-                                <a th:href="@{/interview/list}" class="text-decoration-none"
-                                    th:text="${interview_title}"></a>
-                            </li>
-                            <li class="breadcrumb-item active" aria-current="page" th:text="${details_title}"></li>
-                        </ol>
-                    </nav>
+        <!-- Main Card -->
+        <div class="detail-card animated-section">
+            <div class="detail-card-header">
+                <div class="d-flex align-items-center">
+                    <i class="fas fa-info-circle fs-4 me-3"></i>
+                    <span class="fs-5 fw-bold" th:text="${interview_information}"></span>
                 </div>
 
-                <!-- Main Card -->
-                <div class="detail-card">
-                    <div class="card-header d-flex justify-content-between align-items-center">
-                        <span>
-                            <i class="fas fa-info-circle me-2"></i>
-                            <span th:text="${interview_information}"></span>
-                        </span>
+                <!-- Status badge -->
+                <span class="status-badge"
+                      th:classappend="${ interview.status.name() == new_title ? 'status-new' :
+                         (interview.status.name() == invited_title ? 'status-invited' :
+                         (interview.status.name() == interviewed_title ? 'status-interviewed' : 'status-cancelled')) }">
+                    <i class="fas"
+                        th:classappend="${ interview.status.name() == new_title ? 'fa-clock' :
+                          (interview.status.name() == invited_title ? 'fa-envelope' :
+                          (interview.status.name() == interviewed_title ? 'fa-check-circle' : 'fa-times-circle')) }"></i>
+                    <span th:text="${interview.status}"></span>
+                </span>
+            </div>
 
-                        <!-- Fixed status badge with separate class attributes -->
-                        <span class="status-badge" th:classappend="${interview.status.name() == new_title ? 'status-new' :
-                                           interview.status.name() == invited_title ? 'status-invited' :
-                                           interview.status.name() == interviewed_title ? 'status-interviewed' :
-                                           'status-cancelled'}">
-                            <i class="fas" th:classappend="${interview.status.name() == new_title ? 'fa-clock' :
-                                           interview.status.name() == invited_title ? 'fa-envelope' :
-                                           interview.status.name() == interviewed_title ? 'fa-check-circle' :
-                                           'fa-times-circle'}"></i>
-                            <span th:text="${interview.status}"></span>
-                        </span>
+            <div class="detail-card-body">
+                <!-- Interview Overview Section -->
+                <div class="detail-section">
+                    <div class="section-header">
+                        <i class="fas fa-info-circle"></i>
+                        <h5 th:text="${interview_overview}"></h5>
                     </div>
-
-                    <div class="card-body p-4">
-                        <div class="row">
-                            <div class="col-lg-6">
-                                <div class="detail-row">
-                                    <div class="detail-label" th:text="${interview_id}"></div>
-                                    <div class="detail-value" th:text="${interview.id}"></div>
-                                </div>
-
-                                <div class="detail-row">
-                                    <div class="detail-label" th:text="${title_label}"></div>
-                                    <div class="detail-value" th:text="${interview.title}"></div>
-                                </div>
-
-                                <div class="detail-row">
-                                    <div class="detail-label" th:text="${candidate_id}"></div>
-                                    <div class="detail-value" th:text="${interview.candidateId}"></div>
-                                </div>
-
-                                <div class="detail-row">
-                                    <div class="detail-label" th:text="${job_id}"></div>
-                                    <div class="detail-value" th:text="${interview.jobId}"></div>
-                                </div>
-
-                                <div class="detail-row">
-                                    <div class="detail-label" th:text="${recruiter_owner}"></div>
-                                    <div class="detail-value" th:text="${interview.recruiterOwner}"></div>
-                                </div>
+                    <div class="info-grid">
+                        <div class="info-item animated-item" style="animation-delay: 0.1s;">
+                            <i class="fas fa-hashtag"></i>
+                            <div class="info-item-content">
+                                <div class="info-label" th:text="${interview_id}"></div>
+                                <div class="info-value" th:text="${interview.id}"></div>
                             </div>
+                        </div>
 
-                            <div class="col-lg-6">
-                                <div class="detail-row">
-                                    <div class="detail-label">
-                                        <i class="far fa-calendar-alt me-1 text-secondary"></i>
-                                        <span th:text="${schedule_time_title}"></span>
-                                    </div>
+                        <div class="info-item animated-item" style="animation-delay: 0.2s;">
+                            <i class="fas fa-file-signature"></i>
+                            <div class="info-item-content">
+                                <div class="info-label" th:text="${title_label}"></div>
+                                <div class="info-value" th:text="${interview.title}"></div>
+                            </div>
+                        </div>
 
-                                    <div class="detail-value fw-semibold"
-                                        th:text="${#temporals.format(interview.scheduleTime, 'dd/MM/yyyy HH:mm')}">
-                                    </div>
-                                </div>
-
-                                <div class="detail-row">
-                                    <div class="detail-label">
-                                        <i class="fas fa-map-marker-alt me-1 text-secondary"></i>
-                                        <span th:text="${location_label}"></span>
-                                    </div>
-                                    <div class="detail-value" th:text="${interview.locations}"></div>
-                                </div>
-
-                                <div class="detail-row">
-                                    <div class="detail-label">
-                                        <i class="fas fa-video me-1 text-secondary"></i>
-                                        <span th:text="${meeting_id}"></span>
-                                    </div>
-
-                                    <div class="detail-value">
-                                        <span th:text="${interview.meetId}"></span>
-                                        <button class="btn btn-sm btn-outline-secondary ms-2"
-                                            onclick="copyToClipboard(this)" th:attr="data-text=${interview.meetId}">
-                                            <i class="far fa-copy"></i>
-                                        </button>
-                                    </div>
-                                </div>
-
-                                <div class="detail-row">
-                                    <div class="detail-label">
-                                        <i class="fas fa-star me-1 text-warning"></i>
-                                        <span th:text="${result_title}"></span>
-                                    </div>
-
-                                    <div class="detail-value">
-                                        <span th:if="${interview.result}" th:text="${interview.result}"
-                                            class="fw-semibold" th:classappend="${
-                                          interview.result == 'PASS' ? 'text-success' :
-                                          interview.result == 'FAIL' ? 'text-danger' : ''}"></span>
-                                        <span th:unless="${interview.result}" class="text-muted fst-italic">N/A</span>
-                                    </div>
+                        <div class="info-item animated-item" style="animation-delay: 0.3s;">
+                            <i class="far fa-calendar-alt"></i>
+                            <div class="info-item-content">
+                                <div class="info-label" th:text="${schedule_time_title}"></div>
+                                <div class="info-value"
+                                     th:text="${#temporals.format(interview.scheduleTime, 'dd/MM/yyyy')}">
                                 </div>
                             </div>
                         </div>
 
-                        <div class="mt-3">
-                            <div class="detail-row">
-                                <div class="detail-label">
-                                    <i class="far fa-sticky-note me-1 text-secondary"></i>
-                                    <span th:text="${note}"></span>
-                                </div>
-                                <div class="detail-value">
-                                    <p th:if="${interview.note}" th:text="${interview.note}" class="mb-0"></p>
-                                    <p th:unless="${interview.note}" class="text-muted fst-italic mb-0"
-                                        th:text="${no_note_provide}"></p>
+                        <div class="info-item animated-item" style="animation-delay: 0.4s;">
+                            <i class="fas fa-star"></i>
+                            <div class="info-item-content">
+                                <div class="info-label" th:text="${result_title}"></div>
+                                <div class="info-value">
+                                    <span th:if="${interview.result != null && interview.result.toLowerCase().contains('pass')}"
+                                          class="result-badge result-passed" th:text="${passed_title}"></span>
+                                    <span th:if="${interview.result != null && interview.result.toLowerCase().contains('fail')}"
+                                          class="result-badge result-failed" th:text="${failed_title}"></span>
+                                    <span th:if="${interview.result == null || (!interview.result.toLowerCase().contains('pass') && !interview.result.toLowerCase().contains('fail'))}"
+                                          class="result-badge result-na">N/A</span>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Action Panel -->
-                <div class="action-panel">
-                    <!-- Button to send reminder (UC22) - if user is Interviewer -->
-                    <button class="action-btn btn-info"
-                        th:if="${session.account != null && session.account.role != null && session.account.role.name() == 'ROLE_INTERVIEWER'}"
-                        onclick="sendReminder()">
-                        <i class="fa fa-envelope"></i>
-                        <span th:text="${send_reminder}"></span>
-                    </button>
+                <!-- Participants Section -->
+                <div class="detail-section">
+                    <div class="section-header">
+                        <i class="fas fa-users"></i>
+                        <h5 th:text="${participants}"></h5>
+                    </div>
+                    <div class="info-grid">
+                        <div class="info-item animated-item" style="animation-delay: 0.5s;">
+                            <i class="fas fa-user-tie"></i>
+                            <div class="info-item-content">
+                                <div class="info-label" th:text="${candidate_id}"></div>
+                                <div class="info-value" th:text="${interview.candidateId}"></div>
+                            </div>
+                        </div>
 
-                    <!-- Button to edit (UC20) -->
-                    <a class="action-btn btn-warning"
-                        th:if="${session.account != null && session.account.role != null && session.account.role.name() != 'ROLE_INTERVIEWER'}"
-                        th:href="@{/interview/editInterviewView(id=${interview.id})}">
-                        <i class="fa fa-edit"></i>
-                        <span th:text="${editBtn}"></span>
-                    </a>
+                        <div class="info-item animated-item" style="animation-delay: 0.6s;">
+                            <i class="fas fa-briefcase"></i>
+                            <div class="info-item-content">
+                                <div class="info-label" th:text="${job_id}"></div>
+                                <div class="info-value" th:text="${interview.jobId}"></div>
+                            </div>
+                        </div>
 
-                    <!-- Button to Cancel (UC21) -->
-                    <button class="action-btn btn-danger"
-                        th:if="${session.account != null && session.account.role != null && session.account.role.name() != 'ROLE_INTERVIEWER'}"
-                        onclick="cancelInterview()">
-                        <i class="fa fa-times"></i>
-                        <span th:text="${cancelBtn}"></span>
-                    </button>
+                        <div class="info-item animated-item" style="animation-delay: 0.7s;">
+                            <i class="fas fa-user-shield"></i>
+                            <div class="info-item-content">
+                                <div class="info-label" th:text="${recruiter_owner}"></div>
+                                <div class="info-value" th:text="${interview.recruiterOwner}"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
-                    <!-- Button to Submit Result (UC19) -->
-                    <a class="action-btn btn-success"
-                        th:if="${session.account != null && session.account.role != null && session.account.role.name() == 'ROLE_INTERVIEWER'}"
-                        th:href="@{/interview/submitResultView(id=${interview.id})}">
-                        <i class="fa fa-check"></i>
-                        <span th:text="${submit_result}"></span>
-                    </a>
+                <!-- Location Section -->
+                <div class="detail-section">
+                    <div class="section-header">
+                        <i class="fas fa-map-marked-alt"></i>
+                        <h5 th:text="${location_details}"></h5>
+                    </div>
+                    <div class="info-grid">
+                        <div class="info-item animated-item" style="animation-delay: 0.8s;">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <div class="info-item-content">
+                                <div class="info-label" th:text="${location_label}"></div>
+                                <div class="info-value" th:text="${interview.locations}"></div>
+                            </div>
+                        </div>
 
-                    <div class="divider"></div>
+                        <div class="info-item animated-item" style="animation-delay: 0.9s;">
+                            <i class="fas fa-video"></i>
+                            <div class="info-item-content">
+                                <div class="info-label" th:text="${meeting_id}"></div>
+                                <div class="info-value d-flex align-items-center">
+                                    <span th:text="${interview.meetId}"></span>
+                                    <button class="copy-btn"
+                                            onclick="copyToClipboard(this)"
+                                            th:attr="data-text=${interview.meetId}">
+                                        <i class="fas fa-copy"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
-                    <a class="action-btn btn-secondary" th:href="@{/interview/list}">
-                        <i class="fa fa-arrow-left"></i>
-                        <span th:text="${normal_back_to_list}"></span>
-                    </a>
+                <!-- Notes Section -->
+                <div class="detail-section">
+                    <div class="section-header">
+                        <i class="fas fa-sticky-note"></i>
+                        <h5 th:text="${note}"></h5>
+                    </div>
+                    <div class="note-container animated-item" style="animation-delay: 1s;">
+                        <div class="note-content">
+                            <p class="m-0" th:text="${interview.note ?: 'No note available'}"></p>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
 
-    <!-- Notification Toast -->
-    <div id="notification" class="notification-toast">
-        <div class="d-flex align-items-center">
-            <i id="notificationIcon" class="fas fa-check-circle me-2 text-success"></i>
-            <span id="notificationMessage" th:text="${message_goes_here}" </span>
+        <!-- Action Bar -->
+        <div class="action-bar animated-section">
+            <!--Send Reminder Button-->
+            <a class="btn btn-sm btn-secondary action-tooltip reminder-btn"
+               th:if="${session.account != null && (session.account.getRole().name() != 'ROLE_INTERVIEWER') && interview.status.name() == 'NEW'}"
+               th:href="@{/interview/reminder(interviewId=${interview.id})}"
+               th:data-interview-id="${interview.id}">
+                <i class="fa fa-bell"></i>
+                <span class="tooltip-text" th:text="${send_reminder}"></span>
+            </a>
+
+            <!-- Button to edit (UC20) -->
+            <a class="action-btn-detail btn-warning"
+               th:if="${session.account != null && session.account.role != null && session.account.role.name() != 'ROLE_INTERVIEWER' && interview.status.name() != 'CANCELLED' && interview.status.name() != 'INTERVIEWED'}"
+               th:href="@{/interview/editInterviewView(id=${interview.id})}">
+                <i class="fa fa-edit"></i>
+                <span th:text="${editBtn}"></span>
+            </a>
+
+            <!-- Button to Cancel (UC21) -->
+            <button class="action-btn-detail btn-danger"
+                    th:if="${session.account != null && session.account.role != null && session.account.role.name() != 'ROLE_INTERVIEWER' && interview.status.name() != 'CANCELLED' && interview.status.name() != 'INTERVIEWED'}"
+                    data-bs-toggle="modal" data-bs-target="#cancelConfirmModal">
+                <i class="fa fa-times"></i>
+                <span th:text="${cancelBtn}"></span>
+            </button>
+
+            <!-- Button to Submit Result (UC19) -->
+            <a class="action-btn-detail btn-success"
+               th:if="${session.account != null && session.account.role != null && session.account.role.name() == 'ROLE_INTERVIEWER' && interview.status.name() != 'CANCELLED' && interview.status.name() != 'INTERVIEWED'}"
+               th:href="@{/interview/submitResultView(id=${interview.id})}">
+                <i class="fa fa-check"></i>
+                <span th:text="${submit_result}"></span>
+            </a>
+
+            <div class="modern-separator"></div>
+
+            <a class="action-btn-detail btn-secondary" th:href="@{/interview/list}">
+                <i class="fa fa-arrow-left"></i>
+                <span th:text="${normal_back_to_list}"></span>
+            </a>
         </div>
     </div>
+</div>
 
-    <script th:inline="javascript">
-        // Get interview ID from Thymeleaf model
-        const interviewId = [[${ interview.id }]];
+<!-- Notification Toast -->
+<div id="notificationContainer" class="notification-container"></div>
 
-        // Function to send reminder
-        function sendReminder() {
-            if (!confirm("Send a reminder for this interview?")) return;
+<!-- Cancel Confirmation Modal -->
+<div class="modal fade" id="cancelConfirmModal" tabindex="-1" aria-labelledby="cancelModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="cancelModalLabel">Confirm Cancellation</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to cancel this interview?</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No</button>
+                <button type="button" class="btn btn-danger" id="confirmCancelBtn">Yes</button>
+            </div>
+        </div>
+    </div>
+</div>
 
-            showLoading();
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.6.1/sockjs.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.js"></script>
+<script th:src="@{/js/interviews.js}"></script>
+<script th:src="@{/js/index.js}"></script>
+<script th:inline="javascript">
+    // Get interview ID from Thymeleaf model
+    const interviewId = /*[[${interview.id}]]*/'';
 
-            fetch(`/interview/reminder?interviewId=${interviewId}`, {
-                method: 'GET'  // Changed to GET per your controller
-            }).then(resp => {
+    // Function to cancel interview
+    function cancelInterview() {
+        if (!confirm("Are you sure you want to cancel this interview?")) return;
+
+        showLoading();
+
+        fetch(`/interview/cancelInterview?id=${interviewId}`, {
+            method: 'GET'
+        })
+            .then(resp => {
                 if (resp.ok) {
-                    showNotification('success', 'Reminder sent successfully!');
-                    setTimeout(() => location.reload(), 1500);
+                    showNotification('success', 'Interview cancelled successfully!');
+                    setTimeout(() => window.location.href = "/interview/list", 1500);
                 } else {
-                    showNotification('error', 'Failed to send reminder!');
+                    showNotification('error', 'Failed to cancel interview!');
                 }
-            }).catch(err => {
+            })
+            .catch(err => {
                 showNotification('error', 'An error occurred!');
                 console.error(err);
             });
-        }
+    }
 
-        // Function to cancel interview
-        function cancelInterview() {
-            if (!confirm("Are you sure you want to cancel this interview?")) return;
+    // Enhanced function to copy text to clipboard
+    function copyToClipboard(button) {
+        const text = button.getAttribute('data-text');
+        navigator.clipboard.writeText(text)
+            .then(() => {
+                const originalHTML = button.innerHTML;
+                button.innerHTML = '<i class="fas fa-check copy-success"></i>';
+                button.classList.add('btn-success');
+                button.classList.remove('copy-btn');
 
-            showLoading();
+                setTimeout(() => {
+                    button.innerHTML = originalHTML;
+                    button.classList.remove('btn-success');
+                    button.classList.add('copy-btn');
+                }, 1500);
 
-            fetch(`/interview/cancelInterview?id=${interviewId}`, {
-                method: 'GET'  // Changed to GET per your controller
+                showNotification('success', 'Copied to clipboard!');
             })
-                .then(resp => {
-                    if (resp.ok) {
-                        showNotification('success', 'Interview cancelled successfully!');
-                        setTimeout(() => location.reload(), 1500);
-                    } else {
-                        showNotification('error', 'Failed to cancel interview!');
-                    }
-                })
-                .catch(err => {
-                    showNotification('error', 'An error occurred!');
-                    console.error(err);
-                });
+            .catch(err => {
+                console.error('Failed to copy: ', err);
+                showNotification('error', 'Failed to copy to clipboard');
+            });
+    }
+
+    // Show loading state
+    function showLoading() {
+        showNotification('loading', 'Processing...');
+    }
+
+    // Document ready function with enhanced animations
+    document.addEventListener('DOMContentLoaded', function () {
+        // Check for success parameter
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('success') === 'true') {
+            showNotification('success', 'Operation completed successfully!');
         }
 
-        // Function to copy text to clipboard
-        function copyToClipboard(button) {
-            const text = button.getAttribute('data-text');
-            navigator.clipboard.writeText(text)
-                .then(() => {
-                    const originalHTML = button.innerHTML;
-                    button.innerHTML = '<i class="fas fa-check"></i>';
-                    setTimeout(() => {
-                        button.innerHTML = originalHTML;
-                    }, 1500);
-                    showNotification('success', 'Copied to clipboard!');
-                })
-                .catch(err => {
-                    console.error('Failed to copy: ', err);
-                    showNotification('error', 'Failed to copy to clipboard');
-                });
-        }
-
-        // Show notification toast
-        function showNotification(type, message) {
-            const toast = document.getElementById('notification');
-            const icon = document.getElementById('notificationIcon');
-            const messageElement = document.getElementById('notificationMessage');
-
-            // Set icon and class based on type
-            if (type === 'success') {
-                icon.className = 'fas fa-check-circle me-2 text-success';
-                toast.className = 'notification-toast success show';
-            } else {
-                icon.className = 'fas fa-exclamation-circle me-2 text-danger';
-                toast.className = 'notification-toast error show';
-            }
-
-            messageElement.textContent = message;
-
-            // Hide after 3 seconds
+        // Sequentially animate items
+        document.querySelectorAll('.animated-item').forEach((item, index) => {
             setTimeout(() => {
-                toast.className = 'notification-toast';
-            }, 3000);
-        }
-
-        // Show loading state
-        function showLoading() {
-            const toast = document.getElementById('notification');
-            const icon = document.getElementById('notificationIcon');
-            const messageElement = document.getElementById('notificationMessage');
-
-            icon.className = 'fas fa-circle-notch fa-spin me-2 text-primary';
-            toast.className = 'notification-toast show';
-            messageElement.textContent = 'Processing...';
-        }
-
-        // Check if success parameter is true
-        document.addEventListener('DOMContentLoaded', function () {
-            const urlParams = new URLSearchParams(window.location.search);
-            if (urlParams.get('success') === 'true') {
-                showNotification('success', 'Operation completed successfully!');
-            }
+                item.style.opacity = '1';
+            }, 100 + (index * 100));
         });
-    </script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-</body>
 
+        // Add intersection observer for scroll animations
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.2 });
+
+        document.querySelectorAll('.animated-section').forEach(section => {
+            observer.observe(section);
+        });
+
+        // Add hover effects on action buttons
+        document.querySelectorAll('.action-btn').forEach(btn => {
+            btn.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateY(-5px)';
+            });
+
+            btn.addEventListener('mouseleave', function() {
+                this.style.transform = '';
+            });
+        });
+
+        document.getElementById('confirmCancelBtn').addEventListener('click', function() {
+            // Hide the modal
+            const modal = bootstrap.Modal.getInstance(document.getElementById('cancelConfirmModal'));
+            modal.hide();
+
+            // Call the cancel function
+            cancelInterview();
+        });
+    });
+
+    // cancelInterview
+    function cancelInterview() {
+        showLoading();
+
+        fetch(`/interview/cancelInterview?id=${interviewId}`, {
+            method: 'GET'
+        })
+            .then(resp => {
+                if (resp.ok) {
+                    showNotification('success', 'Interview cancelled successfully!');
+                    setTimeout(() => window.location.href = "/interview/list", 1500);
+                } else {
+                    showNotification('error', 'Failed to cancel interview!');
+                }
+            })
+            .catch(err => {
+                showNotification('error', 'An error occurred!');
+                console.error(err);
+            });
+    }
+</script>
+</body>
 </html>

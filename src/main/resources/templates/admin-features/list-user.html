@@ -2,261 +2,324 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 
 <head>
-    <meta charset="UTF-8" />
+    <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title th:text="${listTitle}"></title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
-        rel="stylesheet">
+          rel="stylesheet">
     <link rel="stylesheet" type="text/css" th:href="@{/css/styles.css}" />
+    <link rel="stylesheet" type="text/css" th:href="@{/css/profile.css}" />
+    <link rel="stylesheet" type="text/css" th:href="@{/css/user.css}" />
 </head>
 
 <body>
-    <div class="d-flex">
-        <!-- Left Sidebar -->
-        <div class="sidebar" th:replace="~{component/left-sidebar::leftSidebar}"></div>
+<!-- Loading overlay -->
+<div th:replace="~{component/load::load}"></div>
 
-        <!-- Main Content -->
-        <div class="content flex-grow-1">
-            <!-- Top Sidebar / Header - REDESIGNED -->
-            <div th:replace="~{component/new-top-sidebar::newTopSidebar(${userH3}, '/user/list', null)}">
-            </div>
+<div class="d-flex">
+    <!-- Left Sidebar -->
+    <div class="sidebar" th:replace="~{component/left-sidebar::leftSidebar}"></div>
 
-            <!-- Dashboard Stats Section - NEW -->
-            <div class="stats-section">
-                <div class="stat-card">
-                    <i class="fas fa-calendar-alt stat-card-bg-icon"></i>
-                    <div class="stat-card-title">Total Users</div>
-                    <div class="stat-card-value" th:text="${employeeCount}"></div>
-                    <div class="stat-card-info positive">
-                        <i class="fas fa-arrow-up"></i> 15% from last month
-                    </div>
-                </div>
-                <div class="stat-card">
-                    <i class="fas fa-users stat-card-bg-icon"></i>
-                    <div class="stat-card-title">Active User</div>
-                    <div class="stat-card-value" th:text="${activeCount}"></div>
-                    <div class="stat-card-info positive">
-                        <i class="fas fa-arrow-up"></i> 8% from last month
-                    </div>
-                </div>
-
-                <div class="stat-card">
-                    <i class="fas fa-user-check stat-card-bg-icon"></i>
-                    <div class="stat-card-title">Inactive User</div>
-                    <div class="stat-card-value" th:text="${inactiveCount}"></div>
-                    <div class="stat-card-info negative">
-                        <i class="fas fa-arrow-down"></i> 3% from last month
-                    </div>
-                </div>
-            </div>
-
-            <!-- Search form - REDESIGNED -->
-            <div class="search-section slide-in mb-4">
-                <form method="get" th:action="@{/user/list}" class="row g-3">
-                    <div class="col-md-3">
-                        <label for="search" class="form-label" th:text="${search}"></label>
-                        <div class="input-group">
-                            <span class="input-group-text"><i class="fas fa-search"></i></span>
-                            <input type="text" class="form-control" id="search" name="title" th:value="${title}"
-                                th:placeholder="${search_by_title}">
-                        </div>
-                    </div>
-
-                    <div class="col-md-3">
-                        <label for="status" class="form-label" th:text="${role}"></label>
-                        <select class="form-select" id="status" name="status">
-                            <option value="" th:text="${role}"></option>
-                            <option th:each="r : ${position}" th:value="${r.id}" th:text="${r.name}"
-                                th:selected="${selectedRole != null and selectedRole == r.id}"></option>
-                        </select>
-                    </div>
-
-                    <div class="col-md-3 d-flex align-items-end">
-                        <button type="submit" class="btn btn-primary w-100">
-                            <i class="fa-solid fa-search"></i>
-                            <span th:text="${search}"></span>
-                        </button>
-                    </div>
-                </form>
-            </div>
-
-            <!-- View toggle buttons -->
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <a class="btn btn-success" th:href="@{/user/create}">
-                    <i class="fa fa-plus me-1"></i>
-                    <span th:text="${add_new}"></span>
-                </a>
-
-                <div class="view-toggle">
-                    <button id="gridViewBtn" class="btn btn-outline-primary active">
-                        <i class="fas fa-th"></i>
-                        <span th:text="${grid_view}"></span>
-                    </button>
-                    <button id="tableViewBtn" class="btn btn-outline-primary">
-                        <i class="fas fa-list"></i>
-                        <span th:text="${table_view}"></span>
-                    </button>
-                </div>
-            </div>
-
-            <!-- Grid View of Interviews -->
-            <div id="gridView" class="interview-grid">
-                <!-- Display each interview as a card -->
-                <div th:if="${employees != null}" th:each="items: ${employees}" class="interview-card scale-in">
-                    <div class="status-badge">
-                        <span th:text="${items.isStatus() ? active : deactive}"
-                            th:class="${items.isStatus()} ? 'badge badge-interviewed' : 'badge badge-cancelled'"></span>
-                    </div>
-
-                    <div class="interview-card-header">
-                        <h5 th:text="${items.getFullname()}"></h5>
-                        <small>ID: <span th:text="${items.getUserID()}"></span></small>
-                    </div>
-
-                    <div class="interview-card-body">
-                        <div class="interview-detail">
-                            <i class="fas fa-user"></i>
-                            <span class="candidate-name" th:text="${items.getPositionName()}"></span>
-                        </div>
-
-                        <div class="interview-detail">
-                            <i class="far fa-calendar-alt"></i>
-                            <span th:text="${items.getPhone()}"></span>
-                        </div>
-                    </div>
-
-                    <div class="interview-card-footer">
-                        <div class="d-flex gap-2">
-                            <a class="btn btn-sm btn-info" th:href="@{/user/details/{id}(id=${items.getUserID()})}">
-                                <i class="fa fa-eye"></i>
-                                <span th:text="${view_title}"></span>
-                            </a>
-
-                            <a class="btn btn-sm btn-warning" th:href="@{/user/edit/{id}(id=${items.getUserID()})}">
-                                <i class="fa fa-edit"></i>
-                                <span th:text="${editBtn}"></span>
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Table View of Interviews (hidden by default) -->
-            <div id="tableView" class="table-container" style="display: none;">
-                <div class="table-responsive">
-                    <table class="table table-hover">
-                        <thead>
-                            <tr>
-                                <th th:text="${username}"></th>
-                                <th th:text="${email}"></th>
-                                <th th:text="${phone}"></th>
-                                <th th:text="${role}"></th>
-                                <th th:text="${status}"></th>
-                                <th th:text="${action}"></th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr th:if="${employees != null}" th:each="items: ${employees}" class="fade-in">
-                                <td th:text="${items.getFullname()}"></td>
-                                <td th:text="${items.getEmail()}"></td>
-                                <td th:text="${items.getPhone()}"></td>
-                                <td th:text="${items.getPositionName()}"></td>
-                                <td th:text="${items.isStatus() ? active : deactive}"></td>
-                                <td>
-                                    <a th:href="@{/user/details/{id}(id=${items.getUserID()})}"
-                                        href="/user/details/{id}(id=${items.getUserID()})">
-                                        <i class="bi bi-0-circle"></i>
-                                    </a>
-                                    <a th:href="@{/user/edit/{id}(id=${items.getUserID()})}"
-                                        href="/user/edit/{id}(id=${items.getUserID()})">
-                                        <i class="bi bi-pencil-square"></i>
-                                    </a>
-                                    <!--                                <a th:href="@{/user/delete/{id}(id=${items.userID})}"-->
-                                    <!--                                   onclick="return confirm('Are you sure you want to delete this user?')">-->
-                                    <!--                                    <i class="bi bi-trash"></i>-->
-                                    <!--                                </a>-->
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
-            <!-- No results message -->
-            <div th:if="${employees.empty}" class="no-results scale-in">
-                <i class="fas fa-search"></i>
-                <h4 th:text="${user_not_found}"></h4>
-                <p th:text="${user_not_found_suggest}"></p>
-            </div>
-
-            <!-- Pagination controls -->
-            <nav th:if="${interviewPage.totalPages} > 1" class="slide-in">
-                <ul class="pagination">
-                    <li class="page-item" th:classappend="${interviewPage.number == 0}? 'disabled'">
-                        <a class="page-link" th:href="@{/interview/list(page=${interviewPage.number}-1,
-                                                size=${interviewPage.size},
-                                                search=${param.search},
-                                                status=${param.status},
-                                                employeeId=${param.employeeId})}" aria-label="Previous">
-                            <span aria-hidden="true">&laquo;</span>
-                        </a>
-                    </li>
-
-                    <li class="page-item" th:each="pg : ${#numbers.sequence(0, ${interviewPage.getTotalPages() - 1})}"
-                        th:classappend="${pg == interviewPage.number}? 'active'">
-                        <a class="page-link" th:href="@{/interview/list(page=${pg},
-                                                size=${interviewPage.size},
-                                                search=${param.search},
-                                                status=${param.status},
-                                                employeeId=${param.employeeId})}" th:text="${pg + 1}">1</a>
-                    </li>
-
-                    <li class="page-item"
-                        th:classappend="${interviewPage.number == ${interviewPage.getTotalPages() - 1}}? 'disabled'">
-                        <a class="page-link" th:href="@{/interview/list(page=${interviewPage.number}+1,
-                                                size=${interviewPage.size},
-                                                search=${param.search},
-                                                status=${param.status},
-                                                employeeId=${param.employeeId})}" aria-label="Next">
-                            <span aria-hidden="true">&raquo;</span>
-                        </a>
-                    </li>
-                </ul>
-            </nav>
+    <!-- Main Content -->
+    <div class="content flex-grow-1">
+        <!-- Top Sidebar / Header - REDESIGNED -->
+        <div th:replace="~{component/new-top-sidebar::newTopSidebar(${userH3}, '/user/list', null)}">
         </div>
+        <div class="d-flex flex-column mb-4 animate__animated animate__fadeInUp">
+            <h1 class="module-title" th:text="${listTitle}"></h1>
+            <p class="submodule-title" th:text="${listTitle}"></p>
+        </div>
+        <!-- Dashboard Stats Section - NEW -->
+        <div class="stats-section">
+            <div class="stat-card">
+                <i class="fas fa-calendar-alt stat-card-bg-icon"></i>
+                <div class="stat-card-title">Total Users</div>
+                <div class="stat-card-value" th:text="${employeeCount}"></div>
+            </div>
+
+            <div class="stat-card">
+                <i class="fas fa-users stat-card-bg-icon"></i>
+                <div class="stat-card-title">Active User</div>
+                <div class="stat-card-value" th:text="${activeCount}"></div>
+            </div>
+
+            <div class="stat-card">
+                <i class="fas fa-user-check stat-card-bg-icon"></i>
+                <div class="stat-card-title">Inactive User</div>
+                <div class="stat-card-value" th:text="${inactiveCount}"></div>
+            </div>
+        </div>
+
+        <!-- Search form - REDESIGNED -->
+        <div class="search-section slide-in mb-4">
+            <form method="get" th:action="@{/user/list}" class="row g-3">
+                <div class="col-md-6">
+                    <label for="search" class="form-label" th:text="${search}"></label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="fas fa-search"></i></span>
+                        <input type="text" class="form-control" id="search" name="title" th:value="${title}"
+                               th:placeholder="${search_by_title}">
+                    </div>
+                </div>
+
+                <div class="col-md-3">
+                    <label for="positionId" class="form-label" th:text="${role}"></label>
+                    <select class="form-select" id="positionId" name="positionId">
+                        <option value="" th:text="${role}"></option>
+                        <option th:each="r : ${position}" th:value="${r.id}" th:text="${r.name}"
+                                th:selected="${positionId != null and positionId == r.id}"></option>
+                    </select>
+                </div>
+
+                <div class="col-md-3 d-flex align-items-end">
+                    <button type="submit" class="btn btn-primary w-100">
+                        <i class="fa-solid fa-search"></i>
+                        <span th:text="${search}"></span>
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- View toggle buttons -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <a class="btn btn-success" th:href="@{/user/create}">
+                <i class="fa fa-plus me-1"></i>
+                <span th:text="${add_new}"></span>
+            </a>
+            <div class="view-toggle">
+                <button id="gridViewBtn" class="btn btn-outline-primary active">
+                    <i class="fas fa-th"></i>
+                    <span th:text="${grid_view}"></span>
+                </button>
+                <button id="tableViewBtn" class="btn btn-outline-primary">
+                    <i class="fas fa-list"></i>
+                    <span th:text="${table_view}"></span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Grid View of Interviews -->
+        <div id="gridView" class="interview-grid">
+            <!-- Display each interview as a card -->
+            <div th:if="${employees != null}" th:each="items: ${employees}" class="interview-card scale-in">
+                <div class="status-badge">
+                        <span th:text="${items.isStatus() ? active : deactive}"
+                              th:class="${items.isStatus()} ? 'badge badge-interviewed' : 'badge badge-cancelled'"></span>
+                </div>
+
+                <div class="interview-card-header">
+                    <h5 th:text="${items.getFullname()}"></h5>
+                    <small>Department: <span th:text="${items.getDepartmentName()}"></span></small>
+                </div>
+
+                <div class="interview-card-body">
+                    <div class="interview-detail">
+                        <i class="fas fa-user"></i>
+                        <span class="candidate-name" th:text="${items.getPositionName()}"></span>
+                    </div>
+
+                    <div class="interview-detail">
+                        <i class="far fa-calendar-alt"></i>
+                        <span th:text="${items.getPhone()}"></span>
+                    </div>
+                </div>
+
+                <div class="interview-card-footer">
+                    <div class="d-flex gap-2">
+                        <a class="btn btn-sm btn-info" th:href="@{/user/details/{id}(id=${items.getUserID()})}">
+                            <i class="fa fa-eye"></i>
+                            <span th:text="${view_title}"></span>
+                        </a>
+
+                        <a class="btn btn-sm btn-warning" th:href="@{/user/edit/{id}(id=${items.getUserID()})}">
+                            <i class="fa fa-edit"></i>
+                            <span th:text="${editBtn}"></span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Table View of Interviews (hidden by default) -->
+        <div id="tableView" class="table-container" style="display: none;">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                    <tr>
+                        <th th:text="${username}"></th>
+                        <th th:text="${email}"></th>
+                        <th th:text="${phone}"></th>
+                        <th th:text="${role}"></th>
+                        <th th:text="${status}"></th>
+                        <th th:text="${action}"></th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:if="${employees != null}" th:each="items: ${employees}" class="fade-in">
+                        <td th:text="${items.getFullname()}"></td>
+                        <td th:text="${items.getEmail()}"></td>
+                        <td th:text="${items.getPhone()}"></td>
+                        <td th:text="${items.getPositionName()}"></td>
+                        <td th:text="${items.isStatus() ? active : deactive}"></td>
+                        <td>
+                            <a th:href="@{/user/details/{id}(id=${items.getUserID()})}">
+                                <i class="bi bi-0-circle"></i>
+                            </a>
+                            <a th:href="@{/user/edit/{id}(id=${items.getUserID()})}"
+                               href="/user/edit/{id}(id=${items.getUserID()})">
+                                <i class="bi bi-pencil-square"></i>
+                            </a>
+                            <!--                                <a th:href="@{/user/delete/{id}(id=${items.userID})}"-->
+                            <!--                                   onclick="return confirm('Are you sure you want to delete this user?')">-->
+                            <!--                                    <i class="bi bi-trash"></i>-->
+                            <!--                                </a>-->
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- No results message -->
+        <div th:if="${#lists.isEmpty(employees)}" class="no-results scale-in">
+            <i class="fas fa-search"></i>
+            <h4 th:text="${user_not_found}"></h4>
+            <p th:text="${user_not_found_suggest}"></p>
+        </div>
+
+
+        <!-- Pagination controls -->
+        <nav aria-label="Page navigation">
+            <ul class="pagination justify-content-center">
+                <!-- Nút Prev -->
+                <li class="page-item" th:classappend="${currentPage == 0} ? 'disabled'">
+                    <a class="page-link"
+                       th:href="@{/user/list(title=${title}, positionId=${positionId}, page=${currentPage - 1})}"
+                       aria-label="Previous">
+                        <span aria-hidden="true">&laquo;</span>
+                    </a>
+                </li>
+
+                <!-- Các số trang -->
+                <li class="page-item" th:each="i : ${#numbers.sequence(0, totalPages - 1)}"
+                    th:classappend="${i == currentPage} ? 'active'">
+                    <a class="page-link" th:href="@{/user/list(title=${title}, positionId=${positionId}, page=${i})}"
+                       th:text="${i + 1}">1</a>
+                </li>
+
+                <!-- Nút Next -->
+                <li class="page-item" th:classappend="${currentPage == totalPages - 1} ? 'disabled'">
+                    <a class="page-link"
+                       th:href="@{/user/list(title=${title}, positionId=${positionId}, page=${currentPage + 1})}"
+                       aria-label="Next">
+                        <span aria-hidden="true">&raquo;</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+
+
+        <!--            <nav th:if="${interviewPage.totalPages} > 1" class="slide-in">-->
+        <!--                <ul class="pagination">-->
+        <!--                    <li class="page-item" th:classappend="${interviewPage.number == 0}? 'disabled'">-->
+        <!--                        <a class="page-link" th:href="@{/interview/list(page=${interviewPage.number}-1,-->
+        <!--                                                size=${interviewPage.size},-->
+        <!--                                                search=${param.search},-->
+        <!--                                                status=${param.status},-->
+        <!--                                                employeeId=${param.employeeId})}" aria-label="Previous">-->
+        <!--                            <span aria-hidden="true">&laquo;</span>-->
+        <!--                        </a>-->
+        <!--                    </li>-->
+
+        <!--                    <li class="page-item" th:each="pg : ${#numbers.sequence(0, ${interviewPage.getTotalPages() - 1})}"-->
+        <!--                        th:classappend="${pg == interviewPage.number}? 'active'">-->
+        <!--                        <a class="page-link" th:href="@{/interview/list(page=${pg},-->
+        <!--                                                size=${interviewPage.size},-->
+        <!--                                                search=${param.search},-->
+        <!--                                                status=${param.status},-->
+        <!--                                                employeeId=${param.employeeId})}" th:text="${pg + 1}">1</a>-->
+        <!--                    </li>-->
+
+        <!--                    <li class="page-item"-->
+        <!--                        th:classappend="${interviewPage.number == ${interviewPage.getTotalPages() - 1}}? 'disabled'">-->
+        <!--                        <a class="page-link" th:href="@{/interview/list(page=${interviewPage.number}+1,-->
+        <!--                                                size=${interviewPage.size},-->
+        <!--                                                search=${param.search},-->
+        <!--                                                status=${param.status},-->
+        <!--                                                employeeId=${param.employeeId})}" aria-label="Next">-->
+        <!--                            <span aria-hidden="true">&raquo;</span>-->
+        <!--                        </a>-->
+        <!--                    </li>-->
+        <!--                </ul>-->
+        <!--            </nav>-->
     </div>
+</div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            // View toggle functionality
-            const gridViewBtn = document.getElementById('gridViewBtn');
-            const tableViewBtn = document.getElementById('tableViewBtn');
-            const gridView = document.getElementById('gridView');
-            const tableView = document.getElementById('tableView');
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        setTimeout(() => {
+            const loadingOverlay = document.getElementById('loadingOverlay');
 
-            if (gridViewBtn && tableViewBtn && gridView && tableView) {
-                gridViewBtn.addEventListener('click', function () {
-                    gridView.style.display = 'grid';
-                    tableView.style.display = 'none';
-                    gridViewBtn.classList.add('active');
-                    tableViewBtn.classList.remove('active');
+            // Làm mờ overlay trước
+            loadingOverlay.style.transition = 'opacity 0.3s ease';
+            loadingOverlay.style.opacity = '0';
+
+            // Sau khi transition hoàn tất, ẩn overlay & thêm class .show
+            setTimeout(() => {
+                loadingOverlay.style.display = 'none';
+
+                // Thêm class .show để kích hoạt hiệu ứng
+                document.querySelectorAll('.interview-card').forEach(card => {
+                    card.classList.add('show');
                 });
 
-                tableViewBtn.addEventListener('click', function () {
-                    gridView.style.display = 'none';
-                    tableView.style.display = 'block';
-                    gridViewBtn.classList.remove('active');
-                    tableViewBtn.classList.add('active');
+                document.querySelectorAll('tr.fade-in').forEach(row => {
+                    row.classList.add('show');
                 });
+
+            }, 300); // Thời gian khớp với CSS transition
+        }, 500); // Delay ban đầu
+    });
+    document.addEventListener('DOMContentLoaded', function () {
+        const gridViewBtn = document.getElementById('gridViewBtn');
+        const tableViewBtn = document.getElementById('tableViewBtn');
+        const gridView = document.getElementById('gridView');
+        const tableView = document.getElementById('tableView');
+
+        function showGridView() {
+            gridView.style.display = 'grid';
+            tableView.style.display = 'none';
+            gridViewBtn.classList.add('active');
+            tableViewBtn.classList.remove('active');
+            localStorage.setItem('viewMode', 'grid');
+        }
+
+        function showTableView() {
+            gridView.style.display = 'none';
+            tableView.style.display = 'block';
+            gridViewBtn.classList.remove('active');
+            tableViewBtn.classList.add('active');
+            localStorage.setItem('viewMode', 'table');
+        }
+
+        if (gridViewBtn && tableViewBtn && gridView && tableView) {
+            gridViewBtn.addEventListener('click', showGridView);
+            tableViewBtn.addEventListener('click', showTableView);
+
+            // Khi load lại trang, lấy lại chế độ hiển thị từ localStorage
+            const viewMode = localStorage.getItem('viewMode');
+            if (viewMode === 'table') {
+                showTableView();
+            } else {
+                showGridView(); // mặc định là grid
             }
-        });
-    </script>
-    <!-- Script đầy đủ cũ để hết ở index.js -->
-    <script th:src="@{/js/index.js}"></script>
+        }
+    });
+</script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 
 </html>
@@ -411,7 +474,6 @@
 <!--                    <span th:text="${add_new}"></span>-->
 <!--                </a>-->
 <!--            </div>-->
-
 
 
 <!--            &lt;!&ndash; Search and filter by role &ndash;&gt;-->

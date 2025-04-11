@@ -7,146 +7,18 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <link rel="stylesheet" th:href="@{/css/offer.css}">
-    <style>
-        /* Mobile Header Styles */
-        .mobile-header {
-            display: none;
-            background-color: #f8f9fa;
-            padding: 10px 15px;
-            border-bottom: 1px solid #dee2e6;
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            z-index: 1000;
-        }
-
-        .mobile-header .logo {
-            font-weight: bold;
-            font-size: 1.2rem;
-        }
-
-        .mobile-header .menu-toggle {
-            font-size: 1.5rem;
-            cursor: pointer;
-        }
-
-        /* Sidebar adjustments */
-        .sidebar {
-            transition: all 0.3s ease;
-        }
-
-        /* Content adjustments */
-        .content {
-            transition: margin-left 0.3s ease;
-        }
-
-        /* Mobile menu styles */
-        .mobile-menu {
-            display: none;
-            position: fixed;
-            top: 60px;
-            left: 0;
-            right: 0;
-            background-color: white;
-            z-index: 999;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-            max-height: calc(100vh - 60px);
-            overflow-y: auto;
-        }
-
-        .mobile-menu.show {
-            display: block;
-        }
-
-        /* Responsive adjustments */
-        @media (max-width: 992px) {
-            .mobile-header {
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-            }
-
-            .sidebar {
-                position: fixed;
-                top: 60px;
-                left: -300px;
-                bottom: 0;
-                width: 250px;
-                z-index: 998;
-            }
-
-            .sidebar.show {
-                left: 0;
-            }
-
-            .content {
-                margin-left: 0;
-                padding-top: 72px !important;
-                padding-left: 15px !important;
-            }
-
-            .filter-bar {
-                flex-direction: column;
-            }
-
-            .filter-bar .search,
-            .filter-bar .select-container,
-            .filter-bar .button-group {
-                width: 100% !important;
-                margin-bottom: 10px;
-            }
-
-            .select-container {
-                flex-direction: column;
-            }
-
-            .select-container select {
-                margin-bottom: 10px;
-                margin-right: 0 !important;
-            }
-        }
-
-        @media (min-width: 993px) {
-            .content {
-                margin-left: 250px;
-            }
-        }
-    </style>
+    <link rel="stylesheet" type="text/css" th:href="@{/css/styles.css}"/>
 </head>
 <body>
-<!-- Mobile Header -->
-<div class="mobile-header">
-    <div class="logo">Your Logo</div>
-    <div class="menu-toggle" onclick="toggleMobileMenu()">
-        <i class="fas fa-bars"></i>
-    </div>
-</div>
+<!-- Mobile NavBar -->
+<div th:replace="~{recruiter-features/navbar :: mobile-menu}"></div>
 
-<!-- Mobile Menu -->
-<div id="mobileMenu" class="mobile-menu">
-    <!-- This will be replaced with your sidebar content -->
-    <div class="sidebar-content">
-        <nav class="nav flex-column">
-            <a class="nav-link active" href="#">
-                <i class="fas fa-home me-2"></i> Trang chủ
-            </a>
-            <a class="nav-link" href="#">
-                <i class="fas fa-user me-2"></i> Hồ sơ
-            </a>
-            <a class="nav-link" href="#">
-                <i class="fas fa-envelope me-2"></i> Tin nhắn
-            </a>
-            <!-- Thêm các mục menu khác tại đây -->
-        </nav>
-    </div>
-</div>
-
+<!--Notification-->
 <div id="notification" class="custom-popup">
     <div class="popup-content">
         <i class="fa-solid fa-circle-check text-success fa-2x"></i>
         <span id="notification-text"></span>
-        <button type="button" class="btn-close-custom" onclick="closeNotification()">
+        <button type="button" class="btn-close-custom" style="background-color: red !important; color: white !important; border-radius: 50% !important; width: 10%" onclick="closeNotification()">
             <i class="fa-solid fa-xmark"></i>
         </button>
     </div>
@@ -154,44 +26,57 @@
 
 <!-- Chat Container -->
 <div class="chat-container">
-    <!-- Chat List (shown when clicking chat button) -->
     <div id="chatList" class="chat-list">
         <div class="chat-list-header">
             <h5>Chats</h5>
-            <button class="chat-list-close" onclick="toggleChatList()">
-                <i class="fas fa-times"></i>
-            </button>
+            <div>
+                <a class="btn chat-list-fullscreen" th:href="@{/chat(rid=${T(com.ims_team4.controller.utils.UrlIdEncoder).encodeId(session.account.getUserID())}, mid=${T(com.ims_team4.controller.utils.UrlIdEncoder).encodeId(session.mid)}, role=${session.account.role})}">
+                    <i class="fas fa-expand"></i>
+                </a>
+                <button class="chat-list-close" onclick="toggleChatList()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
         </div>
         <div class="chat-search">
-            <input type="text" placeholder="Search messages...">
+            <input type="text" placeholder="Search messages..." oninput="searchChat(this)">
         </div>
         <div class="chat-list-body" id="chatListBody">
-            <!-- Sample chat list items -->
             <th:block th:each="liC1 : ${listC1}">
-                <th:block th:each="liU : ${listU}" th:if="${liC1.getManagerId() == liU.getId()}">
-                    <div class="chat-person" th:onclick="openChatWindow('${liU.getFullname()}', ${session.account.getUserId()}, ${liC1.getManagerId()}, ${liC1.getChatId()}, 'ROLE_RECRUITER')">
-                        <div class="chat-person-avatar">
-                            <i class="fas fa-user"></i>
-                        </div>
-                        <div class="chat-person-info">
-                            <div class="chat-person-name">
-                                <span th:text="${liU.getFullname()}"></span>
-                                <span class="chat-person-time" th:each="listLast : ${listLast}" th:if="${listLast.getChatID() == liC1.getChatId()}" th:text="${#strings.substring(listLast.timestamp, 8, 10) + '-' + #strings.substring(listLast.timestamp, 5, 7) + '-' + #strings.substring(listLast.timestamp, 0, 4) + ' ' + #strings.substring(listLast.timestamp, 11, 13) + ':' + #strings.substring(listLast.timestamp, 14, 16)}"></span>
+                <th:block th:each="liU : ${listE}" th:if="${liC1.getManagerId() == liU.getUserID()}">
+                    <th:block th:each="user : ${listU}" th:if="${user.getId() == liU.getUserID()}">
+                        <div th:with="encoder=${T(com.ims_team4.controller.utils.UrlIdEncoder)}"
+                             class="chat-person" th:data-name="${user.getFullname()}"
+                             th:data-recruiter-id="${encoder.encodeId(session.account.getUserID())}"
+                             th:data-manager-id="${encoder.encodeId(liC1.getManagerId())}"
+                             th:data-chat-id="${liC1.getChatId()}"
+                             th:data-role="${session.account.getRole()}"
+                             th:onclick="openChatWindow(this)">
+                            <div class="chat-person-avatar">
+                                <img class="w-100 avatar-img" th:src="@{/{file}(file=${liU.avatar.trim()})}" alt="Avatar" />
                             </div>
-                            <div class="chat-person-lastmsg">
-                                <th:block th:each="liL : ${listLast}">
-                                    <th:block th:if="${liC1.chatId eq liL.chatID}">
-                                        <th:block th:if="${liL.sender eq 'ROLE_RECRUITER'}">
-                                            Bạn: <span th:text="${liL.message}"></span>
-                                        </th:block>
-                                        <th:block th:if="${liL.sender eq 'ROLE_MANAGER'}">
-                                            <span th:text="${liL.message}"></span>
+                            <div class="chat-person-info">
+                                <div class="chat-person-name">
+                                    <span th:text="${user.getFullname()}"></span>
+                                    <span class="chat-person-time" th:each="listLast : ${listLast}"
+                                          th:if="${listLast.getChatID() == liC1.getChatId()}"
+                                          th:text="${#strings.substring(listLast.timestamp, 8, 10) + '-' + #strings.substring(listLast.timestamp, 5, 7) + '-' + #strings.substring(listLast.timestamp, 0, 4) + ' ' + #strings.substring(listLast.timestamp, 11, 13) + ':' + #strings.substring(listLast.timestamp, 14, 16)}"></span>
+                                </div>
+                                <div class="chat-person-lastmsg">
+                                    <th:block th:each="liL : ${listLast}">
+                                        <th:block th:if="${liC1.chatId eq liL.chatID}">
+                                            <th:block th:if="${liL.sender eq 'ROLE_RECRUITER'}">
+                                                Bạn: <span th:text="${liL.message}"></span>
+                                            </th:block>
+                                            <th:block th:if="${liL.sender eq 'ROLE_MANAGER'}">
+                                                <span th:text="${liL.message}"></span>
+                                            </th:block>
                                         </th:block>
                                     </th:block>
-                                </th:block>
+                                </div>
                             </div>
                         </div>
-                    </div>
+                    </th:block>
                 </th:block>
             </th:block>
         </div>
@@ -201,8 +86,8 @@
     <div id="chatWindow" class="chat-window">
         <div class="chat-header">
             <div class="chat-header-info">
-                <div class="chat-header-avatar">
-                    <i class="fas fa-user"></i>
+                <div class="chat-header-avatar" id="chatAvatar">
+
                 </div>
                 <div class="chat-header-name" id="chatWithName">Chat</div>
             </div>
@@ -213,15 +98,7 @@
             </div>
         </div>
         <div class="chat-body" id="chatBody">
-            <!-- Messages will be displayed here -->
-            <div class="chat-message message-received">
-                <div class="message-content received">Hello! How can I help you today?</div>
-                <div class="message-time">10:00 AM</div>
-            </div>
-            <div class="chat-message message-sent">
-                <div class="message-content sent">I have a question about my offer</div>
-                <div class="message-time">10:02 AM</div>
-            </div>
+            <!-- Chat messages will be loaded here dynamically -->
         </div>
         <div class="chat-footer">
             <input type="text" class="chat-input" placeholder="Type your message..." id="chatInput">
@@ -235,39 +112,23 @@
 <!-- Sidebar -->
 <div id="sidebar" class="sidebar" th:replace="~{component/left-sidebar::leftSidebar}"></div>
 
-<!-- Nội dung -->
-<div class="content" style="padding-top: 12px;  padding-left: 50px">
-    <div class="d-flex justify-content-between align-items-center mb-0">
-        <div class="container py-2 flex-grow-1" style="flex-basis: 68%;">
-            <h3 class="page-title fw-bold text-dark">
-                <i class="fa-solid fa-clipboard-list text-primary"></i>
-                <span th:text="${offer_list}"></span>
-            </h3>
-            <nav aria-label="breadcrumb">
-                <ol class="breadcrumb bg-white shadow-sm p-2 rounded">
-                    <li class="breadcrumb-item">
-                        <a th:href="@{/offer/offer/{rid}(rid=${T(com.ims_team4.controller.utils.UrlIdEncoder).encodeId(session.account.userID)})}"
-                           class="text-decoration-none text-primary fw-bold" th:text="${offer_list}"></a>
-                    </li>
-                </ol>
-            </nav>
-        </div>
-        <div th:replace="~{component/top-sidebar::topSidebar}"></div>
-    </div>
+<!-- Main Content -->
+<div class="content" style="padding-left: 50px">
+    <div th:replace="~{component/new-top-sidebar::newTopSidebar(${offer_list}, @{/offer/offer/{rid}(rid=${T(com.ims_team4.controller.utils.UrlIdEncoder).encodeId(session.account.userID)})}, null)}"></div>
 
-    <!-- Thanh tìm kiếm và bộ lọc -->
+    <!-- Filter Bar -->
     <form th:action="@{/offer/search}" method="get">
-        <div class="filter-bar mb-3">
+        <div class="filter-bar mb-3 d-flex justify-content-center align-items-center">
             <input type="hidden" name="rid"
                    th:value="${T(com.ims_team4.controller.utils.UrlIdEncoder).encodeId(session.account.userID)}"/>
 
-            <div class="search input-group">
+            <div class="search input-group flex-nowrap">
                 <span class="input-group-text"><i class="fa-solid fa-search"></i></span>
                 <input type="text" name="text" class="form-control" th:placeholder="${search}">
             </div>
 
-            <div class="select-container d-flex " style="width: 44%">
-                <select class="form-select me-2" name="dep">
+            <div class="select-container">
+                <select class="form-select" name="dep">
                     <option value="0" th:text="${departmentTitle}"></option>
                     <option th:each="department : ${listD}" th:value="${department.getId()}"
                             th:text="${department.getName()}"></option>
@@ -280,14 +141,15 @@
                 </select>
             </div>
 
-            <div class="button-group d-flex align-items-center ms-auto">
-                <button type="submit" class="btn btn-secondary me-2" th:text="${search}"></button>
-                <button type="button" class="chat-button fw-bold text-decoration-none me-2" onclick="toggleChatList()">
-                    <i class="fa-brands fa-facebook-messenger"></i>
+            <div class="button-group">
+                <button type="submit" class="btn btn-secondary" th:text="${search}"></button>
+                <button type="button" class="chat-button btn btn-outline-primary fw-bold text-decoration-none"
+                        onclick="toggleChatList()">
+                    <i class="fa-brands fa-facebook-messenger d-flex justify-content-center align-items-center"></i>
                     <span th:text="${chat_title}"></span>
                 </button>
                 <a th:href="@{/offer/createoffer/{rid}(rid=${T(com.ims_team4.controller.utils.UrlIdEncoder).encodeId(rid)})}"
-                   class="btn btn-primary me-2"
+                   class="btn btn-primary d-flex justify-content-center align-items-center"
                    th:text="${add_new}"></a>
                 <button type="button" class="btn btn-outline-secondary" data-bs-toggle="modal"
                         data-bs-target="#exportModal" th:text="${exportBtn}"></button>
@@ -295,6 +157,7 @@
         </div>
     </form>
 
+    <!-- Export Modal -->
     <div class="modal fade" id="exportModal" tabindex="-1" aria-labelledby="exportModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <form th:action="@{/offer/export}" class="modal-content rounded-3 shadow-lg p-3">
@@ -325,96 +188,537 @@
         </div>
     </div>
 
-    <!-- Bảng dữ liệu -->
-    <div class="table-container">
-        <table class="table table-bordered table-hover">
-            <thead>
-            <tr>
-                <th th:text="${candidate_name}"></th>
-                <th th:text="${email}"></th>
-                <th th:text="${approver_title}"></th>
-                <th th:text="${departmentTitle}"></th>
-                <th th:text="${note}"></th>
-                <th th:text="${statusTitle}"></th>
-                <th th:text="${action}"></th>
-            </tr>
-            </thead>
-            <tbody>
-            <th:block th:each="offer : ${listO}">
-                <tr>
-                    <th:block th:each="candidate : ${listC}" th:if="${candidate.getUserId() == offer.getCandidateId()}">
-                        <th:block th:each="user : ${listU}" th:if="${user.getId() == candidate.getUserId()}">
-                            <td th:text="${user.getFullname()}"></td>
-                            <td th:text="${user.getEmail()}"></td>
-                            <td th:each="emp : ${listU}" th:if="${emp.getId() == offer.getEmployeeId()}"
-                                th:text="${emp.getFullname()}"></td>
-                            <td th:text="${offer.getDepartmentName()}"></td>
-                            <td th:text="${offer.note} ?: 'N/A'"
-                                style="max-width: 150px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"
-                                th:title="${offer.note}"></td>
-                            <td>
-                                <span th:text="${offer.getStatusOfferName()}"></span>
-                            </td>
-                            <td>
-                                <a th:href="@{/offer/offerdetail/{id}(id=${T(com.ims_team4.controller.utils.UrlIdEncoder).encodeId(offer.getId())}, rid=${T(com.ims_team4.controller.utils.UrlIdEncoder).encodeId(offer.getRecruiterOwner())})}"
-                                   class="me-2"><i
-                                        class="fa-solid fa-eye"></i></a>
-                                <a th:data-status="${offer.statusOfferId}"
-                                   th:data-id="${offer.getId()}"
-                                   th:data-eid="${offer.getRecruiterOwner()}"
-                                   th:data-edit-url="@{/offer/editoffer/{id}(id=${T(com.ims_team4.controller.utils.UrlIdEncoder).encodeId(offer.id)}, rid=${T(com.ims_team4.controller.utils.UrlIdEncoder).encodeId(offer.recruiterOwner)})}"
-                                   onclick="checkStatusToEdit(this)"
-                                   href="#">
-                                    <i class="fa-solid fa-edit"></i>
-                                </a>
-                            </td>
+    <!-- Table View (for larger screens) -->
+    <div class="table-view">
+        <div class="table-container">
+            <table class="table table-bordered table-hover">
+                <thead>
+                <tr class="text-center">
+                    <th th:text="${candidate_name}"></th>
+                    <th th:text="${email}"></th>
+                    <th th:text="${approver_title}"></th>
+                    <th th:text="${departmentTitle}"></th>
+                    <th th:text="${note}"></th>
+                    <th th:text="${statusTitle}"></th>
+                    <th th:text="${action}"></th>
+                </tr>
+                </thead>
+                <tbody>
+                <th:block th:each="offer : ${listO}">
+                    <tr>
+                        <th:block th:each="candidate : ${listC}"
+                                  th:if="${candidate.getUserId() == offer.getCandidateId()}">
+                            <th:block th:each="user : ${listU}" th:if="${user.getId() == candidate.getUserId()}">
+                                <td style="max-width: 100px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"
+                                    th:title="${user.getFullname()}" th:text="${user.getFullname()}"></td>
+                                <td th:text="${user.getEmail()}"></td>
+                                <td style="max-width: 150px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"
+                                    th:title="${emp.getFullname()}" th:each="emp : ${listU}"
+                                    th:if="${emp.getId() == offer.getEmployeeId()}"
+                                    th:text="${emp.getFullname()}"></td>
+                                <td th:text="${offer.getDepartmentName()}"></td>
+                                <td th:text="${offer.note} ?: 'N/A'"
+                                    style="max-width: 150px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"
+                                    th:title="${offer.note}"></td>
+                                <td style="max-width: 150px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"
+                                    th:title="${offer.getStatusOfferName()}" th:text="${offer.getStatusOfferName()}">
+                                </td>
+                                <td>
+                                    <a th:href="@{/offer/offerdetail/{id}(id=${T(com.ims_team4.controller.utils.UrlIdEncoder).encodeId(offer.getId())}, rid=${T(com.ims_team4.controller.utils.UrlIdEncoder).encodeId(offer.getRecruiterOwner())})}"
+                                       class="me-2"><i
+                                            class="fa-solid fa-eye"></i></a>
+                                    <a th:data-status="${offer.statusOfferId}"
+                                       th:data-id="${offer.getId()}"
+                                       th:data-eid="${offer.getRecruiterOwner()}"
+                                       th:data-edit-url="@{/offer/editoffer/{id}(id=${T(com.ims_team4.controller.utils.UrlIdEncoder).encodeId(offer.id)}, rid=${T(com.ims_team4.controller.utils.UrlIdEncoder).encodeId(offer.recruiterOwner)})}"
+                                       onclick="checkStatusToEdit(this)"
+                                       href="#">
+                                        <i class="fa-solid fa-edit"></i>
+                                    </a>
+                                </td>
+                            </th:block>
+                        </th:block>
+                    </tr>
+                </th:block>
+                </tbody>
+            </table>
+            <nav aria-label="Page navigation">
+                <ul class="pagination justify-content-center flex-wrap">
+                    <!-- Previous button -->
+                    <li class="page-item" th:classappend="${currentPage == 1} ? 'disabled'">
+                        <a class="page-link px-2 px-sm-3"
+                           th:href="@{/offer/offer/{encodedId}(encodedId=${T(com.ims_team4.controller.utils.UrlIdEncoder).encodeId(session.account.userID)}, page=${currentPage - 1})}"
+                           aria-label="Previous">
+                            <span aria-hidden="true" class="d-none d-sm-inline">&laquo;</span>
+                            <span class="d-sm-none">Trước</span>
+                        </a>
+                    </li>
+
+                    <!-- First page - always show -->
+                    <li class="page-item d-none d-sm-block" th:classappend="${1 == currentPage} ? 'active'">
+                        <a class="page-link px-2 px-sm-3"
+                           th:href="@{/offer/offer/{encodedId}(encodedId=${T(com.ims_team4.controller.utils.UrlIdEncoder).encodeId(session.account.userID)}, page=1)}"
+                           th:text="1"></a>
+                    </li>
+
+                    <!-- Dynamic pages -->
+                    <th:block th:if="${totalPages <= 4}">
+                        <!-- Show pages 2 to totalPages-1 (only if they exist) -->
+                        <th:block th:if="${totalPages > 2}">
+                            <li class="page-item" th:each="page : ${#numbers.sequence(2, totalPages - 1)}"
+                                th:classappend="${page == currentPage} ? 'active'">
+                                <a class="page-link px-2 px-sm-3"
+                                   th:href="@{/offer/offer/{encodedId}(encodedId=${T(com.ims_team4.controller.utils.UrlIdEncoder).encodeId(session.account.userID)}, page=${page})}"
+                                   th:text="${page}"></a>
+                            </li>
                         </th:block>
                     </th:block>
-                </tr>
-            </th:block>
-            </tbody>
-        </table>
-        <nav aria-label="Page navigation">
-            <ul class="pagination justify-content-center">
-                <li class="page-item" th:classappend="${currentPage == 1} ? 'disabled'">
-                    <a class="page-link"
-                       th:href="@{/offer/offer/{encodedId}(encodedId=${T(com.ims_team4.controller.utils.UrlIdEncoder).encodeId(session.account.userID)}, page=${currentPage - 1})}"
-                       aria-label="Previous">
-                        <span aria-hidden="true">&laquo;</span>
-                    </a>
-                </li>
-                <li class="page-item" th:each="page : ${#numbers.sequence(1, totalPages)}"
-                    th:classappend="${page == currentPage} ? 'active'">
-                    <a class="page-link"
-                       th:href="@{/offer/offer/{encodedId}(encodedId=${T(com.ims_team4.controller.utils.UrlIdEncoder).encodeId(session.account.userID)}, page=${page})}"
-                       th:text="${page}"></a>
-                </li>
-                <li class="page-item" th:classappend="${currentPage == totalPages} ? 'disabled'">
-                    <a class="page-link"
-                       th:href="@{/offer/offer/{encodedId}(encodedId=${T(com.ims_team4.controller.utils.UrlIdEncoder).encodeId(session.account.userID)}, page=${currentPage + 1})}"
-                       aria-label="Next">
-                        <span aria-hidden="true">&raquo;</span>
-                    </a>
-                </li>
-            </ul>
-        </nav>
-        <div id="chatbot-icon" onclick="toggleChatBot()">
-            <img src="https://cdn-icons-png.flaticon.com/512/4712/4712035.png" alt="Chatbot">
-        </div>
+                    <th:block th:if="${totalPages > 4}">
+                        <!-- Mobile view - simplified -->
+                        <li class="page-item d-block d-sm-none">
+                <span class="page-link px-2 px-sm-3">
+                    Trang <span th:text="${currentPage}"></span>/<span th:text="${totalPages}"></span>
+                </span>
+                        </li>
 
-        <!-- Cửa sổ chat -->
-        <div id="chat-window" style="position: relative">
-            <iframe
-                    src="https://www.coze.com/store/agent/7488646243938762753?bot_id=true"
-                    allow="microphone"
-                    id="coze-bot"
-                    style="height: 80%; border: none;">
-            </iframe>
+                        <!-- Desktop view - detailed pagination -->
+                        <div class="d-none d-sm-flex">
+                            <th:block th:if="${currentPage <= 3}">
+                                <!-- Show pages 2-3 when current page is near start -->
+                                <li class="page-item" th:classappend="${2 == currentPage} ? 'active'">
+                                    <a class="page-link px-2 px-sm-3"
+                                       th:href="@{/offer/offer/{encodedId}(encodedId=${T(com.ims_team4.controller.utils.UrlIdEncoder).encodeId(session.account.userID)}, page=2)}"
+                                       th:text="2"></a>
+                                </li>
+                                <li class="page-item" th:classappend="${3 == currentPage} ? 'active'">
+                                    <a class="page-link px-2 px-sm-3"
+                                       th:href="@{/offer/offer/{encodedId}(encodedId=${T(com.ims_team4.controller.utils.UrlIdEncoder).encodeId(session.account.userID)}, page=3)}"
+                                       th:text="3"></a>
+                                </li>
+                                <li class="page-item disabled d-none d-md-block">
+                                    <span class="page-link px-2 px-sm-3">...</span>
+                                </li>
+                            </th:block>
+
+                            <th:block th:if="${currentPage > 3 and currentPage < totalPages - 2}">
+                                <li class="page-item disabled d-none d-md-block">
+                                    <span class="page-link px-2 px-sm-3">...</span>
+                                </li>
+                                <li class="page-item">
+                                    <a class="page-link px-2 px-sm-3"
+                                       th:href="@{/offer/offer/{encodedId}(encodedId=${T(com.ims_team4.controller.utils.UrlIdEncoder).encodeId(session.account.userID)}, page=${currentPage - 1})}"
+                                       th:text="${currentPage - 1}"></a>
+                                </li>
+                                <li class="page-item active">
+                                    <a class="page-link px-2 px-sm-3"
+                                       th:href="@{/offer/offer/{encodedId}(encodedId=${T(com.ims_team4.controller.utils.UrlIdEncoder).encodeId(session.account.userID)}, page=${currentPage})}"
+                                       th:text="${currentPage}"></a>
+                                </li>
+                                <li class="page-item">
+                                    <a class="page-link px-2 px-sm-3"
+                                       th:href="@{/offer/offer/{encodedId}(encodedId=${T(com.ims_team4.controller.utils.UrlIdEncoder).encodeId(session.account.userID)}, page=${currentPage + 1})}"
+                                       th:text="${currentPage + 1}"></a>
+                                </li>
+                                <li class="page-item disabled d-none d-md-block">
+                                    <span class="page-link px-2 px-sm-3">...</span>
+                                </li>
+                            </th:block>
+
+                            <th:block th:if="${currentPage >= totalPages - 2}">
+                                <li class="page-item disabled d-none d-md-block">
+                                    <span class="page-link px-2 px-sm-3">...</span>
+                                </li>
+                                <li class="page-item" th:classappend="${totalPages - 2 == currentPage} ? 'active'">
+                                    <a class="page-link px-2 px-sm-3"
+                                       th:href="@{/offer/offer/{encodedId}(encodedId=${T(com.ims_team4.controller.utils.UrlIdEncoder).encodeId(session.account.userID)}, page=${totalPages - 2})}"
+                                       th:text="${totalPages - 2}"></a>
+                                </li>
+                                <li class="page-item" th:classappend="${totalPages - 1 == currentPage} ? 'active'">
+                                    <a class="page-link px-2 px-sm-3"
+                                       th:href="@{/offer/offer/{encodedId}(encodedId=${T(com.ims_team4.controller.utils.UrlIdEncoder).encodeId(session.account.userID)}, page=${totalPages - 1})}"
+                                       th:text="${totalPages - 1}"></a>
+                                </li>
+                            </th:block>
+                        </div>
+                    </th:block>
+
+                    <!-- Last page - show on desktop if more than 1 page -->
+                    <th:block th:if="${totalPages > 1}">
+                        <li class="page-item d-none d-sm-block"
+                            th:classappend="${totalPages == currentPage} ? 'active'">
+                            <a class="page-link px-2 px-sm-3"
+                               th:href="@{/offer/offer/{encodedId}(encodedId=${T(com.ims_team4.controller.utils.UrlIdEncoder).encodeId(session.account.userID)}, page=${totalPages})}"
+                               th:text="${totalPages}"></a>
+                        </li>
+                    </th:block>
+
+                    <!-- Next button -->
+                    <li class="page-item" th:classappend="${currentPage == totalPages} ? 'disabled'">
+                        <a class="page-link px-2 px-sm-3"
+                           th:href="@{/offer/offer/{encodedId}(encodedId=${T(com.ims_team4.controller.utils.UrlIdEncoder).encodeId(session.account.userID)}, page=${currentPage + 1})}"
+                           aria-label="Next">
+                            <span aria-hidden="true" class="d-none d-sm-inline">&raquo;</span>
+                            <span class="d-sm-none">Sau</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
         </div>
     </div>
+
+    <!-- Card View (for mobile) -->
+    <div th:replace="~{recruiter-features/offer-card :: offer-card}"></div>
+
+    <!-- Chatbot -->
+    <div id="chatbot-icon" onclick="toggleChatBot()">
+        <img src="https://cdn-icons-png.flaticon.com/512/4712/4712035.png" alt="Chatbot">
+    </div>
+
+    <!-- Chat Window -->
+    <div id="chat-window" style="position: relative">
+        <iframe
+                src="https://www.coze.com/store/agent/7488646243938762753?bot_id=true"
+                allow="microphone"
+                id="coze-bot"
+                style="height: 80%; border: none;">
+        </iframe>
+    </div>
 </div>
-</body>
+<script th:inline="javascript">
+    var currentUserAvatar = [[${session.account != null && session.account.avatar != null ? session.account.avatar : 'null'}]];
+    console.log('Current user avatar:', currentUserAvatar);
+</script>
 <script>
+    let currentChat = {
+        chatId: null,
+        recruiterId: null,
+        managerId: null,
+        role: null,
+        name: null
+    };
+
+    let ws = null;
+    // let reconnectAttempts = 0;
+    // const MAX_RECONNECT_ATTEMPTS = 5;
+
+    function openChatWindow(chatElement) {
+        currentChat = {
+            name: chatElement.getAttribute('data-name'),
+            recruiterId: chatElement.getAttribute('data-recruiter-id'),
+            managerId: chatElement.getAttribute('data-manager-id'),
+            chatId: chatElement.getAttribute('data-chat-id'),
+            role: chatElement.getAttribute('data-role')
+        };
+
+        const chatWindow = document.getElementById('chatWindow');
+        const chatList = document.getElementById('chatList');
+        const chatWithName = document.getElementById('chatWithName');
+        const chatAvatar = document.getElementById('chatAvatar');
+
+        if (!chatWindow || !chatList || !chatWithName || !chatAvatar) {
+            console.error('Không tìm thấy phần tử chatWindow, chatList, chatWithName hoặc chatAvatar');
+            return;
+        }
+
+        chatWithName.textContent = currentChat.name;
+
+        const avatarElement = chatElement.querySelector('.chat-person-avatar img');
+        if (avatarElement) {
+            chatAvatar.innerHTML = '';
+            const newAvatarImg = document.createElement('img');
+            newAvatarImg.src = avatarElement.src;
+            newAvatarImg.alt = 'Avatar';
+            newAvatarImg.className = 'w-100 avatar-img';
+            chatAvatar.appendChild(newAvatarImg);
+        }
+
+        chatList.classList.add('open-with-window');
+        chatWindow.classList.add('open-with-list');
+        chatWindow.style.display = 'flex';
+        chatList.style.display = 'flex';
+
+        initializeWebSocket();
+        loadChatHistory();
+    }
+
+    function initializeWebSocket() {
+        // if (ws) {
+        //     ws.close();
+        // }
+
+        const protocol = window.location.protocol === 'https:' ? 'wss://' : 'ws://';
+        const host = window.location.host;
+        const endpoint = `/websocket/${currentChat.chatId}/${currentChat.role}`;
+        ws = new WebSocket(protocol + host + endpoint);
+        console.log('Connecting to WebSocket:', protocol + host + endpoint);
+
+        ws.onopen = function () {
+            console.log('WebSocket connection established');
+        };
+
+        ws.onmessage = function (event) {
+            console.log('Message received:', event.data);
+            try {
+                // Parse message data (assuming it's JSON)
+                const messageData = typeof event.data === 'string' ? JSON.parse(event.data) : event.data;
+
+                // Check if this message is from the other user
+                if (messageData.sender !== currentChat.role) {
+                    displayMessage(messageData.content, 'received', messageData.timestamp || new Date().toISOString());
+                }
+            } catch (e) {
+                console.error('Error parsing message:', e);
+                // Fallback to displaying raw message if parsing fails
+                displayMessage(event.data, 'received', new Date().toISOString());
+            }
+        };
+
+        ws.onclose = function () {
+            console.log('WebSocket connection closed');
+            // if (reconnectAttempts < MAX_RECONNECT_ATTEMPTS) {
+            //     const delay = Math.min(1000 * Math.pow(2, reconnectAttempts), 30000);
+            //     reconnectAttempts++;
+            //     console.log(`Attempting to reconnect (${reconnectAttempts}/${MAX_RECONNECT_ATTEMPTS}) in ${delay}ms`);
+            //     setTimeout(initializeWebSocket, delay);
+            // }
+        };
+
+        ws.onerror = function (error) {
+            console.error('WebSocket error:', error);
+        };
+    }
+
+    function sendMessage() {
+        const input = document.getElementById('chatInput');
+        const message = input.value.trim();
+
+        if (!message) return;
+
+        if (ws && ws.readyState === WebSocket.OPEN) {
+            try {
+                ws.send(message);
+                displayMessage(message, 'sent', new Date().toISOString());
+                input.value = '';
+
+                // Cập nhật tin nhắn cuối cùng trong danh sách chat
+                updateLastMessageInChatList(message);
+            } catch (e) {
+                console.error('Error sending message:', e);
+                alert('Failed to send message. Please try again.');
+            }
+        } else {
+            console.error('WebSocket is not connected');
+            alert('Cannot send message. Connection is not available. Trying to reconnect...');
+            initializeWebSocket();
+            setTimeout(() => {
+                if (ws.readyState === WebSocket.OPEN) {
+                    sendMessage();
+                }
+            }, 1000);
+        }
+    }
+
+    function displayMessage(content, type, timestamp) {
+        const chatBody = document.getElementById('chatBody');
+        const messageDiv = document.createElement('div');
+        messageDiv.className = `chat-message message-${type}`;
+
+        const time = formatChatTime(timestamp);
+
+        // Get avatars
+        const chatAvatar = document.getElementById('chatAvatar');
+        let recipientAvatarSrc = '';
+        let myAvatarSrc = "http://localhost:8080/" + currentUserAvatar;
+
+        if (chatAvatar) {
+            const avatarImg = chatAvatar.querySelector('img');
+            if (avatarImg) {
+                recipientAvatarSrc = avatarImg.src;
+            }
+        }
+        
+        if (type === 'sent') {
+            // For sent messages (your message)
+            messageDiv.innerHTML = `
+            <div class="message-content-wrapper">
+                <div class="message-content ${type}">${content}</div>
+                <div class="message-time">${time}</div>
+            </div>
+            <div class="message-avatar my-avatar">
+                <img src="${myAvatarSrc}" alt="My Avatar" class="avatar-img">
+            </div>
+        `;
+        } else {
+            // For received messages
+            messageDiv.innerHTML = `
+            <div class="message-avatar recipient-avatar">
+                <img src="${recipientAvatarSrc}" alt="Recipient Avatar" class="avatar-img">
+            </div>
+            <div class="message-content-wrapper">
+                <div class="message-content ${type}">${content}</div>
+                <div class="message-time">${time}</div>
+            </div>
+        `;
+        }
+
+        chatBody.appendChild(messageDiv);
+        chatBody.scrollTop = chatBody.scrollHeight;
+    }
+
+    function updateLastMessageInChatList(message) {
+        const chatPerson = document.querySelector(`.chat-person[data-chat-id="${currentChat.chatId}"]`);
+        if (chatPerson) {
+            const lastMsgElement = chatPerson.querySelector('.chat-person-lastmsg');
+            if (lastMsgElement) {
+                lastMsgElement.innerHTML = `Bạn: <span>${message}</span>`;
+            }
+        }
+    }
+
+    async function loadChatHistory() {
+        console.log("ridL: " + currentChat.recruiterId);
+        console.log("midL: " + currentChat.managerId);
+        if (!currentChat.chatId || !currentChat.recruiterId || !currentChat.managerId || !currentChat.role) {
+            console.error('Missing required chat data');
+            return;
+        }
+
+        try {
+            const chatBody = document.getElementById('chatBody');
+            chatBody.innerHTML = '<div class="loading-message">Loading chat history...</div>';
+
+            const ridHash = encodeURIComponent(currentChat.recruiterId);
+            const midHash = encodeURIComponent(currentChat.managerId);
+
+            const response = await fetch(`/api/chats?rid=${ridHash}&mid=${midHash}&role=${currentChat.role}`);
+
+            if (!response.ok) {
+                const errorText = await response.text();
+                throw new Error(`Server error: ${response.status} ${response.statusText}. ${errorText}`);
+            }
+
+            const contentType = response.headers.get('content-type');
+            if (!contentType || !contentType.includes('application/json')) {
+                const text = await response.text();
+                throw new Error(`Invalid content-type. Expected JSON but got ${contentType}. Response: ${text}`);
+            }
+
+            const data = await response.json();
+
+            if (!data) {
+                throw new Error('Empty response from server');
+            }
+
+            if (data.error) {
+                throw new Error(data.error);
+            }
+
+            const chatDetails = data.chatDetails || [];
+
+            chatBody.innerHTML = '';
+
+            if (chatDetails.length === 0) {
+                chatBody.innerHTML = `
+            <div class="chat-message message-received">
+                <div class="message-content received">Bắt đầu cuộc trò chuyện với ${currentChat.name}.</div>
+                <div class="message-time">${getCurrentTime()}</div>
+            </div>
+        `;
+                return;
+            }
+
+            chatDetails.forEach(chatDetail => {
+                const isSent = chatDetail.sender === currentChat.role;
+                displayMessage(chatDetail.message, isSent ? 'sent' : 'received', chatDetail.timestamp);
+            });
+
+            chatBody.scrollTop = chatBody.scrollHeight;
+
+        } catch (error) {
+            console.error('Error loading chat history:', error);
+            const chatBody = document.getElementById('chatBody');
+            chatBody.innerHTML = `
+        <div class="error-message">
+            Could not load chat history. ${error.message}
+            <button onclick="loadChatHistory()" class="btn-retry">Retry</button>
+        </div>
+    `;
+        }
+    }
+
+    function formatChatTime(timestamp) {
+        if (!timestamp) return '';
+
+        try {
+            const date = timestamp instanceof Date ? timestamp : new Date(timestamp);
+
+            if (isNaN(date.getTime())) {
+                return '';
+            }
+
+            return date.toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'});
+        } catch (e) {
+            console.error('Error formatting chat time:', e);
+            return '';
+        }
+    }
+
+    function getCurrentTime() {
+        const now = new Date();
+        const hours = now.getHours().toString().padStart(2, '0');
+        const minutes = now.getMinutes().toString().padStart(2, '0');
+        return `${hours}:${minutes}`;
+    }
+
+    function toggleChatWindow() {
+        const chatWindow = document.getElementById('chatWindow');
+        const chatList = document.getElementById('chatList');
+
+        if (!chatWindow || !chatList) {
+            console.error('Không tìm thấy phần tử chatWindow hoặc chatList');
+            return;
+        }
+
+        if (chatWindow.style.display === 'flex') {
+            chatWindow.style.display = 'none';
+            chatWindow.classList.remove('open-with-list');
+            if (!chatList.classList.contains('open-with-window')) {
+                chatList.style.display = 'block';
+            }
+        } else {
+            chatWindow.style.display = 'flex';
+            chatWindow.classList.add('open-with-list');
+            chatList.classList.add('open-with-window');
+            chatList.style.display = 'flex';
+        }
+    }
+
+    function toggleChatList() {
+        const chatList = document.getElementById('chatList');
+        const chatWindow = document.getElementById('chatWindow');
+
+        if (!chatList || !chatWindow) {
+            console.error('Không tìm thấy phần tử chatList hoặc chatWindow');
+            return;
+        }
+
+        if (chatList.style.display === 'flex' || chatList.style.display === 'block') {
+            chatList.style.display = 'none';
+            chatList.classList.remove('open-with-window');
+            if (chatWindow.style.display === 'flex') {
+                chatWindow.classList.remove('open-with-list');
+                chatWindow.style.right = '20px';
+                chatWindow.style.bottom = '20px';
+            }
+        } else {
+            chatList.style.display = 'flex';
+            chatList.classList.add('open-with-window');
+            if (chatWindow.style.display === 'flex') {
+                chatWindow.classList.add('open-with-list');
+            }
+        }
+    }
+
     document.addEventListener("DOMContentLoaded", function () {
         var msg = `[[${msg}]]`;
         if (msg && msg !== "null") {
@@ -428,7 +732,6 @@
         notificationText.innerText = message;
         notification.style.display = "block";
 
-        // Tự động ẩn sau 3 giây
         setTimeout(() => {
             closeNotification();
         }, 3000);
@@ -439,12 +742,10 @@
         notification.style.display = "none";
     }
 
-    // Mobile menu toggle function
     function toggleMobileMenu() {
         const mobileMenu = document.getElementById('mobileMenu');
         mobileMenu.classList.toggle('show');
 
-        // Thêm hiệu ứng toggle icon
         const menuIcon = document.querySelector('.menu-toggle i');
         if (mobileMenu.classList.contains('show')) {
             menuIcon.classList.remove('fa-bars');
@@ -455,18 +756,35 @@
         }
     }
 
-    // Đóng menu khi click bên ngoài
-    document.addEventListener('click', function(event) {
-        const mobileMenu = document.getElementById('mobileMenu');
-        const menuToggle = document.querySelector('.menu-toggle');
-
-        if (!menuToggle.contains(event.target) &&
-            !mobileMenu.contains(event.target) &&
-            mobileMenu.classList.contains('show')) {
-            toggleMobileMenu();
+    document.getElementById('chatInput').addEventListener('keypress', function (e) {
+        if (e.key === 'Enter') {
+            sendMessage();
         }
     });
+
+    window.addEventListener('beforeunload', function () {
+        if (ws) {
+            ws.close();
+        }
+    });
+
+    function searchChat(input) {
+        const searchValue = input.value.toLowerCase();
+        const chatItems = document.querySelectorAll(".chat-person"); // Sử dụng class chat-person có sẵn trong code của bạn
+
+        chatItems.forEach(item => {
+            const name = item.getAttribute('data-name').toLowerCase(); // Lấy tên từ data-name
+            const lastMsgElement = item.querySelector('.chat-person-lastmsg');
+            const lastMsg = lastMsgElement ? lastMsgElement.textContent.toLowerCase() : '';
+
+            // Hiển thị nếu khớp tên hoặc tin nhắn cuối
+            item.style.display = (name.includes(searchValue) || lastMsg.includes(searchValue))
+                ? "flex"
+                : "none";
+        });
+    }
 </script>
 <script src="/js/recruiter-offer.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
 </html>

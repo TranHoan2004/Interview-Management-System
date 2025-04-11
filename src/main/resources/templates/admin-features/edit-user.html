@@ -10,27 +10,13 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
           rel="stylesheet">
     <link rel="stylesheet" type="text/css" th:href="@{/css/styles.css}"/>
-    <style>
-        .avatar-preview {
-            width: 120px;
-            height: 120px;
-            border-radius: 50%;
-            object-fit: cover;
-            border: 3px solid #ddd;
-            padding: 2px;
-            margin: 0 auto; /* Căn giữa */
-            display: block;
-        }
-
-        .avatar-preview[src=""] {
-            visibility: hidden;
-            display: none !important;
-        }
-    </style>
-
+    <link rel="stylesheet" type="text/css" th:href="@{/css/profile.css}"/>
+    <link rel="stylesheet" type="text/css" th:href="@{/css/user.css}"/>
 </head>
 
 <body>
+<!-- Loading overlay -->
+<div th:replace="~{component/load::load}"></div>
 <div class="d-flex">
     <!-- Left Sidebar -->
     <div class="sidebar" th:replace="~{component/left-sidebar::leftSidebar}"></div>
@@ -38,11 +24,16 @@
     <!-- Main Content -->
     <div class="content flex-grow-1">
         <!-- Top Sidebar / Header - REDESIGNED -->
-        <div th:replace="~{component/new-top-sidebar::newTopSidebar(${userH3}, '/user/list', null)}">
+        <div
+                th:replace="~{component/new-top-sidebar::newTopSidebar(${userH3}, '/user/list', ${edit_user_title})}">
+        </div>
+        <div class="d-flex flex-column mb-4 animate__animated animate__fadeInUp">
+            <h1 class="module-title" th:text="${edit_user_title}"></h1>
+            <p class="submodule-title" th:text="${edit_user_title}"></p>
         </div>
         <!-- Content -->
         <div class="container mt-3">
-            <h3 th:text="${edit_user_title}">\</h3>
+
             <form th:action="@{/user/edit/{id}(id=${user?.id})}" th:method="post" enctype="multipart/form-data">
                 <div class="container mt-3 bg-white p-4 rounded">
                     <div class="d-flex justify-content-center">
@@ -55,9 +46,10 @@
                         <div class="col-md-6">
                             <!-- Avatar -->
                             <div class="mb-3">
-                                <label for="avatar" class="form-label">Avatar</label>
+                                <label for="avatar" class="form-label" th:text="${avatar_title}"></label>
                                 <input type="file" class="form-control" id="avatar" name="avatar" accept="image/*"
                                        onchange="previewImage(event)">
+                                <small class="text-danger" th:if="${avatarError}" th:text="${avatarError}"></small>
                             </div>
 
                             <!-- Full Name -->
@@ -97,18 +89,20 @@
                             </div>
 
                             <!-- Role -->
-                            <div class="mb-3">
+                            <div class="mb-3"
+                                 th:if="${employee == null or employee.role.name() != 'ROLE_ADMINISTRATOR'}">
                                 <label for="role" class="form-label" th:text="${role}"></label>
                                 <b class="text-danger">*</b>
                                 <select class="form-control" id="role" name="role" required>
-                                    <option value="ROLE_MANAGER" th:selected="${employee?.role == 'ROLE_MANAGER'}"
+                                    <option value="ROLE_MANAGER"
+                                            th:selected="${employee?.role == 'ROLE_MANAGER'}"
                                             th:text="${manager}"></option>
                                     <option value="ROLE_INTERVIEWER"
                                             th:selected="${employee?.role == 'ROLE_INTERVIEWER'}"
                                             th:text="${interviewerTitle}"></option>
                                     <option value="ROLE_RECRUITER"
-                                            th:selected="${employee?.role == 'ROLE_RECRUITER'}" th:text="${recruiter}">
-                                    </option>
+                                            th:selected="${employee?.role == 'ROLE_RECRUITER'}"
+                                            th:text="${recruiter}"></option>
                                 </select>
                             </div>
                         </div>
@@ -207,7 +201,6 @@
 
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-<!-- Script đầy đủ cũ để hết ở index.js -->
 <script th:src="@{/js/index.js}"></script>
 </body>
 </html>

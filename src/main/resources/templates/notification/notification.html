@@ -1,10 +1,95 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
 <head>
-    <meta charset="UTF-8">
-    <title>Notification</title>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${notification_list}"></title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+          rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@4.1.1/animate.min.css">
+    <link rel="stylesheet" type="text/css" th:href="@{/css/styles.css}"/>
+    <link rel="stylesheet" type="text/css" th:href="@{/css/notification.css}"/>
 </head>
 <body>
+<div class="d-flex">
+    <!-- Loading overlay -->
+    <div th:replace="~{component/load::load}"></div>
 
+    <!-- Left Sidebar -->
+    <div class="sidebar" th:replace="~{component/left-sidebar::leftSidebar}"></div>
+
+    <!-- Main Content -->
+    <div class="content flex-grow-1">
+        <!-- Top Sidebar / Header -->
+        <div th:replace="~{component/new-top-sidebar::newTopSidebar(${notification_list}, null, null)}">
+        </div>
+
+        <!-- Page Header -->
+        <div class="stats-section">
+            <div class="stat-card">
+                <i class="fas fa-calendar-alt stat-card-bg-icon"></i>
+                <div class="stat-card-title" th:text="${notification_label}"></div>
+            </div>
+        </div>
+
+        <div class="search-section slide-in d-flex flex-column">
+            <th:block th:each="item : ${list}">
+                <div th:style="'background-color: ' + (!${item.status} ? '#e0f7fa' : '#ffffff')"
+                     th:onclick="|location.href='/notification/details?id=${item.id}'|"
+                     class="search-section">
+                    <div>
+                        <div class="notification-title1" th:text="${item.title}"></div>
+                        <div class="notification-message1 ellipsis1" th:text="${item.message}"></div>
+                    </div>
+                </div>
+            </th:block>
+        </div>
+
+        <!-- Pagination controls -->
+        <nav th:if="${list.getTotalPages()} > 1" class="animate__animated animate__fadeInUp"
+             style="animation-delay: 0.5s;">
+            <ul class="pagination">
+                <li class="page-item">
+                    <a class="page-link"
+                       th:href="@{/notification/list(index=(${currentPage} - 1))}"
+                       th:classappend="${currentPage == 1 || currentPage == 0} ? 'disabled' : ''"
+                       aria-label="Previous">
+                        <span aria-hidden="true">&laquo;</span>
+                    </a>
+                </li>
+
+                <li class="page-item" th:each="pg : ${#numbers.sequence(0, list.getTotalPages() - 1)}">
+                    <a class="page-link" th:href="@{/notification/list(index=(${pg} + 1))}"
+                       th:text="${pg + 1}"
+                       th:style="${currentPage == (pg + 1)} ? 'border-style: solid' : ''"></a>
+                </li>
+
+                <li class="page-item">
+                    <a class="page-link"
+                       th:href="@{/notification/list(index=(${currentPage} + 1))}"
+                       th:classappend="${currentPage == size} ? 'disabled' : ''"
+                       aria-label="Next">
+                        <span aria-hidden="true">&raquo;</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script th:src="@{/js/index.js}"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        let sidebar = document.querySelector(".top-sidebar");
+        sidebar.addEventListener("animationend", function () {
+            sidebar.style.animation = "none";
+        });
+    });
+</script>
 </body>
+
 </html>

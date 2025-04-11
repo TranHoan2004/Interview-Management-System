@@ -2,19 +2,13 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <title th:text="${candidate_details}"></title>
-<!--    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">-->
-<!--    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">-->
-<!--    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>-->
-<!--    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">-->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
           rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <link rel="stylesheet" type="text/css" th:href="@{/css/styles.css}" />
+    <link rel="stylesheet" type="text/css" th:href="@{/css/styles.css}"/>
     <style>
-
-
         /* Thanh tìm kiếm và bộ lọc */
         .filter-bar {
             display: flex;
@@ -61,12 +55,9 @@
         }
 
         /* Nút bấm */
-
-
         .btn-primary:hover {
             background-color: #16a085;
         }
-
 
 
         .btn-secondary:hover {
@@ -162,11 +153,6 @@
             border: none;
         }
 
-        .container-detail {
-            width: calc(100% - 48px); /* Điều chỉnh để khớp với top sidebar */
-            margin: 0 auto; /* Canh giữa container */
-        }
-
     </style>
 </head>
 <body>
@@ -178,162 +164,46 @@
     <!-- Nội dung chính -->
     <div class="content flex-grow-1">
         <div class="main-content">
-            <div class="top-sidebar">
-                <div class="top-sidebar-container">
-                    <div class="breadcrumb-section">
-                        <nav aria-label="breadcrumb">
-                            <ol class="breadcrumb mb-0">
-                                <li class="breadcrumb-item">
-                                    <a href="/dashboard">
-                                        <i class="fas fa-home"></i>
-                                        <span th:text="${home_page}"></span>
-                                    </a>
-                                </li>
-                                <li class="breadcrumb-item">
-                                    <a th:href="@{/candidate/list}">
-                                        <span th:text="${candidate_list_title}"></span>
-                                    </a>
-                                </li>
-                                <li class="breadcrumb-item active" aria-current="page" th:text="${candidate_details}"></li>
-                            </ol>
-                        </nav>
-                    </div>
+            <!-- Top Sidebar / Header -->
+            <div
+                    th:replace="~{component/new-top-sidebar::newTopSidebar(${candidate_list_title}, '/candidate/list', ${candidate_details})}">
+            </div>
 
-                    <div class="top-sidebar-actions">
-                        <!-- Notifications -->
-                        <div class="dropdown">
-                            <button class="btn action-btn" type="button" data-bs-toggle="dropdown"
-                                    aria-expanded="false">
-                                <i class="fas fa-bell"></i>
-                                <span class="notification-badge">3</span>
-                            </button>
-                            <ul class="dropdown-menu dropdown-menu-end notification-menu">
-                                <li class="dropdown-header">
-                                    <h6 class="mb-0">Notifications</h6>
-                                    <span class="text-muted small">You have 3 unread messages</span>
-                                </li>
-                                <li>
-                                    <hr class="dropdown-divider">
-                                </li>
-                                <li><a class="dropdown-item notification-item unread" href="#">
-                                    <div class="notification-icon bg-primary">
-                                        <i class="fas fa-calendar-check text-white"></i>
-                                    </div>
-                                    <div class="notification-text">
-                                        <p class="mb-0">New interview scheduled</p>
-                                        <span class="text-muted small">15 minutes ago</span>
-                                    </div>
-                                </a></li>
-                                <li><a class="dropdown-item notification-item unread" href="#">
-                                    <div class="notification-icon bg-success">
-                                        <i class="fas fa-user-check text-white"></i>
-                                    </div>
-                                    <div class="notification-text">
-                                        <p class="mb-0">Candidate profile updated</p>
-                                        <span class="text-muted small">1 hour ago</span>
-                                    </div>
-                                </a></li>
-                                <li><a class="dropdown-item notification-item unread" href="#">
-                                    <div class="notification-icon bg-warning">
-                                        <i class="fas fa-clock text-white"></i>
-                                    </div>
-                                    <div class="notification-text">
-                                        <p class="mb-0">Interview reminder</p>
-                                        <span class="text-muted small">Tomorrow, 10:00 AM</span>
-                                    </div>
-                                </a></li>
-                                <li>
-                                    <hr class="dropdown-divider">
-                                </li>
-                                <li><a class="dropdown-item text-center small" href="#">View all notifications</a></li>
-                            </ul>
-                        </div>
-
-                        <!-- Settings -->
-                        <div class="dropdown">
-                            <button class="btn action-btn" type="button" data-bs-toggle="dropdown"
-                                    aria-expanded="false">
-                                <i class="fas fa-cog"></i>
-                            </button>
-                            <ul class="dropdown-menu dropdown-menu-end">
-                                <li><a class="dropdown-item" href="#"><i class="fas fa-user-cog me-2"></i>Account
-                                    Settings</a></li>
-                                <li><a class="dropdown-item" href="#"><i class="fas fa-palette me-2"></i>Appearance</a>
-                                </li>
-                                <li><a class="dropdown-item" href="#"><i class="fas fa-bell me-2"></i>Notification
-                                    Settings</a></li>
-                                <li>
-                                    <hr class="dropdown-divider">
-                                </li>
-                                <li><a class="dropdown-item" href="#"><i class="fas fa-question-circle me-2"></i>Help
-                                    Center</a></li>
-                            </ul>
-                        </div>
-
-                        <!-- User Profile - REDESIGNED -->
-                        <div class="dropdown">
-                            <div class="user-profile" data-bs-toggle="dropdown">
-                                <div class="user-avatar-container">
-                                    <img th:src="${session.account != null ? 'https://ui-avatars.com/api/?name=' + session.account.getFullname() + '&background=random' : 'https://ui-avatars.com/api/?name=User&background=random'}"
-                                         alt="User" class="user-avatar">
-                                    <span class="user-status"></span>
-                                </div>
-                                <div class="user-info d-none d-md-flex">
-                                    <span class="user-name"
-                                          th:text="${session.account != null ? session.account.getFullname() : 'User Name'}">User
-                                        Name</span>
-                                    <span class="user-role"
-                                          th:text="${session.account != null ? session.account.getDepartmentName() : 'Department'}">Department</span>
-                                </div>
-                                <button class="user-dropdown-btn">
-                                    <i class="fas fa-chevron-down"></i>
-                                </button>
-                            </div>
-                            <ul class="dropdown-menu dropdown-menu-end">
-                                <li><a class="dropdown-item" href="#"><i class="fas fa-user me-2"></i>My Profile</a>
-                                </li>
-                                <li><a class="dropdown-item" href="#"><i class="fas fa-history me-2"></i>Activity
-                                    Log</a></li>
-                                <li>
-                                    <hr class="dropdown-divider">
-                                </li>
-                                <li><a class="dropdown-item" href="#" onclick="logout()"><i
-                                        class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
-                            </ul>
-                        </div>
-                    </div>
+            <div class="stats-section">
+                <div class="stat-card">
+                    <i class="fas fa-user stat-card-bg-icon"></i>
+                    <div class="stat-card-title" th:text="${candidate_details}"></div>
                 </div>
             </div>
 
             <div class="container mt-4 container-detail">
-                <div class="stats-section">
-                    <div class="stat-card">
-                        <i class="fas fa-user stat-card-bg-icon"></i>
-                        <div class="stat-card-title" th:text="${candidate_details}"></div>
-                    </div>
-                </div>
-
                 <div class="card shadow-lg p-4 bg-white rounded">
                     <div class="card-body">
                         <div class="row">
                             <!-- Cột bên trái -->
                             <div class="col-md-6">
                                 <h5 class="fw-bold" th:text="${personal_information}"></h5>
+
+                                <!-- Fullname -->
                                 <p>
                                     <strong th:text="${full_name} + ':'"></strong>
                                     <span th:text="${candidate.fullName ?: 'N/A'}"></span>
                                 </p>
 
+                                <!-- DOB -->
                                 <p>
                                     <strong th:text="${dob} + ':'"></strong>
-                                    <span id="dob-value" th:text="${candidate.dob != null ? candidate.dob : 'N/A'}"></span>
+                                    <span id="dob-value"
+                                          th:text="${candidate.dob != null ? candidate.dob : 'N/A'}"></span>
                                 </p>
 
+                                <!-- Age -->
                                 <p>
                                     <strong th:text="${age_title} + ':'"></strong>
                                     <span id="age-display"></span>
                                 </p>
 
+                                <!-- Phone -->
                                 <p>
                                     <strong th:text="${phone} + ':'"></strong>
                                     <a th:if="${candidate.phone != null}" th:href="'tel:' + ${candidate.phone}"
@@ -341,25 +211,28 @@
                                     <span th:unless="${candidate.phone != null}">N/A</span>
                                 </p>
 
+                                <!-- Email -->
                                 <p>
                                     <strong th:text="${email} + ':'"></strong>
                                     <a th:if="${candidate.email != null}" th:href="'mailto:' + ${candidate.email}"
                                        th:text="${candidate.email}"></a>
                                     <span th:unless="${candidate.email != null}">N/A</span>
 
-                                <form th:action="@{/candidate/{userId}/send-invitation(userId=${candidate.userId})}" method="post" style="display: inline;" hidden="">
-                                    <button type="submit" class="btn btn-success">
-                                        ✉️ Send interview invitation
-                                    </button>
+                                <form th:action="@{/candidate/{userId}/send-invitation(userId=${candidate.userId})}"
+                                      th:method="post" style="display: inline;" hidden="">
+                                    <button type="submit" class="btn btn-success"
+                                            th:text="'✉️ ' + ${send_invitation}"></button>
                                 </form>
 
                                 </p>
 
+                                <!-- Address -->
                                 <p>
                                     <strong th:text="${address} + ':'"></strong>
                                     <span th:text="${candidate.address != null ? candidate.address : 'N/A'}"></span>
                                 </p>
 
+                                <!-- Gender -->
                                 <p>
                                     <strong th:text="${gender} + ':'"></strong>
                                     <span th:switch="${candidate.gender}">
@@ -374,6 +247,8 @@
                             <!-- Cột bên phải -->
                             <div class="col-md-6">
                                 <h5 class="fw-bold" th:text="${professional_information}"></h5>
+
+                                <!-- CV attachment -->
                                 <p>
                                     <strong th:text="${cv_attachment} + ':'"></strong>
                                     <span th:if="${candidate.cv != null}">
@@ -383,29 +258,34 @@
                                     <span th:unless="${candidate.cv != null}" th:text="${no_cv}"></span>
                                 </p>
 
+                                <!-- Current Position -->
                                 <p>
                                     <strong th:text="${current_position} + ':'"></strong>
                                     <span th:text="${candidate.positionName ?: 'N/A'}"></span>
                                 </p>
 
+                                <!-- Status -->
                                 <p>
                                     <strong th:text="${statusTitle} + ':'"></strong>
                                     <span th:text="${#strings.replace(#strings.capitalize(#strings.toLowerCase(candidate.status ?: 'Unknown')), '_', ' ')}"></span>
                                 </p>
 
+                                <!-- Year of experience -->
                                 <p>
                                     <strong th:text="${year_of_experience} + ':'"></strong>
                                     <span th:text="${candidate.experience != null ? candidate.experience + ' years' : 'N/A'}"></span>
                                 </p>
 
+                                <!-- Highest level -->
                                 <p>
                                     <strong th:text="${highest_level_title} + ':'"></strong>
                                     <span th:each="level : ${highestLevels}">
-                                    <span th:if="${level.id == candidate.highestEducation}" th:text="${level.name}"></span>
+                                    <span th:if="${level.id == candidate.highestEducation}"
+                                          th:text="${level.name}"></span>
                                     </span>
                                 </p>
 
-
+                                <!-- Skill -->
                                 <p>
                                     <strong th:text="${skill} + ':'"></strong>
                                     <span th:if="${candidate.skills != null}" th:each="skill : ${candidate.skills}"
@@ -413,11 +293,13 @@
                                     <span th:unless="${candidate.skills != null}">N/A</span>
                                 </p>
 
+                                <!-- Recruiter -->
                                 <p>
                                     <strong th:text="${recruiter} + ':'"></strong>
                                     <span th:text="${candidate.recruiter != null ? candidate.recruiter : 'N/A'}"></span>
                                 </p>
 
+                                <!-- Note -->
                                 <p>
                                     <strong th:text="${note} + ':'"></strong>
                                     <span th:text="${candidate.note != null ? candidate.note : 'N/A'}"></span>
@@ -536,108 +418,108 @@
         });
     });
 </script>
-    <!-- SweetAlert2 Delete Candidate -->
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script th:inline="javascript">
-        document.addEventListener("DOMContentLoaded", function () {
-            const deleteButtons = document.querySelectorAll(".delete-btn");
-            const confirmDeleteBtn = document.getElementById("confirmDeleteBtn");
+<!-- SweetAlert2 Delete Candidate -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script th:inline="javascript">
+    document.addEventListener("DOMContentLoaded", function () {
+        const deleteButtons = document.querySelectorAll(".delete-btn");
+        const confirmDeleteBtn = document.getElementById("confirmDeleteBtn");
 
-            // Khi nhấn nút Delete, cập nhật đường dẫn xóa
-            deleteButtons.forEach(button => {
-                button.addEventListener("click", function () {
-                    const userId = this.getAttribute("data-user-id");
-                    if (userId) {
-                        confirmDeleteBtn.setAttribute("href", "/candidate/delete/" + userId);
-                    }
-                });
-            });
-
-            // Hiển thị thông báo sau khi xóa
-            const successMessage = "[[${success}]]";
-            const errorMessage = "[[${error}]]";
-
-            if (successMessage && successMessage !== "null") {
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Deleted successfully!',
-                    text: successMessage,
-                    confirmButtonText: 'OK'
-                }).then(() => {
-                    window.location.href = "/candidate/list"; // Chuyển về Candidate List
-                });
-            }
-
-            const bannedSuccess = /*[[${bannedSuccess}]]*/ {}
-            console.log(bannedSuccess)
-            if (banMessage && banMessage !== "null") {
-                Swal.fire({
-                    icon: 'warning',
-                    // title: 'Banned successfully!',
-                    title: bannedSuccess,
-                    text: banMessage,
-                    confirmButtonText: 'OK'
-                });
-            }
-
-            const errorTitle = /*[[${error_title}]]*/ {}
-            console.log(errorTitle)
-            if (errorMessage && errorMessage !== "null") {
-                Swal.fire({
-                    icon: 'error',
-                    // title: 'Error!',
-                    title: errorTitle + '!',
-                    text: errorMessage,
-                    confirmButtonText: 'OK'
-                }).then(() => {
-                    window.location.href = "/candidate/list"; // Chuyển về Candidate List
-                });
-            }
-        });
-
-        document.addEventListener("DOMContentLoaded", function () {
-            const banButtons = document.querySelectorAll(".ban-btn");
-            const banForm = document.getElementById("banForm");
-
-            banButtons.forEach(button => {
-                button.addEventListener("click", function () {
-                    const userId = this.getAttribute("data-user-id");
-                    console.log("🚫 Ban Candidate UserID: ", userId);
-                    if (userId) {
-                        banForm.setAttribute("action", "/candidate/ban/" + userId);
-                    }
-                });
+        // Khi nhấn nút Delete, cập nhật đường dẫn xóa
+        deleteButtons.forEach(button => {
+            button.addEventListener("click", function () {
+                const userId = this.getAttribute("data-user-id");
+                if (userId) {
+                    confirmDeleteBtn.setAttribute("href", "/candidate/delete/" + userId);
+                }
             });
         });
-    </script>
 
-    <script th:inline="javascript">
-        function calculateAge() {
-            let dobText = document.getElementById("dob-value").innerText.trim();
+        // Hiển thị thông báo sau khi xóa
+        const successMessage = "[[${success}]]";
+        const errorMessage = "[[${error}]]";
 
-            if (dobText && dobText !== "N/A") {
-                let dob = new Date(dobText);
-                const invalidDateFormat = /*[[${invalidDateFormat}]]*/ {}
-                console.log(invalidDateFormat)
-                if (isNaN(dob)) {
-                    // document.getElementById("age-display").innerText = "Invalid date format";
-                    document.getElementById("age-display").innerText = invalidDateFormat;
-                    return;
-                }
-
-                let today = new Date();
-                let age = today.getFullYear() - dob.getFullYear();
-                let monthDiff = today.getMonth() - dob.getMonth();
-
-                if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < dob.getDate())) {
-                    age--; // Nếu chưa đến sinh nhật trong năm nay thì trừ đi 1 tuổi
-                }
-
-                document.getElementById("age-display").innerText = age;
-            } else {
-                document.getElementById("age-display").innerText = "N/A";
-            }
+        if (successMessage && successMessage !== "null") {
+            Swal.fire({
+                icon: 'success',
+                title: 'Deleted successfully!',
+                text: successMessage,
+                confirmButtonText: 'OK'
+            }).then(() => {
+                window.location.href = "/candidate/list"; // Chuyển về Candidate List
+            });
         }
+
+        const bannedSuccess = /*[[${bannedSuccess}]]*/ {}
+        console.log(bannedSuccess)
+        if (banMessage && banMessage !== "null") {
+            Swal.fire({
+                icon: 'warning',
+                // title: 'Banned successfully!',
+                title: bannedSuccess,
+                text: banMessage,
+                confirmButtonText: 'OK'
+            });
+        }
+
+        const errorTitle = /*[[${error_title}]]*/ {}
+        console.log(errorTitle)
+        if (errorMessage && errorMessage !== "null") {
+            Swal.fire({
+                icon: 'error',
+                // title: 'Error!',
+                title: errorTitle + '!',
+                text: errorMessage,
+                confirmButtonText: 'OK'
+            }).then(() => {
+                window.location.href = "/candidate/list"; // Chuyển về Candidate List
+            });
+        }
+    });
+
+    document.addEventListener("DOMContentLoaded", function () {
+        const banButtons = document.querySelectorAll(".ban-btn");
+        const banForm = document.getElementById("banForm");
+
+        banButtons.forEach(button => {
+            button.addEventListener("click", function () {
+                const userId = this.getAttribute("data-user-id");
+                console.log("🚫 Ban Candidate UserID: ", userId);
+                if (userId) {
+                    banForm.setAttribute("action", "/candidate/ban/" + userId);
+                }
+            });
+        });
+    });
+</script>
+
+<script th:inline="javascript">
+    function calculateAge() {
+        let dobText = document.getElementById("dob-value").innerText.trim();
+
+        if (dobText && dobText !== "N/A") {
+            let dob = new Date(dobText);
+            const invalidDateFormat = /*[[${invalidDateFormat}]]*/ {}
+            console.log(invalidDateFormat)
+            if (isNaN(dob)) {
+                // document.getElementById("age-display").innerText = "Invalid date format";
+                document.getElementById("age-display").innerText = invalidDateFormat;
+                return;
+            }
+
+            let today = new Date();
+            let age = today.getFullYear() - dob.getFullYear();
+            let monthDiff = today.getMonth() - dob.getMonth();
+
+            if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < dob.getDate())) {
+                age--; // Nếu chưa đến sinh nhật trong năm nay thì trừ đi 1 tuổi
+            }
+
+            document.getElementById("age-display").innerText = age;
+        } else {
+            document.getElementById("age-display").innerText = "N/A";
+        }
+    }
 
     // Gọi hàm khi trang tải xong để cập nhật tuổi ngay từ đầu
     document.addEventListener("DOMContentLoaded", calculateAge);
@@ -658,10 +540,9 @@
         }
     });
 </script>
+
 <input type="hidden" th:value="${emailMessage}" id="emailMessage">
 <input type="hidden" th:value="${emailStatus}" id="emailStatus">
-
-
 
 </body>
 </html>

@@ -31,12 +31,12 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<UserDTO> getUserByEmail(String email) throws Exception {
+    public UserDTO getUserByEmail(String email) throws Exception {
         Optional<Users> list = userRepository.findByEmail(email);
         if (list.isEmpty()) {
             throw new Exception("Email not found");
         }
-        return list.map(this::convertToDTO).stream().toList();
+        return convertToDTO(list.get());
     }
 
     @Override
@@ -172,7 +172,10 @@ public class UserServiceImpl implements UserService {
 //        }
     }
 
-
+    @Override
+    public Users findByEmail(String email) {
+        return userRepository.findByEmail(email).orElse(null);
+    }
 
 
 }

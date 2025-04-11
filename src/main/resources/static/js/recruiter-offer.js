@@ -41,101 +41,6 @@ function logout() {
     window.location.href = "/logout";
 }
 
-// Chat functions
-function toggleChatList() {
-    const chatList = document.getElementById('chatList');
-    const chatWindow = document.getElementById('chatWindow');
-
-    if (chatWindow.style.display === 'flex') {
-        chatWindow.style.display = 'none';
-    }
-
-    if (chatList.style.display === 'flex') {
-        chatList.style.display = 'none';
-    } else {
-        chatList.style.display = 'flex';
-    }
-}
-
-function openChatWindow(name, recruiterId, managerId, chatId, role) {
-    const chatWindow = document.getElementById('chatWindow');
-    const chatList = document.getElementById('chatList');
-    const chatWithName = document.getElementById('chatWithName');
-
-    chatWithName.textContent = name + chatId;
-    chatList.style.display = 'none';
-    chatWindow.style.display = 'flex';
-
-    const chatBody = document.getElementById('chatBody');
-    chatBody.innerHTML = `
-            <div class="chat-message message-received">
-                <div class="message-content received">Hello! This is the start of your conversation with ${name} & ${chatId}.</div>
-                <div class="message-time">${getCurrentTime()}</div>
-            </div>
-        `;
-}
-
-function toggleChatWindow() {
-    const chatWindow = document.getElementById('chatWindow');
-    if (chatWindow.style.display === 'flex') {
-        chatWindow.style.display = 'none';
-    } else {
-        chatWindow.style.display = 'flex';
-    }
-}
-
-function sendMessage() {
-    const input = document.getElementById('chatInput');
-    const message = input.value.trim();
-    if (message) {
-        const chatBody = document.getElementById('chatBody');
-
-        // Add sent message
-        const sentMessageDiv = document.createElement('div');
-        sentMessageDiv.className = 'chat-message message-sent';
-        sentMessageDiv.innerHTML = `
-                <div class="message-content sent">${message}</div>
-                <div class="message-time">${getCurrentTime()}</div>
-            `;
-        chatBody.appendChild(sentMessageDiv);
-
-        input.value = '';
-
-        // Scroll to bottom
-        chatBody.scrollTop = chatBody.scrollHeight;
-
-        // Simulate reply after 1 second
-        setTimeout(() => {
-            const replyMessageDiv = document.createElement('div');
-            replyMessageDiv.className = 'chat-message message-received';
-            replyMessageDiv.innerHTML = `
-                    <div class="message-content received">Thanks for your message! We'll get back to you soon.</div>
-                    <div class="message-time">${getCurrentTime()}</div>
-                `;
-            chatBody.appendChild(replyMessageDiv);
-            chatBody.scrollTop = chatBody.scrollHeight;
-        }, 1000);
-    }
-}
-
-function getCurrentTime() {
-    const now = new Date();
-    let hours = now.getHours();
-    let minutes = now.getMinutes();
-    const ampm = hours >= 12 ? 'PM' : 'AM';
-    hours = hours % 12;
-    hours = hours ? hours : 12; // the hour '0' should be '12'
-    minutes = minutes < 10 ? '0' + minutes : minutes;
-    return `${hours}:${minutes} ${ampm}`;
-}
-
-// Allow pressing Enter to send message
-document.getElementById('chatInput').addEventListener('keypress', function (e) {
-    if (e.key === 'Enter') {
-        sendMessage();
-    }
-});
-
 
 //Create Offer
 document.getElementById('salary').addEventListener('input', function () {
@@ -197,5 +102,9 @@ document.getElementById("interviewSelect").addEventListener("change", function (
     // let note = selectedOption.getAttribute("data-note");
     document.getElementById("interviewNote").value = selectedOption.getAttribute("data-note");
 });
+
+
+
+
 
 /////////////////////////////////////////////////////

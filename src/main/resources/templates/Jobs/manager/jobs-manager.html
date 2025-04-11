@@ -1,0 +1,161 @@
+<div class="content flex-grow-1" th:fragment="mainListJobManager">
+    <!-- Top sidebar -->
+    <div th:replace="~{component/new-top-sidebar :: newTopSidebar(${job_list}, '/manager/list/{id}(id=${userId})', null)}"></div>
+
+    <!-- Page Header -->
+    <div class="d-flex flex-column mb-4 animate__animated animate__fadeInUp">
+        <h1 class="module-title" th:text="${job_title}"></h1>
+        <p class="submodule-title" th:text="${job_list}"></p>
+    </div>
+    <!-- Search and Filter -->
+    <div class="search-section slide-in mb-4">
+        <form th:action="@{/jobs/manager/list/{id}(id=${userId})}" th:method="get" class="row g-3">
+            <!-- search by title -->
+            <div class="col-md-4">
+                <label class="form-label" th:text="${search}"></label>
+                <div class="input-group">
+                    <span class="input-group-text"><i class="fas fa-search"></i></span>
+                    <input type="text" class="form-control" name="title" th:placeholder="${search_by_title}"
+                           th:value="${title}">
+                </div>
+            </div>
+
+            <!-- search by status -->
+            <div class="col-md-4">
+                <label for="status" class="form-label" th:text="${statusTitle}"></label>
+                <select class="form-select" id="status" name="status">
+                    <option value="" th:text="${all_option}"></option>
+                    <option value="true" th:selected="${status == 'true'}" th:text="${open_title}"></option>
+                    <option value="false" th:selected="${status == 'false'}" th:text="${closed_option}"></option>
+                </select>
+            </div>
+
+            <!-- Button search -->
+            <div class="col-md-4 d-flex align-items-end">
+                <button type="submit" class="btn btn-primary w-100">
+                    <i class="fa-solid fa-search"></i>
+                    <span th:text="${search}"></span>
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Button Add New and Import -->
+    <div class="d-flex justify-content-end align-items-center gap-2 mb-3">
+        <!-- Add New Button -->
+        <a th:href="@{/jobs/manager/create-job/{id}(id=${managerId})}" class="btn btn-success btn-sm">
+            <i class="fa-solid fa-plus me-1"></i>
+            <span th:text="${add_new}"></span>
+        </a>
+
+        <!-- Import Button -->
+        <button type="button" id="importBtn" class="btn btn-info btn-sm">
+            <i class="fa-solid fa-upload"></i>
+            <span th:text="${import_btn}"></span>
+        </button>
+
+        <!-- Import Form (Hidden by Default) -->
+        <div id="importContainer" class="mt-2" style="display: none;">
+            <form id="importForm" th:action="@{/jobs/manager/import-job/{managerId}(managerId=${managerId})}"
+                  th:method="post" enctype="multipart/form-data"
+                  class="import-container p-2 border rounded bg-light">
+                <div class="import-box d-flex align-items-center gap-2">
+                    <input type="file" name="file" id="fileInput" class="form-control form-control-sm"
+                           required/>
+                    <button type="submit" class="btn btn-primary btn-sm">
+                        <i class="fa-solid fa-check"></i>
+                        <span th:text="${submitBtn}"></span>
+                    </button>
+                    <button type="button" id="closeBtn" class="btn btn-danger btn-sm">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Table -->
+    <div class="table-container">
+        <div class="table-responsive">
+            <!-- Job List Table -->
+            <table class="table table-hover">
+                <thead>
+                <tr>
+                    <th th:text="${job_title}"></th>
+                    <th th:text="${required_skill_title}"></th>
+                    <th th:text="${start_date_title}"></th>
+                    <th th:text="${end_date_title}"></th>
+                    <th th:text="${level_title}"></th>
+                    <th th:text="${statusTitle}"></th>
+                    <th th:text="${action}"></th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:if="${jobPage != null and jobPage.isEmpty()}">
+                    <td colspan="7" class="text-center" th:text="${no_job_found}"></td>
+                </tr>
+                <tr th:each="job : ${jobPage?.content}">
+                    <td th:text="${job.title}"></td>
+                    <td th:text="${job.skillNames != null ? #strings.arrayJoin(job.skillNames, ', ') : 'N/A'}"></td>
+                    <td th:text="${#temporals.format(job.startDate, 'dd-MM-yyyy')}"></td>
+                    <td th:text="${#temporals.format(job.endDate, 'dd-MM-yyyy')}"></td>
+                    <td th:text="${job.levelNames != null ? #strings.arrayJoin(job.levelNames, ', ') : 'N/A'}"></td>
+                    <td th:text="${job.status != null and job.status} ? ${open_title} : ${closed_option}"></td>
+                    <td>
+                        <div class="d-flex gap-2">
+                            <a th:href="@{/jobs/manager/job-detail/{managerId}/{jobId}(managerId=${session.account.getUserID()}, jobId=${job.id})}"
+                               class="btn btn-sm btn-info">
+                                <i class="fa fa-eye"></i>
+                            </a>
+
+                            <a th:href="@{/jobs/manager/edit-job/{managerId}/{jobId}(managerId=${session.account.getUserID()}, jobId=${job.id})}"
+                               class="btn btn-sm btn-warning">
+                                <i class="fa fa-pencil"></i>
+                            </a>
+
+                            <form class="delete-form"
+                                  th:action="@{/jobs/manager/delete-job/{managerId}/{jobId}(managerId=${session.account.getUserID()}, jobId=${job.id})}"
+                                  th:method="post"
+                                  style="display:inline;">
+                                <button type="submit" class="btn btn-sm btn-danger delete-job-btn"
+                                        th:attr="data-id=${job.id}">
+                                    <i class="fa fa-trash"></i>
+                                </button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+
+            <!-- Pagination -->
+            <nav>
+                <ul class="pagination">
+                    <li th:classappend="${jobPage.first} ? 'disabled' : ''" class="page-item">
+                        <a class="page-link"
+                           th:href="@{/jobs/manager/list/{managerId}(managerId=${userId}, page=${jobPage.number - 1}, title=${title}, status=${status})}">
+                            <i class="fa-solid fa-angle-left"></i>
+                            <span th:text="${previous_title}"></span>
+                        </a>
+                    </li>
+
+                    <li th:each="i : ${#numbers.sequence(0, jobPage.totalPages - 1)}"
+                        th:classappend="${i == jobPage.number} ? 'active' : ''"
+                        class="page-item">
+                        <a class="page-link"
+                           th:href="@{/jobs/manager/list/{managerId}(managerId=${userId}, page=${i}, title=${title}, status=${status})}"
+                           th:text="${i + 1}"></a>
+                    </li>
+
+                    <li th:classappend="${jobPage.last} ? 'disabled' : ''" class="page-item">
+                        <a class="page-link"
+                           th:href="@{/jobs/manager/list/{managerId}(managerId=${userId}, page=${jobPage.number + 1}, title=${title}, status=${status})}">
+                            <span th:text="${next_title}"></span>
+                            <i class="fa-solid fa-angle-right"></i>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </div>
+</div>

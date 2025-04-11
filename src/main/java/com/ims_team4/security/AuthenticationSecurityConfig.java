@@ -5,6 +5,7 @@ import com.ims_team4.dto.EmployeeDTO;
 import com.ims_team4.dto.UserDTO;
 import com.ims_team4.service.EmployeeService;
 import com.ims_team4.service.UserService;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.Customizer;
@@ -75,11 +76,19 @@ public class AuthenticationSecurityConfig implements Constants.Role {
     public SecurityFilterChain commonFilterChain(HttpSecurity http, UserDetailsService service,
                                                  DataSource source) throws Exception {
         return http
-                .securityMatcher("/login/**", "/logout", "/dashboard", "/forgot")
+                .securityMatcher("/login/**", "/logout", "/dashboard", "/forgot", "/setting", "/access_denied")
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/login/**").permitAll()
-                        .requestMatchers("/dashboard", "/forgot").hasAnyRole(ROLE_RECRUITER, ROLE_MANAGER, ROLE_ADMINISTRATOR, ROLE_INTERVIEWER)
+                        .requestMatchers(
+                                "/login/**",
+                                "/setting",
+                                "/access_denied"
+                        ).permitAll()
+
+                        .requestMatchers(
+                                "/dashboard",
+                                "/forgot"
+                        ).hasAnyRole(ROLE_RECRUITER, ROLE_MANAGER, ROLE_ADMINISTRATOR, ROLE_INTERVIEWER)
                         .anyRequest().authenticated())
                 .formLogin(login -> login
                         .loginPage("/login")
@@ -112,12 +121,12 @@ public class AuthenticationSecurityConfig implements Constants.Role {
                         .alwaysRemember(false))
 //                 When users try to access any URLs but haven't logged in yet, the system will redirect to /login.
                 .exceptionHandling(ex -> ex
-                                .authenticationEntryPoint((request, response, authException) ->
-                                        response.sendRedirect("/login"))
-                                .accessDeniedHandler((request, response, accessDeniedException) -> {
-                                    log.warning("Error happens when exeptionHandling is working: " + accessDeniedException.getMessage());
-                                    log.info("request uri: " + request.getRequestURI());
-                                })
+                        .authenticationEntryPoint((request, response, authException) ->
+                                response.sendRedirect("/login"))
+                        .accessDeniedHandler((request, response, accessDeniedException) -> {
+                            log.warning("Error happens when exeptionHandling is working: " + accessDeniedException.getMessage());
+                            log.info("request uri: " + request.getRequestURI());
+                        })
                 )
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
@@ -139,24 +148,28 @@ public class AuthenticationSecurityConfig implements Constants.Role {
     @Bean
     public UserDetailsService userDetailsService(UserService uSrv, EmployeeService empSrv) throws UsernameNotFoundException {
         return email -> {
-            EmployeeDTO emp = new EmployeeDTO();
+            EmployeeDTO emp;
             try {
-                List<UserDTO> userDTOs = uSrv.getUserByEmail(email);
-                if (userDTOs.isEmpty()) {
-                    throw new UsernameNotFoundException("Account not found");
+                UserDTO userDTO = uSrv.getUserByEmail(email);
+                emp = getEmployeeDTOByID(userDTO.getId(), empSrv);
+                if (!emp.isStatus()) {
+                    throw new Exception("This account can not access");
                 }
-                UserDTO userDTO = userDTOs.getFirst();
-                emp = empSrv.getEmployeeById(Math.toIntExact(userDTO.getId()));
-                if (emp == null) {
-                    throw new Exception("Do not find because list is empty");
-                }
-                log.log(Level.INFO, emp.toString());
             } catch (Exception e) {
-                Logger.getLogger(AuthenticationSecurityConfig.class.getName()).log(Level.SEVERE, e.getMessage(), e);
+                log.log(Level.SEVERE, e.getMessage(), e);
+                throw new RuntimeException(e.getMessage());
             }
             GrantedAuthority authority = new SimpleGrantedAuthority(emp.getRole().name());
             return new User(emp.getEmail(), emp.getPassword(), List.of(authority));
         };
+    }
+
+    @NotNull
+    private EmployeeDTO getEmployeeDTOByID(Long id, @NotNull EmployeeService empSrv) throws Exception {
+        EmployeeDTO emp;
+        emp = empSrv.getActiveEmployeesByID(id);
+        log.log(Level.INFO, emp.toString());
+        return emp;
     }
 
     /**

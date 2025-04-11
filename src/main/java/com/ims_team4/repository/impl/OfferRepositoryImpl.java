@@ -324,7 +324,7 @@ public class OfferRepositoryImpl implements OfferRepository {
                     .uniqueResult();
         } catch (Exception e) {
             e.printStackTrace();
-            return null; // Trả về null khi có lỗi thay vì để ứng dụng bị crash
+            return null;
         }
     }
 
@@ -486,7 +486,21 @@ public class OfferRepositoryImpl implements OfferRepository {
         return offers;
     }
 
-
+    @Transactional(readOnly = true)
+    @Override
+    public List<Offer> getAllOfferByDuedateAndStatus(LocalDate dueDate, int status) {
+        try {
+            Session session = em.unwrap(Session.class);
+            return session.createQuery(
+                            "select o from Offer o where o.dueDate = :dueDate and o.statusOffer.id = :status", Offer.class)
+                    .setParameter("dueDate", dueDate)
+                    .setParameter("status", status)
+                    .getResultList();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
 
     // </editor-fold>
     @NotNull

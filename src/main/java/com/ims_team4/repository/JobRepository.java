@@ -61,7 +61,29 @@ public interface JobRepository extends JpaRepository<Job, Long> {
 
     @Modifying
     @Transactional
+    @Query(value = "DELETE FROM job_candidates WHERE job_id = :jobId", nativeQuery = true)
+    void removeJobCandidateLinks(@Param("jobId") Long jobId);
+    @Modifying
+    @Transactional
     @Query("DELETE FROM Job j WHERE j.id = :id")
     void deleteJobById(@Param("id") Long id);
+
+    @Query("Select count(j) From Job j")
+    int countTotalJobs();
+
+    @Query("Select Count(j) From Job j Where j.status = true")
+    int countOpenJobs();
+
+    @Query("Select Count(j) From Job j Where j.status = false")
+    int countClosedJobs();
+
+    @Query(value = "SELECT COUNT(*) FROM job j WHERE j.start_date >= CURRENT_DATE - INTERVAL 30 DAY", nativeQuery = true)
+    int countTotalJobsLastMonth();
+
+    @Query(value = "SELECT COUNT(*) FROM job j WHERE j.status = true AND j.start_date >= CURRENT_DATE - INTERVAL 30 DAY", nativeQuery = true)
+    int countOpenJobsLastMonth();
+
+    @Query(value = "SELECT COUNT(*) FROM job j WHERE j.status = false AND j.start_date >= CURRENT_DATE - INTERVAL 30 DAY", nativeQuery = true)
+    int countClosedJobsLastMonth();
 
 }

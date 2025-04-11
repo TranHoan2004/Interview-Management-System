@@ -14,6 +14,5 @@ import lombok.Setter;
 // HoanTX
 public class MessageRequest {
     private Message message; // Address and content of notification
-    private Long userID; // ID of user who will receive notification
     private String title; // Title of notification
 }

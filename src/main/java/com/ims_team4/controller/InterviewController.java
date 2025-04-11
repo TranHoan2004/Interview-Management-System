@@ -1,9 +1,9 @@
 package com.ims_team4.controller;
 
-import com.ims_team4.config.Constants;
 import com.ims_team4.dto.CandidateDTO;
 import com.ims_team4.dto.EmployeeDTO;
 import com.ims_team4.dto.InterviewDTO;
+import com.ims_team4.dto.NotificationDTO;
 import com.ims_team4.model.Candidate;
 import com.ims_team4.model.Employee;
 import com.ims_team4.model.Interview;
@@ -18,8 +18,11 @@ import com.ims_team4.service.EmployeeService;
 import com.ims_team4.service.InterviewService;
 import com.ims_team4.utils.email.EmailService;
 import com.ims_team4.utils.email.EmailServiceImpl;
+import jakarta.servlet.http.HttpServletRequest;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.data.domain.Page;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Controller;
@@ -32,9 +35,7 @@ import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -46,13 +47,15 @@ import java.util.stream.Collectors;
 @Controller
 @RequestMapping("/interview")
 @EnableScheduling
-public class InterviewController implements Constants.Link {
+// Vu, HoanTX
+public class InterviewController {
     private final InterviewService interviewService;
     private final EmployeeService empSrv;
     private final CandidateService cSrv;
     private final CandidateRepository candidateRepository;
     private final EmployeeRepository employeeRepository;
     private final JobRepository jobRepository;
+    private final String INTERVIEW_LINK = "http://localhost:8080/interview";
     private final Logger logger = Logger.getLogger(InterviewController.class.getName());
 
     public InterviewController(InterviewService interviewService, EmployeeService empSrv,
@@ -87,6 +90,23 @@ public class InterviewController implements Constants.Link {
         model.addAttribute("page", page);
         model.addAttribute("size", size);
         model.addAttribute("interviewers", interviewers);
+
+        model.addAttribute("id_label", "ID");
+        model.addAttribute("title_label", "Title");
+        model.addAttribute("candidate", "Candidate");
+        model.addAttribute("interviewerTitle", "Interviewer");
+        model.addAttribute("schedule_time_title", "Schedule Time");
+        model.addAttribute("location_label", "Locations");
+        model.addAttribute("job_title", "Job Title");
+        model.addAttribute("result_title", "Result");
+        model.addAttribute("statusTitle", "Status");
+        model.addAttribute("action", "Action");
+
+        model.addAttribute("new_title", "NEW");
+        model.addAttribute("invited_title", "INVITED");
+        model.addAttribute("interviewed_title", "INTERVIEWED");
+        model.addAttribute("canceled_title", "CANCELLED");
+
         return "Interview/list";
     }
 
@@ -99,14 +119,25 @@ public class InterviewController implements Constants.Link {
         InterviewDTO interview = interviewService.getInterviewById(id);
         model.addAttribute("interview", interview);
         model.addAttribute("success", success);
+
+        model.addAttribute("new_title", "NEW");
+        model.addAttribute("invited_title", "INVITED");
+        model.addAttribute("interviewed_title", "INTERVIEWED");
+        model.addAttribute("canceled_title", "CANCELLED");
         return "Interview/detail";
     }
 
     // <editor-fold> desc="UC17: Create new interview schedule"
     //UC17: Create new interview schedule. GET /interview/createInterviewView
     @GetMapping("/createInterviewView")
-    public String showCreateInterviewForm(Model model) {
-        model.addAttribute("interviewForm", new InterviewDTO());
+    public String showCreateInterviewForm(Model model, @RequestParam(required = false) Long candidateId,
+                                          @RequestParam(required = false) Long jobId) {
+        InterviewDTO data = new InterviewDTO();
+        if (candidateId != null) {
+            data.setCandidateId(candidateId);
+            data.setJobId(jobId);
+        }
+        model.addAttribute("interviewForm", data);
         return "Interview/create";
     }
 
@@ -158,13 +189,13 @@ public class InterviewController implements Constants.Link {
     @GetMapping("/editInterviewView")
     public String showEditInterviewForm(@RequestParam Long id, Model model) {
         InterviewDTO interviewDTO = interviewService.getInterviewById(id);
-        model.addAttribute("interview", interviewDTO);
+        model.addAttribute("interviewEdit", interviewDTO);
         return "Interview/edit";
     }
 
     // PUT/POST /interview/editInterview -> Actually update
     @PostMapping("/editInterview")
-    public String editInterview(@ModelAttribute("interview") InterviewDTO interviewDTO) {
+    public String editInterview(@ModelAttribute("interviewEdit") InterviewDTO interviewDTO) {
         // Load the existing Interview entity from DB
         Interview existing = interviewService.findEntityById(interviewDTO.getId());
 
@@ -235,43 +266,61 @@ public class InterviewController implements Constants.Link {
     }
     // </editor-fold>
 
-    // <editor-fold> desc="UC22: Send a reminder for upcoming schedule (HTML approach). For a quick approach, we might just do a GET or POST link.&rdquo;
+    // <editor-fold> desc="UC22: Send a reminder for upcoming schedule (HTML approach). For a quick approach, we might just do a GET or POST link."
 
     /**
      * <p>Send API status to detail screen value of true for send a reminder successfully.</p>
      * <p>Look at index.html and /index in HomeController to see how to catch data throw from this below method.</p>
      */
+    // HoanTX, VuTD
     @GetMapping("/reminder")
-    public String sendReminder(@RequestParam Long interviewId, Model model) {
-        // use to test
-//        public String sendReminder(Model model) {
-        logger.info("send reminder");
-        String url = INTERVIEW_LINK + "/list";
-
+    @ResponseBody
+    public ResponseEntity<?> sendReminder(@RequestParam Long interviewId, HttpServletRequest request, Model model) {
+        // Lấy dữ liệu interview, candidate, recruiter (employee)
         InterviewDTO interviewDTO = interviewService.getInterviewById(interviewId);
+        // Giả sử cSrv.getCandidateByUserId trả về list, ta lấy phần tử đầu tiên
         CandidateDTO candidateDTO = cSrv.getCandidateByUserId(interviewDTO.getCandidateId()).getFirst();
-        EmployeeDTO employeeDTO = empSrv.getEmployeeById(Math.toIntExact(interviewDTO.getRecruiterOwner()));
+        EmployeeDTO employeeDTO = empSrv.getEmployeeById(interviewDTO.getRecruiterOwner());
+
+        // Xây dựng URL để chuyển hướng (dùng trong thông báo)
+        String url = INTERVIEW_LINK + "/interviewDetail?id=" + interviewDTO.getId();
         String content = writeBodyContent(interviewDTO, candidateDTO, employeeDTO.getEmail(), url);
 
+        // Gửi email (hàm sendEmail cũ)
         sendEmail(interviewDTO, candidateDTO, employeeDTO.getEmail(), content);
         interviewService.updateNotificationSent(interviewDTO.getId());
 
-        String str = URLEncoder.encode(content, StandardCharsets.UTF_8);
-        model.addAttribute("content", str);
-        model.addAttribute("title", "Upcoming interview schedule");
-        model.addAttribute("employee", employeeDTO.getUserID());
+        // Xây dựng thông báo gửi tới User (UserId nhận được mail thông báo)
+        NotificationDTO notification = NotificationDTO.builder()
+//                .id(UUID.randomUUID().getMostSignificantBits() & Long.MAX_VALUE)
+                .userID(employeeDTO.getUserID())
+                .title("Reminder Notification")
+                .link(url)
+                .message("You have a interview today, Interview ID: " + interviewDTO.getId())
+                .status(false)
+                .build();
 
-        // Use to test
-//        String str = URLEncoder.encode("Nắ", StandardCharsets.UTF_8);
-//        logger.info(str);
-//        model.addAttribute("content", str);
-//        model.addAttribute("title", "Upcoming interview schedule");
-//        model.addAttribute("employee", 11);
-//        logger.info("send data");
-        return "index";
+        // Nếu request là AJAX, trả về JSON; nếu không thì redirect
+        if ("XMLHttpRequest".equals(request.getHeader("X-Requested-With"))) {
+            Map<String, Object> response = new HashMap<>();
+            response.put("success", true);
+            response.put("message", "Reminder has been sent successfully");
+            response.put("notification", notification);
+            return ResponseEntity.ok(response);
+        } else {
+            // Nếu không phải AJAX: chuyển hướng về danh sách interview
+            String str = URLEncoder.encode(content, StandardCharsets.UTF_8);
+            model.addAttribute("content", str);
+            model.addAttribute("title", "Upcoming interview schedule");
+            model.addAttribute("employee", employeeDTO.getUserID());
+            return ResponseEntity.status(HttpStatus.FOUND)
+                    .header("Location", "/interview/list")
+                    .build();
+        }
     }
 
     // This below method used to check the upcoming interview schedule for each 5s. Maybe it can cause an unnecessary event, so better comment it.
+    // HoanTX
     @Scheduled(fixedDelay = 5000)
     public void notifyDeadline() {
         try {
@@ -280,7 +329,7 @@ public class InterviewController implements Constants.Link {
                 logger.info("There is " + list.size() + " upcoming interviews at" + LocalTime.now().plusHours(24));
                 list.forEach(interviewDTO -> {
                     CandidateDTO candidateDTO = cSrv.getCandidateByUserId(interviewDTO.getCandidateId()).getFirst();
-                    String recruiterEmail = empSrv.getEmployeeById(Math.toIntExact(interviewDTO.getId())).getEmail();
+                    String recruiterEmail = empSrv.getEmployeeById(Math.toIntExact(interviewDTO.getRecruiterOwner())).getEmail();
                     String body = writeBodyContent(interviewDTO, candidateDTO, recruiterEmail, INTERVIEW_LINK + "/list");
                     sendEmail(interviewDTO, candidateDTO, recruiterEmail, body);
                     interviewService.updateNotificationSent(interviewDTO.getId());
@@ -293,11 +342,14 @@ public class InterviewController implements Constants.Link {
         }
     }
 
+    // HoanTX
     private List<InterviewDTO> checkUpcomingInterview() {
         return interviewService.getUpcomingInterviewDTOs(
-                LocalDate.now().plusDays(1).format(DateTimeFormatter.ofPattern("yyyy-MM-dd")), LocalTime.now());
+                LocalDate.now().plusDays(1).format(DateTimeFormatter.ofPattern("yyyy-MM-dd")),
+                LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm")));
     }
 
+    // HoanTX
     private void sendEmail(@NotNull InterviewDTO interviewDTO,
                            @NotNull CandidateDTO candidateDTO,
                            String recruiterEmail,
@@ -315,15 +367,12 @@ public class InterviewController implements Constants.Link {
                                  """ + body +
                          "Thanks & Regards!<br/>IMS Team</body></html>";
         String subject = "no-reply-email-IMS-system <" + interviewDTO.getTitle() + ">";
-        logger.info(subject);
         // candidateDTO.getCvLink() not found, so can not send email, better using an existing file in your local computer.
         service.sendEmailAttachFile(recruiterEmail, subject, content, candidateDTO.getCvLink());
-//        Example:
-//        service.sendEmailAttachFile("tranxuanhoan04@gmail.com", subject, content,
-//                "C:\\Users\\ADMIN\\OneDrive\\Máy tính\\SWP.txt");
         logger.info("Email has been sent ");
     }
 
+    // HoanTX
     @NotNull
     private String writeBodyContent(@NotNull InterviewDTO interviewDTO,
                                     @NotNull CandidateDTO candidateDTO,
@@ -334,7 +383,6 @@ public class InterviewController implements Constants.Link {
         String timeIndicators = interviewDTO.getStartTime().isBefore(LocalTime.NOON) ? " a.m " : " p.m ";
         String str = startTime + timeIndicators + "to " + endTime + timeIndicators;
         logger.info("Start to send email. Upcoming interview schedule: " + interviewDTO);
-        logger.info("Time of interview: " + str);
         return """
                            <p>You have an interview schedule TODAY at
                        """ + str + "</p>" +
@@ -345,6 +393,5 @@ public class InterviewController implements Constants.Link {
                " or visit our website " + interviewScheduleURL + "</p>" +
                "<p>Please join interview room ID: " + interviewDTO.getMeetId() + "</p>";
     }
-
     // </editor-fold>
 }

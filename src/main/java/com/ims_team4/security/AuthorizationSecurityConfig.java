@@ -8,7 +8,6 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 
 @Configuration
 @EnableWebSecurity
@@ -20,7 +19,16 @@ public class AuthorizationSecurityConfig implements Constants.Role {
                 .securityMatcher("/user/**")
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authorizeHttpRequests -> authorizeHttpRequests
-                        .requestMatchers("/user/**").hasRole(ROLE_ADMINISTRATOR) // UC32, UC33, UC34, UC35, UC36
+                        .requestMatchers(
+                                "/user/list",
+                                "/user/create",
+                                "/user/details/",
+                                "/user/edit/",
+                                "/user/activate/",
+                                "/user/delete/"
+                        ).hasRole(ROLE_ADMINISTRATOR) // UC32, UC33, UC34, UC35, UC36
+
+                        .requestMatchers("/user/test").hasAnyRole(ROLE_RECRUITER, ROLE_MANAGER, ROLE_ADMINISTRATOR, ROLE_INTERVIEWER)
                         .anyRequest().authenticated()
                 )
                 // When users try to access any URLs but haven't logged in yet, the system will redirect to /login.
@@ -40,35 +48,22 @@ public class AuthorizationSecurityConfig implements Constants.Role {
                 .securityMatcher("/jobs/**")
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authorize -> authorize
-                                // Full 4 actors can access this URL.
-//                        .requestMatchers(
-//                                "/jobs/list", // UC11 view job list
-//                                "/jobs/details" // UC13 view job details
-//                        )
-//                        .hasAnyRole(ROLE_RECRUITER, ROLE_MANAGER, ROLE_ADMINISTRATOR, ROLE_INTERVIEWER)
-//
-//                                // Except of Interviewer, others can access this URL.
-//                        .requestMatchers(
-//                                "admin/listAllJob",
-//                                "/manager/list",
-//                                "/jobs/create", // UC12 create new job
-//                                "/jobs/edit", // UC14 edit job
-//                                "/jobs/delete" // UC15 delete job
-//                        )
-//                        .hasAnyRole(ROLE_RECRUITER, ROLE_MANAGER, ROLE_ADMINISTRATOR)
-                                .requestMatchers(
-                                        "/jobs/manager/list/",
-                                        "/jobs/manager/job-detail/",
-                                        "/jobs/manager/create-job/",
-                                        "/jobs/manager/edit-job/",
-                                        "/jobs/manager/delete-job/"
-                                ).hasRole(ROLE_MANAGER)
+                        .requestMatchers(
+                                "/jobs/manager/list/",
+                                "/jobs/manager/job-detail/",
+                                "/jobs/manager/create-job/",
+                                "/jobs/manager/edit-job/",
+                                "/jobs/manager/delete-job/",
+                                "/jobs/manager/import-job/"
+                        ).hasRole(ROLE_MANAGER)
 
-                                .requestMatchers(
-                                        "jobs/admin/listAllJob",
-                                        "jobs/admin/job-detail/"
-                                ).hasRole(ROLE_ADMINISTRATOR)
-                                .anyRequest().authenticated()
+                        .requestMatchers(
+                                "/jobs/admin/listAllJob",
+                                "/jobs/admin/job-detail/"
+                        ).hasRole(ROLE_ADMINISTRATOR)
+
+                        .requestMatchers("/jobs/interview/listJob").hasRole(ROLE_INTERVIEWER)
+                        .anyRequest().authenticated()
                 )
                 // When users try to access any URLs but haven't logged in yet, the system will redirect to /login.
                 .exceptionHandling(ex -> ex
@@ -130,22 +125,22 @@ public class AuthorizationSecurityConfig implements Constants.Role {
                         // Except of Interviewer, others can access this URL
                         .requestMatchers(
                                 "/offer/search",
-                                "/offer/offerdetail", // UC26 view offer details
-                                "/offer/editoffer", // UC25 edit offer
+                                "/offer/offerdetail/", // UC26 view offer details
+                                "/offer/editoffer/", // UC25 edit offer
                                 "/offer/export", // UC31 export offer
-                                "/offer/canceloffer", // UC29 cancel offer
-                                "/offer/mark", // UC28 update offer status from Candidate
-                                "/offer/acceptoffer",
-                                "/offer/declineoffer",
+                                "/offer/canceloffer/", // UC29 cancel offer
+                                "/offer/mark/", // UC28 update offer status from Candidate
+                                "/offer/acceptoffer/",
+                                "/offer/declineoffer/",
                                 "/offer/edit",
                                 "/offer/create",
-                                "/offer/candidateOffer"
+                                "/offer/candidateOffer/"
                         )
                         .hasAnyRole(ROLE_RECRUITER, ROLE_MANAGER, ROLE_ADMINISTRATOR)
 
                         // Only Recruiter can access this URL
                         .requestMatchers(
-                                "/offer/offer", // UC23 view offer list for Recruiter
+                                "/offer/offer/", // UC23 view offer list for Recruiter
                                 "/offer/createoffer" // UC24 create new offer
                         )
                         .hasAnyRole(ROLE_RECRUITER)
@@ -159,13 +154,13 @@ public class AuthorizationSecurityConfig implements Constants.Role {
 
                         // Only Manager can access this URL
                         .requestMatchers(
-                                "/offer/managerOffer", // UC23 view offer list for Manager
+                                "/offer/managerOffer/", // UC23 view offer list for Manager
                                 "/offer/reminder" // UC30 reminder to take action on the offer
                         )
                         .hasAnyRole(ROLE_MANAGER)
 
                         .requestMatchers(
-                                "/offer/adminOffer" // UC23 view offer list for Admin
+                                "/offer/adminOffer/" // UC23 view offer list for Admin
                         )
                         .hasAnyRole(ROLE_ADMINISTRATOR)
                         .anyRequest().authenticated()
@@ -199,7 +194,8 @@ public class AuthorizationSecurityConfig implements Constants.Role {
                                 "/candidate/add", // UC06 create a new candidate
                                 "/candidate/edit", // UC08 edit candidate
                                 "/candidate/delete/", // UC09 delete candidate
-                                "/candidate/ban/" // UC10 ban candidate
+                                "/candidate/ban/", // UC10 ban candidate
+                                "/candidate/send-invitation/"
                         )
                         .hasAnyRole(ROLE_RECRUITER, ROLE_MANAGER, ROLE_ADMINISTRATOR)
                         .anyRequest().authenticated()
@@ -215,35 +211,49 @@ public class AuthorizationSecurityConfig implements Constants.Role {
                 .build();
     }
 
-//    @Bean
-//    public SecurityFilterChain notificationFilterChain(HttpSecurity http) throws Exception {
-//        return http
-//                .securityMatcher("/notification/**")
-//                .csrf(csrf -> csrf
-//                        .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
-//                )
-//                .authorizeHttpRequests(author -> author
-//                        .requestMatchers("/notification/create").authenticated()
-//                        .anyRequest().permitAll()
-//                ).build();
-//    }
+    @Bean
+    public SecurityFilterChain notificationFilterChain(HttpSecurity http) throws Exception {
+        return http
+                .securityMatcher("/notification/**")
+                .csrf(AbstractHttpConfigurer::disable)
+                .authorizeHttpRequests(author -> author
+                        .requestMatchers(
+                                "/notification/create",
+                                "/notification/list",
+                                "/notification/update/",
+                                "/notification/details"
+                        ).hasAnyRole(ROLE_RECRUITER, ROLE_MANAGER, ROLE_ADMINISTRATOR, ROLE_INTERVIEWER)
+                        .anyRequest().authenticated()
+                ).exceptionHandling(ex -> ex
+                        .authenticationEntryPoint((request, response, authException) ->
+                                response.sendRedirect("/login"))
+                        .accessDeniedHandler((request, response, authException) ->
+                                response.sendRedirect("/access_denied")
+                        )
+                ).httpBasic(Customizer.withDefaults())
+                .build();
+    }
 
-//    @Bean
-//    public SecurityFilterChain webSocketFilterChain(HttpSecurity http) throws Exception {
-//        return http
-//                .csrf(AbstractHttpConfigurer::disable)
-//                .authorizeHttpRequests(authorize -> authorize
-//                        .requestMatchers("/websocket/**")
-//                        .hasAnyRole("RECRUITER", "MANAGER", "ADMINISTRATOR")
-//                )
-//                .exceptionHandling(ex -> ex
-//                        .authenticationEntryPoint((request, response, authException) ->
-//                                response.sendRedirect("/login"))
-//                        .accessDeniedHandler((request, response, accessDeniedException) ->
-//                                response.sendRedirect("/error")
-//                        )
-//                )
-//                .httpBasic(Customizer.withDefaults())
-//                .build();
-//    }
+    @Bean
+    public SecurityFilterChain webSocketFilterChain(HttpSecurity http) throws Exception {
+        return http
+                .securityMatcher("/topic/**", "/specific/**", "/app/**", "/ws/**")
+                .csrf(AbstractHttpConfigurer::disable)
+                .authorizeHttpRequests(author -> author
+                        .requestMatchers(
+                                "/topic/**",
+                                "/specific/**",
+                                "/app/**",
+                                "/ws/**"
+                        ).hasAnyRole(ROLE_RECRUITER, ROLE_MANAGER, ROLE_ADMINISTRATOR, ROLE_INTERVIEWER)
+                        .anyRequest().authenticated()
+                ).exceptionHandling(ex -> ex
+                        .authenticationEntryPoint((request, response, authException) ->
+                                response.sendRedirect("/login"))
+                        .accessDeniedHandler((request, response, authException) ->
+                                response.sendRedirect("/access_denied")
+                        )
+                ).httpBasic(Customizer.withDefaults())
+                .build();
+    }
 }
