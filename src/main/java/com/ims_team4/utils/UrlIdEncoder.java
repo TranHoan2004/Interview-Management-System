@@ -1,4 +1,4 @@
-package com.ims_team4.controller.utils;
+package com.ims_team4.utils;
 
 import java.util.Base64;
 
