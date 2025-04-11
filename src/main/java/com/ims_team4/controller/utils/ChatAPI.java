@@ -8,6 +8,7 @@ import com.ims_team4.model.utils.HrRole;
 import com.ims_team4.service.ChatDetailService;
 import com.ims_team4.service.ChatService;
 import com.ims_team4.service.EmployeeService;
+import com.ims_team4.utils.UrlIdEncoder;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
