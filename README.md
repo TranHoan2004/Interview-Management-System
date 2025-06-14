@@ -1,44 +1,65 @@
-Interview Management System (IMS)  
-🚀 This project aims to make the company's recruitment process easier, more convenient, and more professional.
-🚀 The project was developed by a team of 6 members at FSA.
-🚀 Technologies: Java, Spring Boot, Python.
-🚀 Template Engine: Thymeleaf
-🚀 Database: MySQL.
+# 🧑‍💼 Interview Management System (IMS)
 
-⭐ Team Members:
+🚀 **IMS** is a modern recruitment support platform designed to make the company’s hiring process easier, more convenient, and more professional.
 
-Trần Xuân Hoàn (HoanTX): Team leader, responsible for designing the database, clarifying system requirements, task assignment and management, urging team members to complete tasks; guiding new members in getting familiar with the technology stack; handling role-based access control, authorization, and notification system design; implementing multi-language support (for static content) and automatic reminder notifications for the Interview side.
+This system was developed by a 6-member team at **FSA** as part of a full-cycle software development project.
 
-Phạm Đức Long (LongPD): Database design, development of Offer-related features, creation of the chatbot and internal messaging system, and implementation of automatic reminders for the Offer side.
+---
 
-Ngô Thu Trang (TrangNT): Development of User-related features.
+## 📌 Features
 
-Trần Đăng Vũ (VuTD): Development of Interview-related features; website interface design and notification implementation.
+- 🧑 Candidate & job position management
+- 🗓️ Interview scheduling with automatic notifications
+- 📢 Role-based access control & authorization
+- 🔔 Reminder system for interviewers and offer managers
+- 📬 Internal messaging and chatbot support
+- 🌍 Multi-language support for static content
 
-Nguyễn Nam Phong (PhongNN): Development of Job-related features.
+---
 
-Phạm Hải Đăng (DangPH): Development of Candidate-related features and notification creation.
+## 🛠️ Technologies Used
 
-⭐ Timeline: From January 20th to April 9th.
---------------------------------------------------------------------------------------------------------------------------
-Dự án "Hệ thống quản lý phỏng vấn"
-🚀 Đây là dự án nhằm giúp cho quá trình tuyển dụng của công ty trở nên dễ dàng, tiện lợi và chuyên nghiệp hơn.  
-🚀 Dự án thuộc về đội phát triển gồm 6 thành viên tại FSA.  
-🚀 Công nghệ: Java, Spring Boot, Python.  
-🚀 Template Engine: Thymeleaf
-🚀 Database: MySQL.  
+- **Backend**: Java, Spring Boot
+- **Scripting/Utilities**: Python
+- **Frontend Template Engine**: Thymeleaf
+- **Database**: MySQL
 
-⭐ Thành viên:
-- Trần Xuân Hoàn (HoanTX): Nhóm trưởng, chịu trách nhiệm thiết kế DB, làm rõ nghiệp vụ hệ thống, phân chia, quản lý công việc, đôn đốc các thành viên hoàn thành nhiệm vụ;
-Hướng dẫn các thành viên mới làm quen với công nghệ; Phân quyền, ủy quyền và thiết kế hệ thống thông báo;
-Thiết lập cơ chế đa ngôn ngữ (các văn bản tĩnh), gửi thông báo nhắc hẹn tự động cho phía Interview.
-- Phạm Đức Long (LongPD): Thiết kế DB, xây dựng các chức năng về Offer, tạo chat bot và hệ thống nhắn tin nội bộ, tạo nhắc hẹn tự động cho phía Offer.
-- Ngô Thu Trang (TrangNT): Phát triển các chức năng liên quan đến User.
-- Trần Đăng Vũ (VuTD): Phát triển các chức năng liên quan đến Interview; Thiết kế giao diện trang web và tạo thông báo.
-- Nguyễn Nam Phong (PhongNN): Phát triển các chức năng của Job.
-- Phạm Hải Đăng (DangPH): Phát triển các chức năng của Candidate và tạo thông báo
+---
 
-⭐ Thời gian: Từ 20/1-9/4
---------------------------------------------------------------------------------------------------------------------------
+## 👥 Team Members
 
-![ERD](src/main/resources/documents/ERD.png)
+| Name | Role | Responsibilities |
+|------|------|------------------|
+| **Trần Xuân Hoàn (HoanTX)** | 🧠 Team Leader | - Database & system requirement design<br>- Task management & technical guidance<br>- Role-based access control & authorization<br>- Notification system design<br>- Multi-language static content & interview reminders |
+| **Phạm Đức Long (LongPD)** | 🔧 Developer | - Database design<br>- Offer module implementation<br>- Chatbot & internal messaging system<br>- Offer-side auto-reminders |
+| **Ngô Thu Trang (TrangNT)** | 👤 Developer | - User module development |
+| **Trần Đăng Vũ (VuTD)** | 🎨 Developer | - Interview module implementation<br>- UI/UX design<br>- Notification features |
+| **Nguyễn Nam Phong (PhongNN)** | 💼 Developer | - Job module development |
+| **Phạm Hải Đăng (DangPH)** | 👨‍💻 Developer | - Candidate module development<br>- Notification implementation |
+
+📄 _See detailed task tracking in the project management document._
+
+---
+
+## 🗓️ Project Timeline
+
+- **Start Date**: January 20th, 2025  
+- **End Date**: April 9th, 2025
+
+---
+
+## 🧩 System Diagram
+
+![ERD Diagram](src/main/resources/documents/ERD.png)
+
+---
+
+## 📎 License
+
+This project was built for educational purposes. Redistribution or reuse must comply with FSA academic policies.
+
+---
+
+## 📬 Contact
+
+> For any inquiries, please open an issue or refer to the project collaboration document for direct contact information.
