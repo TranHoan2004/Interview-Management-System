@@ -11,6 +11,7 @@ import org.jetbrains.annotations.NotNull;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -24,10 +25,10 @@ import static com.ims_team4.utils.RandomCode.generateSixRandomCodes;
 // TrangNT
 public class EmployeeServiceImpl implements EmployeeService {
     private final EmployeeRepository employeeRepository;
-    private final BCryptPasswordEncoder encoder;
+    private final PasswordEncoder encoder;
     private final Logger logger = java.util.logging.Logger.getLogger(EmployeeServiceImpl.class.getName());
 
-    public EmployeeServiceImpl(BCryptPasswordEncoder encoder, EmployeeRepository employeeRepository) {
+    public EmployeeServiceImpl(PasswordEncoder encoder, EmployeeRepository employeeRepository) {
         this.encoder = encoder;
         this.employeeRepository = employeeRepository;
     }
@@ -64,7 +65,6 @@ public class EmployeeServiceImpl implements EmployeeService {
 
         return employeePage.map(this::convertToDTO);
     }
-
 
     @Override
     @Transactional

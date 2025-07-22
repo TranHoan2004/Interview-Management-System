@@ -1,6 +1,6 @@
 package com.ims_team4.controller;
 
-import com.ims_team4.controller.utils.UrlIdEncoder;
+import com.ims_team4.utils.UrlIdEncoder;
 import com.ims_team4.dto.*;
 import com.ims_team4.model.utils.CandidateStatus;
 import com.ims_team4.model.utils.HrRole;
@@ -549,58 +549,58 @@ public class OfferController {
 
             String emailContent = String.format(
                     "<!DOCTYPE html>" +
-                    "<html>" +
-                    "<head>" +
-                    "    <style>" +
-                    "        body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px; }" +
-                    "        .header { color: #2c3e50; font-size: 24px; margin-bottom: 20px; }" +
-                    "        .content { background-color: #f9f9f9; padding: 20px; border-radius: 5px; }" +
-                    "        .button {" +
-                    "            display: inline-block; padding: 10px 20px; background-color: #3498db; " +
-                    "            color: white !important; text-decoration: none; border-radius: 4px; margin: 15px 0; " +
-                    "            font-weight: bold;" +
-                    "        }" +
-                    "        .footer { margin-top: 20px; font-size: 14px; color: #7f8c8d; }" +
-                    "        .details { margin: 15px 0; }" +
-                    "        .detail-item { margin-bottom: 8px; }" +
-                    "        .detail-label { font-weight: bold; color: #2c3e50; }" +
-                    "    </style>" +
-                    "    <script>" +
-                    "        function openOffer(url) {" +
-                    "            // Try to find existing window with our offer" +
-                    "            var offerWindow = window.open('', 'offerWindow');" +
-                    "            " +
-                    "            if (offerWindow && offerWindow.location.href !== 'about:blank') {" +
-                    "                // Window exists, just navigate it to the new URL" +
-                    "                offerWindow.location.href = url;" +
-                    "                offerWindow.focus();" +
-                    "            } else {" +
-                    "                // Window doesn't exist, open a new one" +
-                    "                offerWindow = window.open(url, 'offerWindow');" +
-                    "            }" +
-                    "            return false;" +
-                    "        }" +
-                    "    </script>" +
-                    "</head>" +
-                    "<body>" +
-                    "    <div class='header'>Action Required: Offer Reminder</div>" +
-                    "    <div class='content'>" +
-                    "        <p>Dear %s,</p>" +
-                    "        <p>This is a friendly reminder that your action is required on the following offer by <strong>%s</strong>:</p>" +
-                    "        <div class='details'>" +
-                    "            <div class='detail-item'><span class='detail-label'>Candidate Name:</span> %s</div>" +
-                    "            <div class='detail-item'><span class='detail-label'>Description:</span> %s</div>" +
-                    "        </div>" +
-                    "        <p>Please click the button below to review the offer:</p>" +
-                    "        <a href='%s' class='button' onclick='return openOffer(this.href)'>Review Offer</a>" +
-                    "        <p>Or copy and paste this link into your browser:<br>" +
-                    "        <small>%s</small></p>" +
-                    "    </div>" +
-                    "    <div class='footer'>" +
-                    "        <p>Best regards,<br>IMS</p>" +
-                    "    </div>" +
-                    "</body>" +
-                    "</html>",
+                            "<html>" +
+                            "<head>" +
+                            "    <style>" +
+                            "        body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px; }" +
+                            "        .header { color: #2c3e50; font-size: 24px; margin-bottom: 20px; }" +
+                            "        .content { background-color: #f9f9f9; padding: 20px; border-radius: 5px; }" +
+                            "        .button {" +
+                            "            display: inline-block; padding: 10px 20px; background-color: #3498db; " +
+                            "            color: white !important; text-decoration: none; border-radius: 4px; margin: 15px 0; " +
+                            "            font-weight: bold;" +
+                            "        }" +
+                            "        .footer { margin-top: 20px; font-size: 14px; color: #7f8c8d; }" +
+                            "        .details { margin: 15px 0; }" +
+                            "        .detail-item { margin-bottom: 8px; }" +
+                            "        .detail-label { font-weight: bold; color: #2c3e50; }" +
+                            "    </style>" +
+                            "    <script>" +
+                            "        function openOffer(url) {" +
+                            "            // Try to find existing window with our offer" +
+                            "            var offerWindow = window.open('', 'offerWindow');" +
+                            "            " +
+                            "            if (offerWindow && offerWindow.location.href !== 'about:blank') {" +
+                            "                // Window exists, just navigate it to the new URL" +
+                            "                offerWindow.location.href = url;" +
+                            "                offerWindow.focus();" +
+                            "            } else {" +
+                            "                // Window doesn't exist, open a new one" +
+                            "                offerWindow = window.open(url, 'offerWindow');" +
+                            "            }" +
+                            "            return false;" +
+                            "        }" +
+                            "    </script>" +
+                            "</head>" +
+                            "<body>" +
+                            "    <div class='header'>Action Required: Offer Reminder</div>" +
+                            "    <div class='content'>" +
+                            "        <p>Dear %s,</p>" +
+                            "        <p>This is a friendly reminder that your action is required on the following offer by <strong>%s</strong>:</p>" +
+                            "        <div class='details'>" +
+                            "            <div class='detail-item'><span class='detail-label'>Candidate Name:</span> %s</div>" +
+                            "            <div class='detail-item'><span class='detail-label'>Description:</span> %s</div>" +
+                            "        </div>" +
+                            "        <p>Please click the button below to review the offer:</p>" +
+                            "        <a href='%s' class='button' onclick='return openOffer(this.href)'>Review Offer</a>" +
+                            "        <p>Or copy and paste this link into your browser:<br>" +
+                            "        <small>%s</small></p>" +
+                            "    </div>" +
+                            "    <div class='footer'>" +
+                            "        <p>Best regards,<br>IMS</p>" +
+                            "    </div>" +
+                            "</body>" +
+                            "</html>",
                     user.getFullname(),
                     offer.getDueDate().format(DateTimeFormatter.ofPattern("MMM dd, yyyy")),
                     offer.getCandidateName(),

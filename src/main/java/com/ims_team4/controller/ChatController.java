@@ -1,6 +1,5 @@
 package com.ims_team4.controller;
 
-import com.ims_team4.controller.utils.UrlIdEncoder;
 import com.ims_team4.dto.ChatDTO;
 import com.ims_team4.dto.ChatDetailDTO;
 import com.ims_team4.dto.EmployeeDTO;
@@ -8,6 +7,7 @@ import com.ims_team4.model.utils.HrRole;
 import com.ims_team4.service.ChatDetailService;
 import com.ims_team4.service.ChatService;
 import com.ims_team4.service.EmployeeService;
+import com.ims_team4.utils.UrlIdEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
