@@ -1,5 +1,6 @@
 package com.ims_team4.utils.excel;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.stereotype.Component;
@@ -12,10 +13,9 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+@Slf4j
 @Component
 public class ImportExcelFile {
-    private static final Logger LOGGER = Logger.getLogger(ImportExcelFile.class.getName());
-
     public List<List<String>> readExcelFile(InputStream inputStream) throws IOException {
         List<List<String>> data = new ArrayList<>();
         try (XSSFWorkbook workbook = new XSSFWorkbook(inputStream)) {
@@ -25,7 +25,7 @@ public class ImportExcelFile {
                 data.add(rowData);
             }
         } catch (Exception e) {
-            LOGGER.log(Level.SEVERE, "Lỗi khi đọc file Excel", e);
+            log.error("Lỗi khi đọc file Excel", e);
             throw e;
         }
         return data;

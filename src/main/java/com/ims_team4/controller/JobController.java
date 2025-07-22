@@ -7,6 +7,7 @@ import com.ims_team4.model.*;
 import com.ims_team4.service.*;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -21,8 +22,8 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.security.Principal;
 import java.util.Optional;
-import java.util.logging.Logger;
 
+@Slf4j
 @Controller
 @RequestMapping("/jobs")
 // Nam Phong
@@ -34,7 +35,6 @@ public class JobController {
     private final UserService userService;
     private final JobExcelImporterService jobExcelImporterService;
     private final DashboardService dashboardService;
-    private final Logger logger = Logger.getLogger(this.getClass().getName());
 
     public JobController(JobService jobService, SkillService skillService, BenefitService benefitService,
                          LevelService levelService, UserService userService,
@@ -189,7 +189,7 @@ public class JobController {
             jobExcelImporterService.importJobsFromExcel(managerId, file);
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("errorMessage", "Failed to import job: " + e.getMessage());
-            logger.log(java.util.logging.Level.SEVERE, e.getMessage(), e);
+            log.error(e.getMessage(), e);
         }
         return "redirect:/jobs/manager/list/" + managerId;
     }
@@ -284,7 +284,7 @@ public class JobController {
             redirectAttributes.addFlashAttribute("successMessage", "Import Job successfully!");
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("errorMessage", "Failed to import job: " + e.getMessage());
-            logger.log(java.util.logging.Level.SEVERE, e.getMessage(), e);
+            log.error(e.getMessage(), e);
         }
         return "redirect:/jobs/admin/listAllJob";
     }

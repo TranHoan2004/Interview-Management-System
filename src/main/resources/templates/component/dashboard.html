@@ -61,19 +61,19 @@
 
                 <div th:if="${session.account.getRole().name().equals('ROLE_RECRUITER')}" class="d-inline-flex">
                     <p th:text="${list_offers}"></p>&nbsp;
-                    <a th:href="@{/offer/offer/{encodedId}(encodedId=${T(com.ims_team4.controller.utils.UrlIdEncoder).encodeId(session.account.userID)})}"
+                    <a th:href="@{/offer/offer/{encodedId}(encodedId=${T(com.ims_team4.utils.UrlIdEncoder).encodeId(session.account.userID)})}"
                         th:text="${click_link}"></a>
                 </div>
 
                 <div th:if="${session.account.getRole().name().equals('ROLE_MANAGER')}" class="d-inline-flex">
                     <p th:text="${list_offers}"></p>&nbsp;
-                    <a th:href="@{/offer/managerOffer/{encodedId}(encodedId=${T(com.ims_team4.controller.utils.UrlIdEncoder).encodeId(session.account.userID)})}"
+                    <a th:href="@{/offer/managerOffer/{encodedId}(encodedId=${T(com.ims_team4.utils.UrlIdEncoder).encodeId(session.account.userID)})}"
                         th:text="${click_link}"></a>
                 </div>
 
                 <div class="d-inline-flex" th:if="${session.account.getRole().name().equals('ROLE_ADMINISTRATOR')}">
                     <p th:text="${list_offers}"></p>&nbsp;
-                    <a th:href="@{/offer/adminOffer/{encodedId}(encodedId=${T(com.ims_team4.controller.utils.UrlIdEncoder).encodeId(session.account.userID)})}"
+                    <a th:href="@{/offer/adminOffer/{encodedId}(encodedId=${T(com.ims_team4.utils.UrlIdEncoder).encodeId(session.account.userID)})}"
                         th:text="${click_link}"></a>
                 </div>
 

@@ -912,7 +912,7 @@
         </a>
 
         <div th:if="${session.account.getRole().name().equals('ROLE_RECRUITER')}">
-            <a th:href="@{/offer/offer/{encodedId}(encodedId=${T(com.ims_team4.controller.utils.UrlIdEncoder).encodeId(session.account.userID)})}"
+            <a th:href="@{/offer/offer/{encodedId}(encodedId=${T(com.ims_team4.utils.UrlIdEncoder).encodeId(session.account.userID)})}"
                 id="offer-link">
                 <i class="fa-solid fa-file-alt"></i>
                 <div th:text="${offerLeftSidebar}"></div>
@@ -920,7 +920,7 @@
         </div>
 
         <div th:if="${session.account.getRole().name().equals('ROLE_MANAGER')}">
-            <a th:href="@{/offer/managerOffer/{encodedId}(encodedId=${T(com.ims_team4.controller.utils.UrlIdEncoder).encodeId(session.account.userID)})}"
+            <a th:href="@{/offer/managerOffer/{encodedId}(encodedId=${T(com.ims_team4.utils.UrlIdEncoder).encodeId(session.account.userID)})}"
                 id="manager-offer-link">
                 <i class="fa-solid fa-file-alt"></i>
                 <div th:text="${offerLeftSidebar}"></div>
@@ -928,7 +928,7 @@
         </div>
 
         <div th:if="${session.account.getRole().name().equals('ROLE_ADMINISTRATOR')}">
-            <a th:href="@{/offer/adminOffer/{encodedId}(encodedId=${T(com.ims_team4.controller.utils.UrlIdEncoder).encodeId(session.account.userID)})}"
+            <a th:href="@{/offer/adminOffer/{encodedId}(encodedId=${T(com.ims_team4.utils.UrlIdEncoder).encodeId(session.account.userID)})}"
                 id="admin-offer-link">
                 <i class="fa-solid fa-file-alt"></i>
                 <div th:text="${offerLeftSidebar}"></div>

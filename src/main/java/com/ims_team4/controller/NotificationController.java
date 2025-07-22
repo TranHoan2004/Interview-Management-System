@@ -5,6 +5,7 @@ import com.ims_team4.dto.NotificationDTO;
 import com.ims_team4.dto.request.MessageRequest;
 import com.ims_team4.service.NotificationService;
 import jakarta.servlet.http.HttpSession;
+import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
@@ -18,14 +19,13 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
-import java.util.logging.Logger;
 
+@Slf4j
 @Controller
 // HoanTX
 // Chú ý: Tạo phương thức mới để sử dụng, tránh ghi đè phương thuc cũ
 public class NotificationController {
     private final NotificationService nSrv;
-    private final Logger logger = Logger.getLogger(NotificationController.class.getName());
 
     public NotificationController(NotificationService nSrv) {
         this.nSrv = nSrv;
@@ -42,7 +42,7 @@ public class NotificationController {
     }
 
     private NotificationDTO getNotificationDTO(@NotNull final MessageRequest message) {
-        logger.info("create notification");
+        log.info("create notification");
         return NotificationDTO.builder()
                 .id(UUID.randomUUID().getMostSignificantBits() & Long.MAX_VALUE)
                 .userID(Long.valueOf(message.getMessage().getTo()))
@@ -70,7 +70,7 @@ public class NotificationController {
                     .sorted(Comparator.comparing(NotificationDTO::getStatus))
                     .toList();
         } catch (Exception e) {
-            logger.warning(e.getMessage());
+            log.error(e.getMessage(), e);
         }
         return ResponseEntity.ok(pseudoList);
     }
@@ -83,7 +83,7 @@ public class NotificationController {
             model.addAttribute("notification",
                     notification);
         } catch (Exception e) {
-            logger.warning(e.getMessage());
+            log.error(e.getMessage(), e);
             model.addAttribute("error", e.getMessage());
         }
         return "notification/notification-details";
@@ -107,10 +107,10 @@ public class NotificationController {
             model.addAttribute("list", list);
             model.addAttribute("size", size);
             model.addAttribute("currentPage", index);
-            logger.info("current page: " + index);
-            logger.info("size: " + size);
+            log.info("current page: {}", index);
+            log.info("size: {}", size);
         } catch (Exception e) {
-            logger.warning(e.getMessage());
+            log.error(e.getMessage(), e);
             model.addAttribute("error", e.getMessage());
         }
         return "notification/notification";
@@ -120,7 +120,7 @@ public class NotificationController {
     @PostMapping("/notification/update/{id}")
     @ResponseBody
     public String updateNotificationAndRender(@PathVariable("id") Long id) {
-        logger.info("Go here");
+        log.info("Go here");
         NotificationDTO noti = nSrv.updateNotificationDTO(id);
         return noti.getLink();
     }

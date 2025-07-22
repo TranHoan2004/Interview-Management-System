@@ -1,7 +1,5 @@
-package com.ims_team4.controller;
+package com.ims_team4.controller.utils;
 
-import com.ims_team4.controller.utils.SessionController;
-import com.ims_team4.controller.utils.SetupGlobalAttributes;
 import com.ims_team4.dto.EmployeeDTO;
 import jakarta.servlet.http.HttpSession;
 import org.jetbrains.annotations.NotNull;

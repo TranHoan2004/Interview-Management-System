@@ -7,6 +7,8 @@ import com.ims_team4.repository.EmployeeRepository;
 import com.ims_team4.service.EmployeeService;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -21,17 +23,13 @@ import java.util.stream.Collectors;
 
 import static com.ims_team4.utils.RandomCode.generateSixRandomCodes;
 
+@Slf4j
 @Service
+@RequiredArgsConstructor
 // TrangNT
 public class EmployeeServiceImpl implements EmployeeService {
     private final EmployeeRepository employeeRepository;
     private final PasswordEncoder encoder;
-    private final Logger logger = java.util.logging.Logger.getLogger(EmployeeServiceImpl.class.getName());
-
-    public EmployeeServiceImpl(PasswordEncoder encoder, EmployeeRepository employeeRepository) {
-        this.encoder = encoder;
-        this.employeeRepository = employeeRepository;
-    }
 
     @Override
     public List<EmployeeDTO> findAll() {
@@ -159,9 +157,9 @@ public class EmployeeServiceImpl implements EmployeeService {
         Optional<Employee> employee = employeeRepository.findByUserId(userId);
 
         if (employee.isEmpty()) {
-            logger.severe("❌ Employee NOT FOUND for User ID: " + userId);
+            log.error("❌ Employee NOT FOUND for User ID: {}", userId);
         } else {
-            logger.info("✅ Employee FOUND: " + employee.get().getUser().getFullname());
+            log.info("✅ Employee FOUND: {}", employee.get().getUser().getFullname());
         }
 
         return employee;

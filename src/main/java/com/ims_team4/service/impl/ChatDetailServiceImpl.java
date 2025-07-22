@@ -15,14 +15,11 @@ import java.util.stream.Collectors;
 
 @Service
 public class ChatDetailServiceImpl implements ChatDetailService {
-
-    private ChatDetailRepository chatDetailRepository;
-
+    private final ChatDetailRepository chatDetailRepository;
 
     public ChatDetailServiceImpl(ChatDetailRepository chatDetailRepository) {
         this.chatDetailRepository = chatDetailRepository;
     }
-
 
     private ChatDetailDTO convertToDTO(@NotNull ChatDetail chatDetail) {
         return ChatDetailDTO.builder()

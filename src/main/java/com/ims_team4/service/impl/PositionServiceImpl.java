@@ -48,7 +48,4 @@ public class PositionServiceImpl implements PositionService {
         return positionRepository.getAllPosition();  // ✅ Dùng lại phương thức có sẵn
 
     }
-
-
-
 }

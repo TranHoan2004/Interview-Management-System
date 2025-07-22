@@ -8,15 +8,13 @@ import com.ims_team4.repository.InterviewRepository;
 import com.ims_team4.service.InterviewService;
 import jakarta.transaction.Transactional;
 import jakarta.validation.constraints.NotNull;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 
 import java.sql.Date;
-import java.time.LocalTime;
 import java.util.List;
-import java.util.Set;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 /**
@@ -24,11 +22,11 @@ import java.util.stream.Collectors;
  * <p>
  * Adjust exception handling, logging, or candidate/job status updates as needed.
  */
+@Slf4j
 @Service
 @Transactional
 public class InterviewServiceImpl implements InterviewService {
     private final InterviewRepository interviewRepository;
-    private final Logger log = Logger.getLogger(this.getClass().getName());
 
     @Autowired
     public InterviewServiceImpl(InterviewRepository interviewRepository) {
@@ -98,7 +96,7 @@ public class InterviewServiceImpl implements InterviewService {
                 .orElseThrow(() -> new RuntimeException("Interview not found."));
 
         if (old.getStatus() == InterviewStatus.CANCELLED
-            || old.getStatus() == InterviewStatus.INTERVIEWED) {
+                || old.getStatus() == InterviewStatus.INTERVIEWED) {
             throw new IllegalStateException("Cannot edit a CANCELLED or INTERVIEWED interview.");
         }
 
@@ -134,7 +132,7 @@ public class InterviewServiceImpl implements InterviewService {
                 .orElseThrow(() -> new RuntimeException("Interview not found with ID=" + interviewId));
 
         if (interview.getStatus() == InterviewStatus.INTERVIEWED
-            || interview.getStatus() == InterviewStatus.CANCELLED) {
+                || interview.getStatus() == InterviewStatus.CANCELLED) {
             throw new IllegalStateException("Interview is already INTERVIEWED or CANCELLED.");
         }
 
@@ -215,7 +213,7 @@ public class InterviewServiceImpl implements InterviewService {
         }
 
         return dto;
-      }
+    }
 
 
     //VuTD

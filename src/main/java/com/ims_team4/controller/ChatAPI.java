@@ -1,4 +1,4 @@
-package com.ims_team4.controller.utils;
+package com.ims_team4.controller;
 
 import com.ims_team4.dto.ChatDTO;
 import com.ims_team4.dto.ChatDetailDTO;

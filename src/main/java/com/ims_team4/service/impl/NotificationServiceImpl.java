@@ -5,6 +5,8 @@ import com.ims_team4.model.Notification;
 import com.ims_team4.model.Users;
 import com.ims_team4.repository.NotificationRepository;
 import com.ims_team4.service.NotificationService;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -15,17 +17,13 @@ import java.util.List;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
+@RequiredArgsConstructor
 // HoanTX
 public class NotificationServiceImpl implements NotificationService {
     private final NotificationRepository repo;
     private final UserServiceImpl userService;
-    private final Logger logger = Logger.getLogger(NotificationServiceImpl.class.getName());
-
-    public NotificationServiceImpl(NotificationRepository repo, UserServiceImpl userService) {
-        this.repo = repo;
-        this.userService = userService;
-    }
 
     @Override
     public List<NotificationDTO> getAllNotificationByUserID(Long id) throws Exception {
@@ -45,7 +43,7 @@ public class NotificationServiceImpl implements NotificationService {
 
     @Override
     public Page<NotificationDTO> getPaginatedNotificationDTOByUserID(Long id, int start, int maxResult) {
-        logger.info("getNotificationDTOByUserID in service impl");
+        log.info("getNotificationDTOByUserID in service impl");
         Pageable page = PageRequest.of(start, maxResult);
         return repo.getAllNotificationByUserID(id, page).map(this::convert);
     }

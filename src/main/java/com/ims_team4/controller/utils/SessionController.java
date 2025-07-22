@@ -3,6 +3,7 @@ package com.ims_team4.controller.utils;
 import com.ims_team4.dto.EmployeeDTO;
 import com.ims_team4.service.EmployeeService;
 import jakarta.servlet.http.HttpSession;
+import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -19,12 +20,11 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
+@Slf4j
 @Component
 public class SessionController {
     private final EmployeeService empSrv;
-    private final Logger logger = Logger.getLogger(this.getClass().getName());
 
     public SessionController(EmployeeService empSrv) {
         this.empSrv = empSrv;
@@ -34,23 +34,23 @@ public class SessionController {
     public String getEmailFromSession(@NotNull HttpSession session) {
         SecurityContext context = (SecurityContext) session.getAttribute("SPRING_SECURITY_CONTEXT");
         if (context != null) {
-            logger.info("context not null " + context.getAuthentication().getPrincipal());
+            log.info("context not null {}", context.getAuthentication().getPrincipal());
             Authentication authentication = context.getAuthentication();
             if (authentication != null) {
                 if (authentication.getPrincipal() instanceof UserDetails user) {
-                    logger.log(Level.FINE, "getUserDetailsFromSession: " + user);
+                    log.info("getUserDetailsFromSession: {}", user);
                     return user.getUsername();
                 }
             }
         } else {
-            logger.log(Level.WARNING, "No SecurityContext found in session");
+            log.error("No SecurityContext found in session");
         }
         return null;
     }
 
     public EmployeeDTO getEntityFromSession(HttpSession session) {
         String email = getEmailFromSession(session);
-        logger.info("Get email from session: " + email);
+        log.info("Get email from session: {}", email);
         EmployeeDTO account = EmployeeDTO.builder().build();
         if (email != null) {
             account = empSrv.getEmployeeDTOByEmail(email);

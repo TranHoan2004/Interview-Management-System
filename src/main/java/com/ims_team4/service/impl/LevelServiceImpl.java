@@ -38,11 +38,4 @@ public class LevelServiceImpl implements LevelService {
         return new HashSet<>(levels != null ? levels : Collections.emptyList());
 
     }
-
-    private LevelDTO convertToDTO(@NotNull Level Level) {
-        return LevelDTO.builder()
-                .id(Level.getId())
-                .name(Level.getName())
-                .build();
-    }
 }

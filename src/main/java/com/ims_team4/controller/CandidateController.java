@@ -12,6 +12,7 @@ import com.ims_team4.service.impl.CandidateServiceImpl;
 import com.ims_team4.utils.email.EmailService;
 import jakarta.servlet.http.HttpSession;
 import jakarta.transaction.Transactional;
+import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.http.ContentDisposition;
@@ -28,9 +29,8 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
+@Slf4j
 @Controller
 @RequestMapping("/candidate")
 // Dang Momo
@@ -41,7 +41,6 @@ public class CandidateController {
     private final HighestLevelService highestLevelService;
     private final PositionService positionService;
     private final SkillService skillService;
-    private final Logger log = Logger.getLogger(CandidateController.class.getName());
     private final CandidateServiceImpl candidateServiceImpl;
     private final UserRepository userRepository;
     private final EmailService emailService;
@@ -70,7 +69,7 @@ public class CandidateController {
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication != null && authentication.isAuthenticated()
-            && !"anonymousUser".equals(authentication.getPrincipal())) {
+                && !"anonymousUser".equals(authentication.getPrincipal())) {
             Object principal = authentication.getPrincipal();
             if (principal instanceof UserDetails) {
                 model.addAttribute("user", principal);
@@ -237,15 +236,15 @@ public class CandidateController {
                 throw new Exception("Candidate cannot be deleted unless status is 'OPEN'.");
             }
         } catch (Exception e) {
-            log.log(Level.SEVERE, e.getMessage(), e);
+            log.error(e.getMessage(), e);
             redirectAttributes.addFlashAttribute("error", e.getMessage());
             return "redirect:/candidate/list";
         }
 
-        log.info("Proceeding to delete Candidate with userId: " + userId);
+        log.info("Proceeding to delete Candidate with userId: {}", userId);
         boolean candidateDeleted = candidateService.deleteCandidateByUserId(userId);
         if (candidateDeleted) {
-            log.info("Proceeding to delete User with userId: " + userId);
+            log.info("Proceeding to delete User with userId: {}", userId);
             userService.deleteUserById(userId);
             redirectAttributes.addFlashAttribute("success", "Candidate deleted successfully.");
         } else {
@@ -367,31 +366,30 @@ public class CandidateController {
                 redirectAttributes.addFlashAttribute("editCandidateFailed", "Edit candidate failed!");
             }
 
-
             if (emailExists || phoneExists) {
                 return "redirect:/candidate/edit/" + candidateDTO.getUserId();
             }
 
-            log.info("🔄 [UPDATE] Request received for Candidate ID: " + candidateDTO.getUserId());
+            log.info("\uD83D\uDD04 [UPDATE] Request received for Candidate ID: {}", candidateDTO.getUserId());
 
             // In ra giá trị recruiterId nhận từ form
-            log.info("📌 Received Recruiter ID from form: " + candidateDTO.getRecruiter());
+            log.info("\uD83D\uDCCC Received Recruiter ID from form: {}", candidateDTO.getRecruiter());
 
             // Nếu có CV mới, cập nhật vào DTO
             if (cvFile != null && !cvFile.isEmpty()) {
                 candidateDTO.setCv(cvFile.getBytes());
-                log.info("📂 CV file uploaded: " + cvFile.getOriginalFilename());
+                log.info("\uD83D\uDCC2 CV file uploaded: {}", cvFile.getOriginalFilename());
             }
 
             // Lấy HighestLevel
             Optional<HighestLevel> highestLevelOpt = highestLevelService
                     .getHighestLevelById(candidateDTO.getHighestEducation());
             if (highestLevelOpt.isEmpty()) {
-                log.severe("❌ Highest Level not found for ID: " + candidateDTO.getHighestEducation());
+                log.error("❌ Highest Level not found for ID: {}", candidateDTO.getHighestEducation());
                 redirectAttributes.addFlashAttribute("error", "Highest Level not found.");
                 return "redirect:/candidate/list";
             }
-            log.info("✅ Highest Level found: " + highestLevelOpt.get().getName());
+            log.info("✅ Highest Level found: {}", highestLevelOpt.get().getName());
 
             // Lấy danh sách kỹ năng từ database
             Set<Skill> updatedSkills = new HashSet<>();
@@ -403,18 +401,18 @@ public class CandidateController {
             Employee newRecruiter = null;
             if (candidateDTO.getRecruiter() != null && !candidateDTO.getRecruiter().isEmpty()) {
                 Long recruiterUserId = Long.parseLong(candidateDTO.getRecruiter());
-                log.info("🔍 Fetching recruiter with ID: " + recruiterUserId);
+                log.info("Fetching recruiter with ID: {}", recruiterUserId);
 
                 newRecruiter = employeeService.getEmployeeByUserId(recruiterUserId)
                         .orElseThrow(() -> new RuntimeException("❌ Recruiter not found with ID: " + recruiterUserId));
 
-                log.info("✅ New Recruiter found: " + newRecruiter.getUser().getFullname());
+                log.info("✅ New Recruiter found: {}", newRecruiter.getUser().getFullname());
             }
 
             // Lấy User để cập nhật thông tin cá nhân
             Users user = userService.getUser(candidateDTO.getUserId());
             if (user == null) {
-                log.severe("❌ User not found for Candidate ID: " + candidateDTO.getUserId());
+                log.error("❌ User not found for Candidate ID: {}", candidateDTO.getUserId());
                 redirectAttributes.addFlashAttribute("error", "User not found.");
                 return "redirect:/candidate/list";
             }
@@ -442,10 +440,9 @@ public class CandidateController {
 
                 // ✅ Kiểm tra nếu status được cập nhật thành "Waiting for Interview"
                 if ("WAITING_FOR_INTERVIEW".equals(candidateDTO.getStatus())) {
-                    log.info("📌 Candidate status received from form: " + candidateDTO.getStatus());
+                    log.info("\uD83D\uDCCC Candidate status received from form: {}", candidateDTO.getStatus());
                     redirectAttributes.addFlashAttribute("showInterviewModal", true);
-                    log.info("📌 showInterviewModal flag set in controller: "
-                             + redirectAttributes.getFlashAttributes().get("showInterviewModal"));
+                    log.info("\uD83D\uDCCC showInterviewModal flag set in controller: {}", redirectAttributes.getFlashAttributes().get("showInterviewModal"));
                     redirectAttributes.addFlashAttribute("candidateName", candidateDTO.getFullName());
                     redirectAttributes.addFlashAttribute("candidateUserId", candidateDTO.getUserId());
                     redirectAttributes.addFlashAttribute("jobId", candidateDTO.getPositionId());
@@ -456,7 +453,7 @@ public class CandidateController {
             }
 
         } catch (Exception e) {
-            log.severe("❌ Unexpected error: " + e.getMessage());
+            log.error("❌ Unexpected error: {}", e.getMessage());
             redirectAttributes.addFlashAttribute("error", "Unexpected error: " + e.getMessage());
         }
 
@@ -513,36 +510,36 @@ public class CandidateController {
                         </head>
                         <body style="font-family: Arial, sans-serif; line-height: 1.6; margin: 20px; padding: 20px;">
                             <h2 style="color: #0056b3; text-align: center;">THƯ MỜI THAM GIA BUỔI PHỎNG VẤN</h2>
-
+                        
                             <p><b>Thân gửi %s,</b></p>
-
+                        
                             <p>Lời đầu tiên, chúng tôi xin trân trọng cảm ơn bạn đã quan tâm đến cơ hội làm việc tại FPT Software.</p>
-
+                        
                             <p>Sau khi xem xét hồ sơ của bạn, Phòng Tuyển dụng FPT Software trân trọng mời bạn tham dự buổi phỏng vấn tuyển dụng để trao đổi thêm về vị trí công việc phù hợp.</p>
-
+                        
                             <p><b>Thông tin buổi phỏng vấn của bạn như sau:</b></p>
                             <ul>
                                 <li><b>Thời gian:</b> Công ty sẽ sắp xếp lịch phỏng vấn và thông báo cho bạn qua email.</li>
                                 <li><b>Địa điểm:</b> Tòa nhà FPT Software Academy (Hòa Lạc)</li>
                                 <li><b>Người hỗ trợ:</b> Mr Minh Chuyên – 0389 289 922</li>
                             </ul>
-
+                        
                             <p><b>Lưu ý:</b></p>
                             <ul>
                                 <li>Theo dõi email để nhận thông tin chi tiết về thời gian và hình thức phỏng vấn.</li>
                                 <li>Tham gia phỏng vấn đầy đủ, đúng giờ (tới trước ít nhất 15 phút).</li>
                                 <li>Chuẩn bị kiến thức và tinh thần tốt trước khi tham gia phỏng vấn.</li>
                             </ul>
-
+                        
                             <p>Chúng tôi hy vọng sẽ có cơ hội làm việc cùng bạn trong thời gian tới!</p>
-
+                        
                             <p>Trân trọng cảm ơn!</p>
-
+                        
                             <hr>
-
+                        
                             <p><b>Trân trọng thông báo,</b></p>
                             <p><b>Công ty TNHH Phần mềm FPT</b></p>
-
+                        
                             <p>
                                 <b>MINH CHUYÊN (HUYENNV2)</b><br>
                                 FPT Software Academy<br>

@@ -19,6 +19,7 @@ import com.ims_team4.service.InterviewService;
 import com.ims_team4.utils.email.EmailService;
 import com.ims_team4.utils.email.EmailServiceImpl;
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -36,14 +37,13 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 /**
  * InterviewController handles requests related to Interview functionality: - UC16 list schedules - UC18 view details -
  * UC17 create schedule - UC20 edit schedule - UC21 cancel schedule - UC19 submit result - UC22 send reminder
  */
+@Slf4j
 @Controller
 @RequestMapping("/interview")
 @EnableScheduling
@@ -56,7 +56,6 @@ public class InterviewController {
     private final EmployeeRepository employeeRepository;
     private final JobRepository jobRepository;
     private final String INTERVIEW_LINK = "http://localhost:8080/interview";
-    private final Logger logger = Logger.getLogger(InterviewController.class.getName());
 
     public InterviewController(InterviewService interviewService, EmployeeService empSrv,
                                CandidateService cSrv, CandidateRepository candidateRepository,
@@ -201,7 +200,7 @@ public class InterviewController {
 
         // candidate
         if (interviewDTO.getCandidateId() != 0
-            && (existing.getCandidate() == null
+                && (existing.getCandidate() == null
                 || !existing.getCandidate().getId().equals(interviewDTO.getCandidateId()))) {
             Candidate candidate = candidateRepository.findById(interviewDTO.getCandidateId())
                     .orElseThrow(() -> new RuntimeException("Candidate not found!"));
@@ -210,7 +209,7 @@ public class InterviewController {
 
         // job
         if (interviewDTO.getJobId() != null
-            && (existing.getJob() == null
+                && (existing.getJob() == null
                 || !existing.getJob().getId().equals(interviewDTO.getJobId()))) {
             Job job = jobRepository.findById(interviewDTO.getJobId())
                     .orElseThrow(() -> new RuntimeException("Job not found!"));
@@ -326,7 +325,7 @@ public class InterviewController {
         try {
             List<InterviewDTO> list = checkUpcomingInterview();
             if (!CollectionUtils.isEmpty(list)) {
-                logger.info("There is " + list.size() + " upcoming interviews at" + LocalTime.now().plusHours(24));
+                log.info("There is {} upcoming interviews at{}", list.size(), LocalTime.now().plusHours(24));
                 list.forEach(interviewDTO -> {
                     CandidateDTO candidateDTO = cSrv.getCandidateByUserId(interviewDTO.getCandidateId()).getFirst();
                     String recruiterEmail = empSrv.getEmployeeById(Math.toIntExact(interviewDTO.getRecruiterOwner())).getEmail();
@@ -334,11 +333,9 @@ public class InterviewController {
                     sendEmail(interviewDTO, candidateDTO, recruiterEmail, body);
                     interviewService.updateNotificationSent(interviewDTO.getId());
                 });
-//            } else {
-//                logger.info("There is no upcoming interviews at" + LocalTime.now().plusHours(24));
             }
         } catch (Exception e) {
-            logger.log(Level.SEVERE, e.getMessage(), e);
+            log.error(e.getMessage(), e);
         }
     }
 
@@ -356,20 +353,20 @@ public class InterviewController {
                            String body) {
         EmailService service = new EmailServiceImpl();
         String content = """
-                                    <!DOCTYPE html>
-                                    <html lang="en">
-                                    <head>
-                                         <meta charset="UTF-8">
-                                         <title>Reminder for upcoming interview schedule</title>
-                                    </head>
-                                    <body>
-                                    <p>This email is from IMS system,<p>
-                                 """ + body +
-                         "Thanks & Regards!<br/>IMS Team</body></html>";
+                   <!DOCTYPE html>
+                   <html lang="en">
+                   <head>
+                        <meta charset="UTF-8">
+                        <title>Reminder for upcoming interview schedule</title>
+                   </head>
+                   <body>
+                   <p>This email is from IMS system,<p>
+                """ + body +
+                "Thanks & Regards!<br/>IMS Team</body></html>";
         String subject = "no-reply-email-IMS-system <" + interviewDTO.getTitle() + ">";
         // candidateDTO.getCvLink() not found, so can not send email, better using an existing file in your local computer.
         service.sendEmailAttachFile(recruiterEmail, subject, content, candidateDTO.getCvLink());
-        logger.info("Email has been sent ");
+        log.info("Email has been sent ");
     }
 
     // HoanTX
@@ -382,16 +379,16 @@ public class InterviewController {
         String endTime = interviewDTO.getEndTime().getHour() + ":" + interviewDTO.getEndTime().getMinute();
         String timeIndicators = interviewDTO.getStartTime().isBefore(LocalTime.NOON) ? " a.m " : " p.m ";
         String str = startTime + timeIndicators + "to " + endTime + timeIndicators;
-        logger.info("Start to send email. Upcoming interview schedule: " + interviewDTO);
+        log.info("Start to send email. Upcoming interview schedule: {}", interviewDTO);
         return """
-                           <p>You have an interview schedule TODAY at
-                       """ + str + "</p>" +
-               "<p>With Candidate " + candidateDTO.getFullName() +
-               ", position " + candidateDTO.getPositionName() +
-               ", the CV is attached with this no-reply-email</p>" +
-               "<p>If anything wrong, please refer recruiter " + recruiterEmail +
-               " or visit our website " + interviewScheduleURL + "</p>" +
-               "<p>Please join interview room ID: " + interviewDTO.getMeetId() + "</p>";
+                    <p>You have an interview schedule TODAY at
+                """ + str + "</p>" +
+                "<p>With Candidate " + candidateDTO.getFullName() +
+                ", position " + candidateDTO.getPositionName() +
+                ", the CV is attached with this no-reply-email</p>" +
+                "<p>If anything wrong, please refer recruiter " + recruiterEmail +
+                " or visit our website " + interviewScheduleURL + "</p>" +
+                "<p>Please join interview room ID: " + interviewDTO.getMeetId() + "</p>";
     }
     // </editor-fold>
 }

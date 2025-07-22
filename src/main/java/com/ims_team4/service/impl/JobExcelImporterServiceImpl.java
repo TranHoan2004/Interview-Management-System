@@ -1,12 +1,12 @@
 package com.ims_team4.service.impl;
 
-import com.ims_team4.model.Benefit;
 import com.ims_team4.model.Job;
 import com.ims_team4.model.Users;
 import com.ims_team4.repository.*;
 import com.ims_team4.service.JobDataParserService;
 import com.ims_team4.service.JobExcelImporterService;
 import com.ims_team4.utils.excel.ImportExcelFile;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -15,6 +15,7 @@ import java.util.HashSet;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class JobExcelImporterServiceImpl implements JobExcelImporterService {
 
     private final UserRepository userRepository;
@@ -24,16 +25,6 @@ public class JobExcelImporterServiceImpl implements JobExcelImporterService {
     private final LevelRepository levelRepository;
     private final BenefitRepository benefitRepository;
     private final JobRepository jobRepository;
-
-    public JobExcelImporterServiceImpl(UserRepository userRepository, ImportExcelFile importExcelFile, JobDataParserService jobDataParserService, SkillRepository skillRepository, LevelRepository levelRepository, BenefitRepository benefitRepository, JobRepository jobRepository) {
-        this.userRepository = userRepository;
-        this.importExcelFile = importExcelFile;
-        this.jobDataParserService = jobDataParserService;
-        this.skillRepository = skillRepository;
-        this.levelRepository = levelRepository;
-        this.benefitRepository = benefitRepository;
-        this.jobRepository = jobRepository;
-    }
 
     @Override
     @Transactional

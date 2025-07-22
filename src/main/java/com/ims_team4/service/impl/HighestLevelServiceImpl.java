@@ -37,7 +37,4 @@ public class HighestLevelServiceImpl implements HighestLevelService {
     public Optional<HighestLevel> getHighestLevelById(long id) {
         return highestLevelRepository.findByIdCustom(id); // ✅ Gọi repository đúng cách
     }
-
-
-
 }

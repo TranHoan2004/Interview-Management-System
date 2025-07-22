@@ -12,6 +12,8 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.data.domain.Page;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -32,11 +34,11 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Base64;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
+@Slf4j
 @Controller
 @RequestMapping("/offer")
+@RequiredArgsConstructor
 // Duc Long
 public class OfferController {
     private final OfferService offerService;
@@ -52,27 +54,6 @@ public class OfferController {
     private final TemplateEngine templateEngine;
     private final ChatDetailService chatDetailService;
     private final ChatService chatService;
-    private final Logger logger = Logger.getLogger(OfferController.class.getName());
-
-    public OfferController(CandidateService candidateService, UserService userService,
-                           DepartmentService departmentService, StatusOfferService statusOfferService, PositionService positionService,
-                           EmployeeService employeeService, InterviewService interviewService, ContractTypeService contractTypeService,
-                           LevelService levelService, OfferService offerService, TemplateEngine templateEngine,
-                           ChatService chatService, ChatDetailService chatDetailService) {
-        this.candidateService = candidateService;
-        this.userService = userService;
-        this.departmentService = departmentService;
-        this.statusOfferService = statusOfferService;
-        this.positionService = positionService;
-        this.employeeService = employeeService;
-        this.interviewService = interviewService;
-        this.contractTypeService = contractTypeService;
-        this.levelService = levelService;
-        this.offerService = offerService;
-        this.templateEngine = templateEngine;
-        this.chatService = chatService;
-        this.chatDetailService = chatDetailService;
-    }
 
     @GetMapping("/offer/{encodedId}")
     public String index(@RequestParam(name = "page", defaultValue = "1") int page,
@@ -255,7 +236,7 @@ public class OfferController {
             redirectAttributes.addFlashAttribute("msg",
                     success ? "Change has been successfully updated" : "Failed to update change");
         } catch (Exception e) {
-            logger.log(Level.ALL, e.getMessage(), e);
+            log.error(e.getMessage(), e);
         }
         String role = employeeService.getEmployeeById(rid).getRole().name();
         if (role.equals(HrRole.ROLE_MANAGER.name())) {
@@ -320,7 +301,7 @@ public class OfferController {
             redirectAttributes.addFlashAttribute("msg",
                     success ? "Sucessfully created offer" : "Failed to created offer");
         } catch (Exception e) {
-            logger.log(Level.ALL, e.getMessage(), e);
+            log.error(e.getMessage(), e);
         }
 
         return "redirect:/offer/offer/" + UrlIdEncoder.encodeId(Integer.parseInt(rid));
@@ -611,7 +592,7 @@ public class OfferController {
 
             emailService.sendNormalEmail(user.getEmail(), subject, emailContent);
         } catch (Exception e) {
-            logger.warning(e.getMessage());
+            log.error(e.getMessage(), e);
         }
     }
 

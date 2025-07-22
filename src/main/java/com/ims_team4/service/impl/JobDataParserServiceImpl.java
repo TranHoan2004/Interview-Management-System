@@ -30,7 +30,7 @@ public class JobDataParserServiceImpl implements JobDataParserService {
         double excelDate = parseDouble(excelDateStr, "Invalid Excel serial date format: ");
         if (excelDate > 0) {
             long days = (long) excelDate;
-            return LocalDate.of(1900, 1, 1).plus(days - 2, ChronoUnit.DAYS); // Excel tính 1900 là năm nhuận, cần trừ đi 2 ngày
+            return LocalDate.of(1900, 1, 1).plusDays(days - 2); // Excel tính 1900 là năm nhuận, cần trừ đi 2 ngày
         } else {
             throw new IllegalArgumentException("Invalid Excel serial date: " + excelDateStr);
         }

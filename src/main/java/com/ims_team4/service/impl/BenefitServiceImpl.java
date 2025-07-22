@@ -31,7 +31,7 @@ public class BenefitServiceImpl implements BenefitService {
 
     @Override
     public Set<Benefit> getBenefitsByName(List<String> benefitNames) {
-        if(benefitNames == null || benefitNames.isEmpty()){
+        if (benefitNames == null || benefitNames.isEmpty()) {
             return Collections.emptySet();
         }
         Set<String> benefitNamesSet = new HashSet<>(benefitNames);
@@ -42,13 +42,6 @@ public class BenefitServiceImpl implements BenefitService {
 
     private BenefitDTO convertToDTO(@NotNull Benefit benefit) {
         return BenefitDTO.builder()
-                .id(benefit.getId())
-                .name(benefit.getName())
-                .build();
-    }
-
-    private Benefit convertEntity(@NotNull BenefitDTO benefit) {
-        return Benefit.builder()
                 .id(benefit.getId())
                 .name(benefit.getName())
                 .build();

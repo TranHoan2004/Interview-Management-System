@@ -2,6 +2,7 @@ package com.ims_team4.utils.excel;
 
 import jakarta.servlet.ServletOutputStream;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFFont;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
@@ -14,15 +15,13 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 // Duc Long
+@Slf4j
 public class ExportExcelFile<T> {
     private final XSSFWorkbook workbook;
     private XSSFSheet sheet;
     private final List<T> listData;
-    private final Logger logger = Logger.getLogger(this.getClass().getName());
 
     public ExportExcelFile(List<T> listData) {
         this.listData = listData;
@@ -58,20 +57,19 @@ public class ExportExcelFile<T> {
     private void createCell(@NotNull Row row, int columnCount, Object value, CellStyle style) {
         sheet.autoSizeColumn(columnCount);
         Cell cell = row.createCell(columnCount);
-        if (value instanceof Integer i) {
-            cell.setCellValue(i);
-        } else if (value instanceof Boolean b) {
-            cell.setCellValue(b);
-        } else if (value instanceof Long l) {
-            cell.setCellValue(l);
-        } else if (value instanceof LocalDate localDate) {
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-            cell.setCellValue(localDate.format(formatter));
-        } else if (value instanceof LocalDateTime localDateTime) {
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-            cell.setCellValue(localDateTime.format(formatter));
-        } else {
-            cell.setCellValue((String) value);
+        switch (value) {
+            case Integer i -> cell.setCellValue(i);
+            case Boolean b -> cell.setCellValue(b);
+            case Long l -> cell.setCellValue(l);
+            case LocalDate localDate -> {
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+                cell.setCellValue(localDate.format(formatter));
+            }
+            case LocalDateTime localDateTime -> {
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+                cell.setCellValue(localDateTime.format(formatter));
+            }
+            case null, default -> cell.setCellValue((String) value);
         }
         cell.setCellStyle(style);
     }
@@ -101,7 +99,7 @@ public class ExportExcelFile<T> {
                     Object value = field.get(data);
                     createCell(row, columnCount, value, style);
                 } catch (NoSuchFieldException | IllegalAccessException e) {
-                    logger.log(Level.SEVERE, e.getMessage(), e);
+                    log.error(e.getMessage(), e);
                 }
                 columnCount++;
             }

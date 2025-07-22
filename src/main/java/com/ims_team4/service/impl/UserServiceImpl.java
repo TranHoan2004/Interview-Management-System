@@ -81,7 +81,6 @@ public class UserServiceImpl implements UserService {
         return user != null ? Optional.of(convertToDTO(user)) : Optional.empty();
     }
 
-
     @NotNull
     private Users convertToEntity(@NotNull UserDTO userDTO) {
         Users user = new Users();
@@ -102,7 +101,6 @@ public class UserServiceImpl implements UserService {
 
         return user;
     }
-
 
     private UserDTO convertToDTO(@NotNull Users user) {
         Logger log = Logger.getLogger(this.getClass().getName());
@@ -158,7 +156,6 @@ public class UserServiceImpl implements UserService {
         return userRepository.existsByPhone(phone);
     }
 
-
     @Override
     @Transactional
     public void deleteUserById(Long userId) {
@@ -176,6 +173,5 @@ public class UserServiceImpl implements UserService {
     public Users findByEmail(String email) {
         return userRepository.findByEmail(email).orElse(null);
     }
-
 
 }

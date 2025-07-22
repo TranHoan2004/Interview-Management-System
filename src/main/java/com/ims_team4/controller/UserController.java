@@ -11,6 +11,8 @@ import com.ims_team4.service.PositionService;
 import com.ims_team4.service.UserService;
 import com.ims_team4.utils.email.EmailService;
 import jakarta.servlet.http.HttpSession;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -31,7 +33,9 @@ import java.util.logging.Logger;
 
 import static com.ims_team4.utils.RandomCode.generateSixRandomCodes;
 
+@Slf4j
 @Controller
+@RequiredArgsConstructor
 @RequestMapping("/user")
 // Trang
 public class UserController {
@@ -40,17 +44,6 @@ public class UserController {
     private final DepartmentService depSrv;
     private final UserService userService;
     private final EmailService emailService;
-    private final Logger log = Logger.getLogger(this.getClass().getName());
-
-    public UserController(EmployeeService empSrv, PositionService positionService,
-                          DepartmentService depSrv, UserService userService,
-                          EmailService emailService) {
-        this.empSrv = empSrv;
-        this.positionService = positionService;
-        this.depSrv = depSrv;
-        this.userService = userService;
-        this.emailService = emailService;
-    }
 
     // Trong UserDTO hoặc UserMapper class
     public void applyUserFields(String fullName, LocalDate dob, String phone, String address,
@@ -190,7 +183,7 @@ public class UserController {
             UserDTO users = userService.saveUser(userDTO);
 
             if (users == null || users.getId() == null) {
-                log.severe("User creation failed: UserDTO is null or missing ID!");
+                log.error("User creation failed: UserDTO is null or missing ID!");
                 model.addAttribute("error", "User creation failed. Please try again.");
                 return "admin-features/create-user";
             }
@@ -211,7 +204,7 @@ public class UserController {
 
             return "redirect:/user/list"; // Thành công -> chuyển hướng danh sách user
         } catch (Exception e) {
-            log.log(Level.SEVERE, e.getMessage(), e);
+            log.error(e.getMessage(), e);
             model.addAttribute("error", "Failed to create employee. Please check your input!");
             return "admin-features/create-user";
         }
@@ -220,8 +213,8 @@ public class UserController {
     private boolean isImageFile(String contentType) {
         return contentType != null && (
                 contentType.equalsIgnoreCase("image/png") ||
-                contentType.equals("image/jpeg") ||
-                contentType.equals("image/jpg")
+                        contentType.equals("image/jpeg") ||
+                        contentType.equals("image/jpg")
         );
     }
 
@@ -338,8 +331,7 @@ public class UserController {
             // Nếu thành công, chuyển hướng về danh sách user
             return "redirect:/user/details/{id}";
         } catch (Exception e) {
-            log.log(Level.SEVERE, e.getMessage(), e);
-            System.out.println(e.getMessage());
+            log.error(e.getMessage(), e);
             model.addAttribute("error", "Failed to create employee. Please check your input!");
             return "admin-features/edit-user"; // Quay lại trang tạo user nếu có lỗi
         }

@@ -15,6 +15,7 @@ import com.ims_team4.utils.RandomCode;
 import com.ims_team4.utils.email.EmailService;
 import com.ims_team4.utils.email.EmailServiceImpl;
 import jakarta.servlet.http.HttpSession;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.http.client.fluent.Form;
 import org.apache.http.client.fluent.Request;
 import org.jetbrains.annotations.NotNull;
@@ -27,9 +28,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
+@Slf4j
 @Controller
 // HoanTX
 public class LoginController implements Constants.GoogleAndFacebookAuthentication {
@@ -38,7 +38,6 @@ public class LoginController implements Constants.GoogleAndFacebookAuthenticatio
     private final UserService userService;
     private final EmployeeService empSrv;
     private final SessionController details;
-    private static final Logger logger = Logger.getLogger(LoginController.class.getName());
 
     public LoginController(UserServiceImpl impl, EmployeeService empSrv, EmployeeServiceImpl empSrvImpl) {
         this.userService = impl;
@@ -68,7 +67,7 @@ public class LoginController implements Constants.GoogleAndFacebookAuthenticatio
     public String login(@RequestParam(name = "code", required = false) String code,
                         @RequestParam(value = "error", required = false) boolean error,
                         Model model, HttpSession session) {
-        logger.info("login get method");
+        log.info("login get method");
         render(model);
         try {
             if (error) {
@@ -81,7 +80,7 @@ public class LoginController implements Constants.GoogleAndFacebookAuthenticatio
             String email = getGoogleUserInfo(accessToken).getEmail();
             setupSession(session, email);
         } catch (Exception e) {
-            logger.log(Level.SEVERE, e.getMessage(), e);
+            log.error(e.getMessage(), e);
             model.addAttribute("error", e.getMessage());
             return "login-logout-features/login";
         }
@@ -99,10 +98,10 @@ public class LoginController implements Constants.GoogleAndFacebookAuthenticatio
 
     @PostMapping("/verify-email")
     public String checkEmailAndSendVerifyCode(Model model, @RequestParam("email") String email) {
-        logger.info("email: " + email);
+        log.info("email: {}", email);
         try {
             List<String> list = userService.getAllEmail();
-            logger.info(list.toString());
+            log.info(list.toString());
             if (!isEmailExisting(email, list)) {
                 throw new Exception("Email not found");
             }
@@ -112,7 +111,7 @@ public class LoginController implements Constants.GoogleAndFacebookAuthenticatio
             model.addAttribute("status", false);
             model.addAttribute("code", String.class);
         } catch (Exception e) {
-            logger.log(Level.SEVERE, e.getMessage(), e);
+            log.error(e.getMessage(), e);
             model.addAttribute("error", e.getMessage());
             model.addAttribute("status", true);
         }
@@ -122,7 +121,7 @@ public class LoginController implements Constants.GoogleAndFacebookAuthenticatio
     @PostMapping("/verify-code")
     public String verifyCode(@ModelAttribute("code") String code, Model model) {
         try {
-            logger.info("code in model attribute: " + code + " and random code: " + randomCode);
+            log.info("code in model attribute: {} and random code: {}", code, randomCode);
             if (!code.equals(randomCode)) {
                 throw new Exception("Wrong code");
             }
@@ -130,7 +129,7 @@ public class LoginController implements Constants.GoogleAndFacebookAuthenticatio
             model.addAttribute("password", String.class);
             model.addAttribute("rewrite-password", String.class);
         } catch (Exception e) {
-            logger.log(Level.ALL, e.getMessage(), e);
+            log.error(e.getMessage(), e);
             model.addAttribute("error", e.getMessage());
             model.addAttribute("status", false);
         }
@@ -143,7 +142,7 @@ public class LoginController implements Constants.GoogleAndFacebookAuthenticatio
             employeeDTO.setPassword(password);
             empSrv.updateEmployeesPassword(employeeDTO);
         } catch (Exception e) {
-            logger.log(Level.SEVERE, e.getMessage(), e);
+            log.error(e.getMessage(), e);
             model.addAttribute("error", e.getMessage());
             return "login-logout-features/reset-password";
         }
@@ -178,63 +177,63 @@ public class LoginController implements Constants.GoogleAndFacebookAuthenticatio
     // </editor-fold>
 
     private boolean isEmailExisting(@NotNull String email, @NotNull List<String> list) {
-        logger.info("verify email: " + email);
+        log.info("verify email: {}", email);
         return list.stream().anyMatch(email::equals);
     }
 
     private void sendEmail(String email) {
         EmailService service = new EmailServiceImpl();
         randomCode = RandomCode.generateSixRandomCodes();
-        logger.info("random code: " + randomCode);
+        log.info("random code: {}", randomCode);
         String subject = """
-                                 <!DOCTYPE html>
-                                 <html lang="en">
-                                 <head>
-                                     <meta charset="UTF-8">
-                                     <title>Interview Manager System - Verification Code</title>
-                                 </head>
-                                 <body style="margin: 0; padding: 0; background-color: #f4f4f4; font-family: Arial, sans-serif;">
-                                     <table border="0" cellpadding="0" cellspacing="0" width="100%">
-                                         <tr>
-                                             <td align="center" style="padding: 20px 0;">
-                                                 <table border="0" cellpadding="0" cellspacing="0" width="600"
-                                                        style="background-color: #ffffff; border-radius: 8px; overflow: hidden;\s
-                                                               box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
-                                                     <tr style="background-color: #ff6600;">
-                                                         <td align="center" style="padding: 20px 10px;">
-                                                             <h2 style="margin: 0; color: #ffffff;">Interview Manager System</h2>
-                                                         </td>
-                                                     </tr>
-                                                     <tr>
-                                                         <td style="padding: 30px 40px; text-align: center; color: #333;">
-                                                             <h3 style="margin-top: 0; margin-bottom: 10px;">Hello,</h3>
-                                                             <p style="margin: 0; font-size: 16px;">
-                                                                 This is the verify code of <b>Interview Manager System</b>.
-                                                             </p>
-                                                             <div style="font-size: 28px; font-weight: bold; color: #ff6600;\s
-                                                                         margin: 20px 0;">
-                                                                \s""" + randomCode
-                         + """
-                                                                     </div>
-                                                                     <p style="margin-top: 20px; font-size: 14px; color: #555;">
-                                                                         If you do not ask to reset your password, please ignore this email.
-                                                                     </p>
-                                                                 </td>
-                                                             </tr>
-                                                             <tr>
-                                                                 <td style="background-color: #f4f4f4; padding: 10px; text-align: center;">
-                                                                     <p style="margin: 0; font-size: 12px; color: #999;">
-                                                                         © 2023 Interview Manager System. All rights reserved.
-                                                                     </p>
-                                                                 </td>
-                                                             </tr>
-                                                         </table>
-                                                     </td>
-                                                 </tr>
-                                             </table>
-                                         </body>
-                                         </html>
-                                 """;
+                <!DOCTYPE html>
+                <html lang="en">
+                <head>
+                    <meta charset="UTF-8">
+                    <title>Interview Manager System - Verification Code</title>
+                </head>
+                <body style="margin: 0; padding: 0; background-color: #f4f4f4; font-family: Arial, sans-serif;">
+                    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+                        <tr>
+                            <td align="center" style="padding: 20px 0;">
+                                <table border="0" cellpadding="0" cellspacing="0" width="600"
+                                       style="background-color: #ffffff; border-radius: 8px; overflow: hidden;\s
+                                              box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
+                                    <tr style="background-color: #ff6600;">
+                                        <td align="center" style="padding: 20px 10px;">
+                                            <h2 style="margin: 0; color: #ffffff;">Interview Manager System</h2>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding: 30px 40px; text-align: center; color: #333;">
+                                            <h3 style="margin-top: 0; margin-bottom: 10px;">Hello,</h3>
+                                            <p style="margin: 0; font-size: 16px;">
+                                                This is the verify code of <b>Interview Manager System</b>.
+                                            </p>
+                                            <div style="font-size: 28px; font-weight: bold; color: #ff6600;\s
+                                                        margin: 20px 0;">
+                                               \s""" + randomCode
+                + """
+                                                    </div>
+                                                    <p style="margin-top: 20px; font-size: 14px; color: #555;">
+                                                        If you do not ask to reset your password, please ignore this email.
+                                                    </p>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td style="background-color: #f4f4f4; padding: 10px; text-align: center;">
+                                                    <p style="margin: 0; font-size: 12px; color: #999;">
+                                                        © 2023 Interview Manager System. All rights reserved.
+                                                    </p>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+                            </table>
+                        </body>
+                        </html>
+                """;
         service.sendNormalEmail(email, "[Interview Management System] Verify Code", subject);
     }
 
@@ -251,7 +250,7 @@ public class LoginController implements Constants.GoogleAndFacebookAuthenticatio
         }
         session.setAttribute("account", emp);
         details.setAttributeForSecurityContext(emp, session);
-        logger.info("session: " + session.getAttribute("account"));
+        log.info("session: {}", session.getAttribute("account"));
     }
     // </editor-fold>
 }

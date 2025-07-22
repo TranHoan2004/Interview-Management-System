@@ -7,6 +7,7 @@ import com.ims_team4.model.utils.CandidateStatus;
 import com.ims_team4.repository.OfferRepository;
 import com.ims_team4.repository.UserRepository;
 import com.ims_team4.service.OfferService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -18,15 +19,11 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 // Duc Long
 public class OfferServiceImpl implements OfferService {
     private final OfferRepository offerRepository;
     private final UserRepository userRepository;
-
-    public OfferServiceImpl(OfferRepository offerRepository, UserRepository userRepository) {
-        this.offerRepository = offerRepository;
-        this.userRepository = userRepository;
-    }
 
     // <editor-fold desc="Code bởi @Duc Long- getALlOffer">
     @Override
@@ -51,13 +48,6 @@ public class OfferServiceImpl implements OfferService {
     public OfferDTO getOfferById(long id) {
         return convertToDTO(offerRepository.getOfferById(id));
     }
-
-//    @Override
-//    public List<OfferDTO> getAllOfferByRecruiter(int id, Pageable pageable) {
-//        return offerRepository.getAllOfferByRecruiter(id, pageable).stream()
-//                .map(this::convertToDTO)
-//                .collect(Collectors.toList());
-//    }
 
     @Override
     public boolean editOffer(int offerid, int salary, LocalDate from, LocalDate to, LocalDate duedate, String interviewNote, int interviewId, String note, int recruiterOwner, int cid, int coid, int did, int eid, int lid, int pid, int updateBy) {
@@ -85,20 +75,6 @@ public class OfferServiceImpl implements OfferService {
         return convertToDTO(offerRepository.getMaxOfferOfCandidate(cid));
     }
 
-//    @Override
-//    public List<OfferDTO> getAllOfferOfManager(int mid) {
-//        return offerRepository.getAllOfferOfManager(mid).stream()
-//                .map(this::convertToDTO)
-//                .collect(Collectors.toList());
-//    }
-//
-//    @Override
-//    public List<OfferDTO> getAllOfferOfAdmin(int aid) {
-//        return offerRepository.getAllOfferOfAdmin(aid).stream()
-//                .map(this::convertToDTO)
-//                .collect(Collectors.toList());
-//    }
-
     @Override
     public boolean createOffer(int salary, LocalDate from, LocalDate to, LocalDate duedate, String interviewNote, int interviewId, String note, int recruiterOwner, int cid, int coid, int did, int eid, int lid, int pid, int updateBy) {
         return offerRepository.createOffer(salary, from, to, duedate, interviewNote, interviewId, note, recruiterOwner, cid, coid, did, eid, lid, pid, updateBy);
@@ -117,8 +93,6 @@ public class OfferServiceImpl implements OfferService {
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
     }
-
-
     // </editor-fold>
 
     // <editor-fold desc="Code bởi @Duc Long- convertOfferToDTO">

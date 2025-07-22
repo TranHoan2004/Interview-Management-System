@@ -5,6 +5,7 @@ import com.ims_team4.dto.EmployeeDTO;
 import com.ims_team4.dto.UserDTO;
 import com.ims_team4.service.EmployeeService;
 import com.ims_team4.service.UserService;
+import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -26,15 +27,12 @@ import org.springframework.security.web.authentication.rememberme.PersistentToke
 
 import javax.sql.DataSource;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
+@Slf4j
 @Configuration
 @EnableWebSecurity
 // HoanTX
 public class AuthenticationSecurityConfig implements Constants.Role {
-    private final Logger log = Logger.getLogger(AuthenticationSecurityConfig.class.getName());
-
     /**
      * <p>
      * Configures setting for Login, Logout and “Remember Me” authentication.
@@ -95,11 +93,11 @@ public class AuthenticationSecurityConfig implements Constants.Role {
                         .loginPage("/login")
                         .loginProcessingUrl("/login")
                         .successHandler((request, response, authorize) -> {
-                            log.info("User has logged in: " + authorize.getName());
+                            log.info("User has logged in: {}", authorize.getName());
                             response.sendRedirect("/dashboard");
                         })
                         .failureHandler((request, response, authorize) -> {
-                            log.info(request.getRequestURI() + " failed");
+                            log.info("{} failed", request.getRequestURI());
                             log.info(authorize.getMessage());
                         })
                         .failureUrl("/login?error=true"))
@@ -108,7 +106,7 @@ public class AuthenticationSecurityConfig implements Constants.Role {
                         .invalidateHttpSession(true)
                         .logoutSuccessHandler((request, response, authentication) -> {
                             if (authentication != null) {
-                                log.info("User has logged out: " + authentication.getName());
+                                log.info("User has logged out: {}", authentication.getName());
                             }
                             response.sendRedirect("/login");
                         })
@@ -125,8 +123,8 @@ public class AuthenticationSecurityConfig implements Constants.Role {
                         .authenticationEntryPoint((request, response, authException) ->
                                 response.sendRedirect("/login"))
                         .accessDeniedHandler((request, response, accessDeniedException) -> {
-                            log.warning("Error happens when exeptionHandling is working: " + accessDeniedException.getMessage());
-                            log.info("request uri: " + request.getRequestURI());
+                            log.error("Error happens when exeptionHandling is working: {}", accessDeniedException.getMessage());
+                            log.info("request uri: {}", request.getRequestURI());
                         })
                 )
                 .sessionManagement(session -> session
@@ -157,7 +155,7 @@ public class AuthenticationSecurityConfig implements Constants.Role {
                     throw new Exception("This account can not access");
                 }
             } catch (Exception e) {
-                log.log(Level.SEVERE, e.getMessage(), e);
+                log.error(e.getMessage(), e);
                 throw new RuntimeException(e.getMessage());
             }
             GrantedAuthority authority = new SimpleGrantedAuthority(emp.getRole().name());
@@ -167,9 +165,8 @@ public class AuthenticationSecurityConfig implements Constants.Role {
 
     @NotNull
     private EmployeeDTO getEmployeeDTOByID(Long id, @NotNull EmployeeService empSrv) throws Exception {
-        EmployeeDTO emp;
-        emp = empSrv.getActiveEmployeesByID(id);
-        log.log(Level.INFO, emp.toString());
+        EmployeeDTO emp = empSrv.getActiveEmployeesByID(id);
+        log.info(emp.toString());
         return emp;
     }
 

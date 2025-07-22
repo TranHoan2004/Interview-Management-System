@@ -2,54 +2,34 @@ package com.ims_team4.service.impl;
 
 import com.ims_team4.dto.JobDTO;
 import com.ims_team4.model.*;
-import com.ims_team4.model.utils.HrRole;
 import com.ims_team4.repository.*;
 import com.ims_team4.service.BenefitService;
 import com.ims_team4.service.JobService;
 import com.ims_team4.service.LevelService;
 import com.ims_team4.service.SkillService;
-import com.ims_team4.utils.excel.ImportExcelFile;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
-import java.time.LocalDate;
-import java.time.format.DateTimeParseException;
-import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.stream.Collectors;
 
-
 @Service
+@RequiredArgsConstructor
+@FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 public class JobServiceImpl implements JobService {
-
-    @Autowired
-    private JobRepository jobRepository;
-
-    @Autowired
-    private LevelRepository levelRepository;
-
-    @Autowired
-    private SkillRepository skillRepository;
-
-    @Autowired
-    private BenefitRepository benefitRepository;
-
-    @Autowired
-    private UserRepository userRepository;
-
-    @Autowired
-    private LevelService levelService;
-
-    @Autowired
-    private SkillService skillService;
-
-    @Autowired
-    private BenefitService benefitService;
+    JobRepository jobRepository;
+    LevelRepository levelRepository;
+    SkillRepository skillRepository;
+    BenefitRepository benefitRepository;
+    UserRepository userRepository;
+    LevelService levelService;
+    SkillService skillService;
+    BenefitService benefitService;
 
     @Override
     public List<JobDTO> getAllJobs() {
